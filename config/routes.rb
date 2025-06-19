@@ -2,10 +2,8 @@ Rails.application.routes.draw do
   get "about", to: "static#about"
   get "privacy", to: "static#privacy"
   get "terms", to: "static#terms"
-  get "app", to: "static#app"
-  get "admin", to: "static#admin"
-  devise_for :users, path_names: { sign_in: 'sign-in', sign_up: 'register', sign_out: 'logout' },
-             controllers: { registrations: 'registrations' }
+  devise_for :users, path_names: { sign_in: "sign-in", sign_up: "register", sign_out: "logout" },
+             controllers: { registrations: "registrations" }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -19,4 +17,10 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "static#index"
+
+  get "app", to: "static#app", as: "app"
+  get "app/*other" => "static#app"
+
+  get "admin", to: "static#admin", as: "admin"
+  get "admin/*other" => "static#admin"
 end

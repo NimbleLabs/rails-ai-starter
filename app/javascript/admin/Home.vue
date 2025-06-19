@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="font-extrabold text-4xl md:text-7xl tracking-tight">Starter Application</h1>
+    <h1 class="font-extrabold text-4xl md:text-7xl tracking-tight">Starter Admin App</h1>
   </div>
 </template>
 

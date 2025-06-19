@@ -3,7 +3,7 @@
 //
 //    <%= vite_client_tag %>
 //    <%= vite_javascript_tag 'application' %>
-console.log('Vite ⚡️ Rails')
+console.log('Vite ⚡️ Rails - Admin App')
 
 // If using a TypeScript entrypoint file:
 //     <%= vite_typescript_tag 'application' %>
@@ -25,10 +25,10 @@ console.log('Vite ⚡️ Rails')
 // Example: Import a stylesheet in app/frontend/index.css
 // import '~/index.css'
 import { createApp } from 'vue'
-import NewApp from '../app/NewApp.vue'
-import router from '../app/router'
+import AdminApp from '../admin/AdminApp.vue'
+import router from '../admin/router'
 import Rails from '@rails/ujs';
 window.Rails = Rails
-const app = createApp(NewApp)
+const app = createApp(AdminApp)
 app.use(router)
 app.mount('#app')
