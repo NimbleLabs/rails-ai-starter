@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    --primary-light: #f3e8ff;
+    --primary: #9333ea;
+    --primary-hover: #7e22ce;
+    --primary-dark: #581c87;
+}
+
+@theme {
+    --color-primary-light: var(--primary-light);
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-dark: var(--primary);
+}
+
+@layer components {
+
+    .body-base {
+        @apply bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-100;
+    }
+
+    .slide-out-menu {
+        @apply bg-zinc-50 dark:bg-slate-900
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    .mobile-nav-button {
+        @apply text-slate-900 dark:text-slate-50;
+    }
+
+    .btn {
+        @apply cursor-pointer py-2 px-4 rounded-md;
+    }
+
+    .btn-primary {
+        @apply text-white bg-primary hover:bg-primary-hover focus:ring-primary;
+    }
+
+    .card {
+        @apply p-5 rounded-lg shadow border border-slate-200 dark:border-slate-700;
+    }
+}

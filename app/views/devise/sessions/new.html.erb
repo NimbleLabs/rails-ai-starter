@@ -1,0 +1,42 @@
+<% invalid_login = flash[:alert] && flash[:alert].index('Invalid').present? %>
+<div class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full card">
+    <h2 class="my-5 text-center text-3xl font-extrabold ">Sign in</h2>
+
+    <% if invalid_login %>
+      <%= content_tag(:div, flash[:alert], class: 'sm:mx-auto w-full md:max-w-md my-5 p-2 mb-3 bg-yellow-100 text-yellow-700 font-medium rounded-xl text-center') %>
+    <% end %>
+
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
+
+      <div class="space-y-4">
+        <div>
+          <%= f.label :email, class: "block text-sm font-medium text-slate-700 dark:text-slate-100" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email",
+                            class: "mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= f.label :password, class: "block text-sm font-medium text-slate-700 dark:text-slate-100" %>
+          <%= f.password_field :password, autocomplete: "current-password",
+                               class: "mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm" %>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="flex items-center">
+            <%= f.check_box :remember_me, class: "h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" %>
+            <%= f.label :remember_me, class: "ml-2 block text-sm" %>
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.submit "Log in", class: "group relative w-full flex justify-center btn btn-primary border border-transparent text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2" %>
+      </div>
+    <% end %>
+
+    <div class="mt-6 text-center text-sm">
+      <%= render "devise/shared/links", class: "text-purple-500 dark:text-purple-400 hover:text-purple-600 dark:hover:text-purple-500" %>
+    </div>
+  </div>
+</div>

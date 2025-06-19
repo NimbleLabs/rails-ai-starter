@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''">
+  <head>
+    <title><%= content_for(:title) || "Rails Ai Starter" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+
+    <script>
+        function initAlpineState() {
+            return {
+                open: false,
+                dark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+                toggleDarkMode(isDark) {
+                    this.dark = isDark;
+                    localStorage.theme = isDark ? 'dark' : 'light';
+                }
+            };
+        }
+    </script>
+
+    <script src="//unpkg.com/alpinejs" defer></script>
+
+  </head>
+
+  <body class="dark:bg-slate-900 dark:text-white body-base">
+    <%= render "shared/nav" %>
+    <main>
+      <%= yield %>
+    </main>
+  </body>
+</html>
