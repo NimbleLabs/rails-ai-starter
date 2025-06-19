@@ -1,4 +1,18 @@
-<div>
-  <h1 class="font-bold text-4xl">Static#app</h1>
-  <p>Find me in app/views/static/app.html.erb</p>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Starter App</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <% if Rails.env.development? %>
+    <%= vite_client_tag %>
+  <% end %>
+  <%= vite_javascript_tag 'application' %>
+
+</head>
+<body class="body-base h-screen">
+<div id="app" class="h-full"></div>
+</body>
+</html>

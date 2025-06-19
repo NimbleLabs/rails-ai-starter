@@ -1,4 +1,5 @@
 class StaticController < ApplicationController
+  layout :get_layout
   def index
   end
 
@@ -15,5 +16,10 @@ class StaticController < ApplicationController
   end
 
   def admin
+  end
+
+  def get_layout
+    return 'empty' if action_name == 'app' || action_name == 'admin'
+    'application'
   end
 end
