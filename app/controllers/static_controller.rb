@@ -1,5 +1,8 @@
 class StaticController < ApplicationController
+  before_action :authenticate_user!, only: %i[ app admin ]
+
   layout :get_layout
+
   def index
   end
 
