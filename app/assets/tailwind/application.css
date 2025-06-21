@@ -21,6 +21,14 @@
         @apply bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-100;
     }
 
+    .container-bg {
+        @apply bg-white dark:bg-gray-900;
+    }
+
+    .container-bg-secondary {
+        @apply bg-zinc-50 dark:bg-gray-800;
+    }
+
     .slide-out-menu {
         @apply bg-zinc-50 dark:bg-slate-900
     }
