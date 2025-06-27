@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     namespace :v1, format: :json do
       get "users/current", to: "users#current"
       get "users", to: "users#index"
+      get "users/:id", to: "users#show"
     end
   end
 

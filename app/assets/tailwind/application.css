@@ -49,6 +49,10 @@
         @apply text-white bg-primary hover:bg-primary-hover focus:ring-primary;
     }
 
+    .btn-secondary {
+        @apply bg-slate-200 hover:bg-slate-300 focus:ring-slate-300;
+    }
+
     .card {
         @apply p-5 rounded-lg shadow border border-slate-200 dark:border-slate-700;
     }
