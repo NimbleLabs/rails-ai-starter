@@ -1,13 +1,7 @@
+@import "../stylesheets/default.css";
 @import "tailwindcss";
-@import "spinner";
+@import "../stylesheets/spinner.css";
 @custom-variant dark (&:where(.dark, .dark *));
-
-:root {
-    --primary-light: #f3e8ff;
-    --primary: #9333ea;
-    --primary-hover: #7e22ce;
-    --primary-dark: #581c87;
-}
 
 @theme {
     --color-primary-light: var(--primary-light);
@@ -23,7 +17,7 @@
     }
 
     .container-bg {
-        @apply bg-white dark:bg-gray-900;
+        @apply bg-primary text-white dark:bg-primary-dark;
     }
 
     .container-bg-secondary {
