@@ -29,6 +29,8 @@ import AdminApp from '../admin/AdminApp.vue'
 import router from '../admin/router'
 import Rails from '@rails/ujs';
 window.Rails = Rails
+import starter from "../admin/model"
+window.starter = starter
 const app = createApp(AdminApp)
 app.use(router)
 app.mount('#app')

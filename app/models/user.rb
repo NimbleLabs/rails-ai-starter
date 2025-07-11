@@ -35,4 +35,10 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   enum :role, { user: 0, admin: 1 }
+
+  after_create :on_after_create
+
+  def on_after_create
+    UserMailer.with(user: self).welcome_email.deliver_later(wait: 2.seconds)
+  end
 end

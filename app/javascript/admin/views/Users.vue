@@ -31,7 +31,7 @@
     </div>
 
     <!-- Empty state when no users exist -->
-    <div v-else class="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
+    <div v-else-if="usersLoaded" class="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
       <div class="mx-auto max-w-md">
         <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -50,7 +50,9 @@ export default {
   name: 'Users',
   data () {
     return {
-      users: []
+      users: [],
+      usersLoaded: false,
+      model: starter.model
     }
   },
   mounted () {
@@ -59,14 +61,18 @@ export default {
   methods: {
     async loadUsers () {
       try {
+        this.model.loading = true
         console.log('loading users')
         const service = new RestService('users')
         const response = await service.list()
         console.log('users loaded')
         console.log(response)
         this.users = response
+        this.usersLoaded = true
+        this.model.loading = false
       } catch (error) {
         console.error('Error fetching users:', error)
+        this.model.loading = false
       }
     },
 

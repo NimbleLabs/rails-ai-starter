@@ -15,9 +15,7 @@ export default {
   components: {MainContainer, LoadingSpinner},
   data() {
     return {
-      model: {
-        loading: false,
-      }
+      model: starter.model
     }
   },
   computed: {
