@@ -14,6 +14,7 @@
     <div class="hidden sm:flex md:items-center md:gap-x-8 text-sm/6">
       <% if user_signed_in? %>
         <% if current_user.admin? %> <%= link_to "Admin", admin_path, class: "pointer" %> <% end %>
+        <%= link_to "App", app_path, class: "pointer" %>
         <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: "mb-0 pointer" %>
       <% else %>
         <%= link_to "Sign In", new_session_path(resource_name), class: "hover:text-purple-500" %>
@@ -43,6 +44,15 @@
         <div class="-my-6 divide-y divide-gray-500/10">
 
           <% if user_signed_in? %>
+            <% if current_user.admin? %> 
+              <div class="py-2">
+                <%= link_to "Admin", admin_path, class: "pointer" %> 
+              </div>
+            <% end %>
+            <div class="py-2">
+              <%= link_to "App", app_path, class: "pointer", "@click": "open = false" %>
+            </div>
+
             <div class="py-2">
               <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: "cursor-pointer -mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-purple-500", "@click": "open = false" %>
             </div>

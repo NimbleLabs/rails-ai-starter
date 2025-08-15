@@ -1,7 +1,38 @@
 :root {
-    --primary-light: #f3e8ff;
-    --primary: #9333ea;
-    --primary-hover: #7e22ce;
-    --primary-dark: oklch(27.9% 0.041 260.031);
+    /* Primary Colors (Purple theme) */
+    --primary-light: #f3e8ff; /* purple-100 */
+    --primary: #9333ea; /* purple-600 */
+    --primary-hover: #7e22ce; /* purple-700 */
+    --primary-dark: #581c87; /* purple-900 */
+    
+    /* Secondary Colors (Complementary blue-gray) */
+    --secondary-light: #f1f5f9; /* slate-100 */
+    --secondary: #475569; /* slate-600 */
+    --secondary-hover: #334155; /* slate-700 */
+    --secondary-dark: #1e293b; /* slate-800 */
+    
+    /* Accent Colors (Rose for CTAs) */
+    --accent-light: #fecaca; /* rose-200 */
+    --accent: #f43f5e; /* rose-500 */
+    --accent-hover: #e11d48; /* rose-600 */
+    --accent-dark: #be123c; /* rose-700 */
+    
+    /* Success Colors */
+    --success-light: #dcfce7; /* green-100 */
+    --success: #16a34a; /* green-600 */
+    --success-hover: #15803d; /* green-700 */
+    --success-dark: #166534; /* green-800 */
+    
+    /* Warning Colors */
+    --warning-light: #fef3c7; /* yellow-100 */
+    --warning: #d97706; /* yellow-600 */
+    --warning-hover: #b45309; /* yellow-700 */
+    --warning-dark: #92400e; /* yellow-800 */
+    
+    /* Error Colors */
+    --error-light: #fecaca; /* red-200 */
+    --error: #dc2626; /* red-600 */
+    --error-hover: #b91c1c; /* red-700 */
+    --error-dark: #991b1b; /* red-800 */
 }
 

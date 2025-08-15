@@ -1,9 +1,40 @@
 :root[data-theme="green"],
 [data-theme="green"] {
+    /* Primary Colors (Green theme) */
     --primary-light: #dcfce7; /* green-100 */
     --primary: #16a34a; /* green-600 */
     --primary-hover: #15803d; /* green-700 */
     --primary-dark: #166534; /* green-800 */
+    
+    /* Secondary Colors (Complementary teal) */
+    --secondary-light: #f0fdfa; /* teal-50 */
+    --secondary: #0d9488; /* teal-600 */
+    --secondary-hover: #0f766e; /* teal-700 */
+    --secondary-dark: #134e4a; /* teal-800 */
+    
+    /* Accent Colors (Fuchsia for CTAs) */
+    --accent-light: #f0abfc; /* fuchsia-300 */
+    --accent: #d946ef; /* fuchsia-500 */
+    --accent-hover: #c026d3; /* fuchsia-600 */
+    --accent-dark: #a21caf; /* fuchsia-700 */
+    
+    /* Success Colors (using primary green) */
+    --success-light: #dcfce7; /* green-100 */
+    --success: #16a34a; /* green-600 */
+    --success-hover: #15803d; /* green-700 */
+    --success-dark: #166534; /* green-800 */
+    
+    /* Warning Colors */
+    --warning-light: #fef3c7; /* yellow-100 */
+    --warning: #eab308; /* yellow-500 */
+    --warning-hover: #ca8a04; /* yellow-600 */
+    --warning-dark: #a16207; /* yellow-700 */
+    
+    /* Error Colors */
+    --error-light: #fecaca; /* red-200 */
+    --error: #dc2626; /* red-600 */
+    --error-hover: #b91c1c; /* red-700 */
+    --error-dark: #991b1b; /* red-800 */
 }
 
 

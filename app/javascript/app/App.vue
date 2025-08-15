@@ -1,18 +1,21 @@
 <template>
-  <div class="h-full">
-    <router-view></router-view>
+  <div class="h-full flex">
+    <loading-spinner :loading="loading"></loading-spinner>
+    <MainContainer class="h-full flex-1" />
   </div>
 </template>
 
 <script>
 
+import LoadingSpinner from "~/components/LoadingSpinner.vue";
+import MainContainer from "./layout/MainContainer.vue";
+
 export default {
-  name: 'NewApp',
+  name: 'App',
+  components: {MainContainer, LoadingSpinner},
   data() {
     return {
-      model: {
-        loading: false,
-      }
+      model: starter.model
     }
   },
   computed: {

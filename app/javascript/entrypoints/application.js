@@ -25,10 +25,12 @@ console.log('Vite ⚡️ Rails')
 // Example: Import a stylesheet in app/frontend/index.css
 // import '~/index.css'
 import { createApp } from 'vue'
-import NewApp from '../app/NewApp.vue'
+import App from '../app/App.vue'
 import router from '../app/router'
 import Rails from '@rails/ujs';
 window.Rails = Rails
-const app = createApp(NewApp)
+import starter from "../admin/model"
+window.starter = starter
+const app = createApp(App)
 app.use(router)
 app.mount('#app')

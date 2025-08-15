@@ -5,10 +5,41 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+    /* Primary Colors */
     --color-primary-light: var(--primary-light);
     --color-primary: var(--primary);
     --color-primary-hover: var(--primary-hover);
     --color-primary-dark: var(--primary-dark);
+    
+    /* Secondary Colors */
+    --color-secondary-light: var(--secondary-light);
+    --color-secondary: var(--secondary);
+    --color-secondary-hover: var(--secondary-hover);
+    --color-secondary-dark: var(--secondary-dark);
+    
+    /* Accent Colors */
+    --color-accent-light: var(--accent-light);
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-accent-dark: var(--accent-dark);
+    
+    /* Success Colors */
+    --color-success-light: var(--success-light);
+    --color-success: var(--success);
+    --color-success-hover: var(--success-hover);
+    --color-success-dark: var(--success-dark);
+    
+    /* Warning Colors */
+    --color-warning-light: var(--warning-light);
+    --color-warning: var(--warning);
+    --color-warning-hover: var(--warning-hover);
+    --color-warning-dark: var(--warning-dark);
+    
+    /* Error Colors */
+    --color-error-light: var(--error-light);
+    --color-error: var(--error);
+    --color-error-hover: var(--error-hover);
+    --color-error-dark: var(--error-dark);
 }
 
 @layer components {
@@ -18,11 +49,15 @@
     }
 
     .container-bg {
-        @apply bg-primary text-white dark:bg-primary-dark;
+        @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100;
     }
 
     .container-bg-secondary {
-        @apply bg-zinc-50 dark:bg-gray-800;
+        @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100;
+    }
+
+    .container-bg-tertiary {
+        @apply bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100;
     }
 
     .slide-out-menu {
@@ -46,10 +81,50 @@
     }
 
     .btn-secondary {
-        @apply bg-slate-200 hover:bg-slate-300 focus:ring-slate-300;
+        @apply text-secondary bg-secondary-light hover:bg-secondary-hover hover:text-white focus:ring-secondary;
+    }
+
+    .btn-accent {
+        @apply text-white bg-accent hover:bg-accent-hover focus:ring-accent;
+    }
+
+    .btn-success {
+        @apply text-white bg-success hover:bg-success-hover focus:ring-success;
+    }
+
+    .btn-warning {
+        @apply text-white bg-warning hover:bg-warning-hover focus:ring-warning;
+    }
+
+    .btn-error {
+        @apply text-white bg-error hover:bg-error-hover focus:ring-error;
     }
 
     .card {
-        @apply p-5 rounded-lg shadow border border-slate-200 dark:border-slate-700;
+        @apply p-6 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800;
+    }
+
+    .card-secondary {
+        @apply p-6 rounded-xl shadow-lg border border-secondary-light dark:border-secondary-dark bg-secondary-light dark:bg-secondary-dark;
+    }
+
+    .section-light {
+        @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+    }
+
+    .section-neutral {
+        @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100;
+    }
+
+    .section-neutral-alt {
+        @apply bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100;
+    }
+
+    .section-primary-accent {
+        @apply bg-primary/5 text-slate-900 dark:bg-primary-dark/10 dark:text-slate-100 border-t border-primary/10 dark:border-primary/20;
+    }
+
+    .section-colored {
+        @apply bg-gradient-to-br from-primary to-primary-dark text-white;
     }
 }
