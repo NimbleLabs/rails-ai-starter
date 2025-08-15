@@ -42,7 +42,7 @@ gem "thruster", require: false
 
 gem "devise"
 gem "friendly_id"
-gem "ruby_llm"
+gem "ruby_llm", "~> 1.6.2"
 gem "vite_rails"
 gem 'bootstrap-email'
 
