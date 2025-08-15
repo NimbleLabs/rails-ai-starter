@@ -2,7 +2,9 @@
   <div class="w-52 h-full bg-white border-r border-gray-200 flex flex-col">
     <!-- Logo/Brand Area -->
     <div class="px-3 pt-4 pb-2">
-      <h1 class="text-2xl font-extrabold tracking-tight text-sky-900 text-center">Starter</h1>
+      <a href="/" class="inline-block w-full text-2xl font-extrabold tracking-tight text-sky-900 text-center">
+        Starter
+      </a>
     </div>
 
     <!-- Navigation Links -->

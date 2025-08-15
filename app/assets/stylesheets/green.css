@@ -1,0 +1,9 @@
+:root[data-theme="green"],
+[data-theme="green"] {
+    --primary-light: #dcfce7; /* green-100 */
+    --primary: #16a34a; /* green-600 */
+    --primary-hover: #15803d; /* green-700 */
+    --primary-dark: #166534; /* green-800 */
+}
+
+

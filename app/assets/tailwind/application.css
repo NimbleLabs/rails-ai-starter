@@ -1,4 +1,5 @@
 @import "../stylesheets/default.css";
+@import "../stylesheets/green.css";
 @import "tailwindcss";
 @import "../stylesheets/spinner.css";
 @custom-variant dark (&:where(.dark, .dark *));
@@ -7,7 +8,7 @@
     --color-primary-light: var(--primary-light);
     --color-primary: var(--primary);
     --color-primary-hover: var(--primary-hover);
-    --color-primary-dark: var(--primary);
+    --color-primary-dark: var(--primary-dark);
 }
 
 @layer components {
