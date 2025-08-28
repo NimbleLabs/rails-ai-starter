@@ -6,6 +6,12 @@ class StaticController < ApplicationController
   def index
   end
 
+  def dark
+  end
+
+  def simple
+  end
+
   def about
   end
 

@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
-  get "about", to: "static#about"
-  get "privacy", to: "static#privacy"
-  get "terms", to: "static#terms"
+  get "about", to: "static#about", as: "about"
+  get "simple", to: "static#simple", as: "simple"
+  get "privacy", to: "static#privacy", as: "privacy"
+  get "terms", to: "static#terms", as: "terms"
+  get "dark-theme", to: "static#dark", as: "dark_theme"
+
   devise_for :users, path_names: { sign_in: "sign-in", sign_up: "register", sign_out: "logout" },
              controllers: { registrations: "registrations" }
 
