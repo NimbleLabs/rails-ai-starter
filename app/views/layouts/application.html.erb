@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''" x-bind:data-theme="theme">
+<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''">
   <head>
     <title><%= content_for(:title) || "Rails Ai Starter" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -17,18 +17,22 @@
             return {
                 open: false,
                 dark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-                theme: localStorage.colorTheme || 'default',
+                theme: localStorage.colorTheme || 'purple',
                 toggleDarkMode(isDark) {
+                    console.log("toggleDarkMode isDark:", isDark);
                     this.dark = isDark;
                     localStorage.theme = isDark ? 'dark' : 'light';
                 },
                 setTheme(name) {
+                    console.log("Setting theme to:", name);
                     this.theme = name;
-                    if (name === 'default') {
-                        localStorage.removeItem('colorTheme');
-                    } else {
-                        localStorage.colorTheme = name;
-                    }
+                    localStorage.colorTheme = name;
+
+                    // if (name === 'default') {
+                    //     localStorage.removeItem('colorTheme');
+                    // } else {
+                    //     localStorage.colorTheme = name;
+                    // }
                 }
             };
         }
@@ -37,7 +41,7 @@
     <script src="//unpkg.com/alpinejs" defer></script>
   </head>
 
-  <body class="body-base">
+  <body x-cloak class="body-base">
     <%= render "shared/nav" %>
     <main>
       <%= yield %>

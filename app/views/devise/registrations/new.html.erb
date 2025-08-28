@@ -7,21 +7,18 @@
 
       <div class="space-y-4">
         <div>
-          <%= f.label :name, class: "block text-sm font-medium" %>
-          <%= f.text_field :name, autocomplete: 'name',
-                           class: "mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm" %>
+          <%= f.label :name, class: "block text-sm font-medium mb-1" %>
+          <%= f.text_field :name, class: "input-form-field" %>
         </div>
 
         <div>
-          <%= f.label :email, class: "block text-sm font-medium" %>
-          <%= f.email_field :email, autocomplete: 'email',
-                            class: "mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm" %>
+          <%= f.label :email, class: "block text-sm font-medium mb-1" %>
+          <%= f.email_field :email, class: "input-form-field" %>
         </div>
 
         <div>
-          <%= f.label :password, class: "block text-sm font-medium" %>
-          <%= f.password_field :password,
-                               class: "mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm" %>
+          <%= f.label :password, class: "block text-sm font-medium mb-1" %>
+          <%= f.password_field :password, class: "input-form-field" %>
         </div>
 
         <div class="mt-10">

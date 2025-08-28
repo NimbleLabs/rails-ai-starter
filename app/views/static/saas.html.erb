@@ -1,0 +1,244 @@
+<!-- Hero Section -->
+<section class="section-light min-h-screen flex items-center justify-center relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary-dark/10 dark:from-primary/10 dark:to-primary-dark/20"></div>
+  <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
+    <h1 class="font-extrabold text-5xl md:text-7xl lg:text-8xl tracking-tight mb-8 text-primary dark:text-primary-light">
+      Rails AI Starter
+    </h1>
+    <p class="text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed text-slate-600 dark:text-slate-300">
+      The modern SaaS platform that transforms your business with cutting-edge AI technology and beautiful user experiences
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <% if user_signed_in? %>
+        <%= link_to "Open App", app_path, class: "btn btn-accent px-8 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" %>
+      <% else %>
+        <%= link_to "Get Started Free", new_registration_path(resource_name), class: "btn btn-accent px-8 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" %>
+      <% end %>
+      <button class="btn btn-secondary px-8 py-4 text-lg font-semibold rounded-full">
+        Watch Demo
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="section-neutral py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="font-bold text-4xl md:text-6xl mb-6 text-slate-900 dark:text-slate-100">
+        Powerful Features
+      </h2>
+      <p class="text-xl max-w-3xl mx-auto text-slate-600 dark:text-slate-300">
+        Everything you need to build, scale, and grow your SaaS business with confidence
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="card group hover:scale-105 transition-transform duration-300">
+        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-hover transition-colors">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-3 text-slate-900 dark:text-slate-100">Lightning Fast</h3>
+        <p class="text-slate-600 dark:text-slate-300">Built with modern technologies for optimal performance and user experience.</p>
+      </div>
+
+      <div class="card group hover:scale-105 transition-transform duration-300">
+        <div class="w-12 h-12 bg-accent rounded-lg flex items-center justify-center mb-4 group-hover:bg-accent-hover transition-colors">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-3 text-slate-900 dark:text-slate-100">Secure by Default</h3>
+        <p class="text-slate-600 dark:text-slate-300">Enterprise-grade security measures to protect your data and users.</p>
+      </div>
+
+      <div class="card group hover:scale-105 transition-transform duration-300">
+        <div class="w-12 h-12 bg-success rounded-lg flex items-center justify-center mb-4 group-hover:bg-success-hover transition-colors">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-3 text-slate-900 dark:text-slate-100">User Friendly</h3>
+        <p class="text-slate-600 dark:text-slate-300">Intuitive interface designed for both beginners and power users.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section-light py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-4 gap-8 text-center">
+      <div class="space-y-2">
+        <div class="text-4xl md:text-5xl font-bold text-primary">10k+</div>
+        <div class="text-lg text-slate-600 dark:text-slate-400">Active Users</div>
+      </div>
+      <div class="space-y-2">
+        <div class="text-4xl md:text-5xl font-bold text-accent">99.9%</div>
+        <div class="text-lg text-slate-600 dark:text-slate-400">Uptime</div>
+      </div>
+      <div class="space-y-2">
+        <div class="text-4xl md:text-5xl font-bold text-success">500+</div>
+        <div class="text-lg text-slate-600 dark:text-slate-400">Companies</div>
+      </div>
+      <div class="space-y-2">
+        <div class="text-4xl md:text-5xl font-bold text-secondary">24/7</div>
+        <div class="text-lg text-slate-600 dark:text-slate-400">Support</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="section-primary-accent py-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="font-bold text-4xl md:text-6xl mb-6 text-slate-900 dark:text-slate-100">
+        Simple Pricing
+      </h2>
+      <p class="text-xl max-w-3xl mx-auto text-slate-600 dark:text-slate-300">
+        Choose the plan that's right for your business. Start free, upgrade when you're ready.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <!-- Starter Plan -->
+      <div class="card bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 relative">
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">Starter</h3>
+          <div class="mb-6">
+            <span class="text-4xl font-bold">$0</span>
+            <span class="text-lg opacity-70">/month</span>
+          </div>
+          <ul class="space-y-3 mb-8 text-left">
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Up to 5 projects
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Basic analytics
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Community support
+            </li>
+          </ul>
+          <button class="btn btn-secondary w-full">Get Started</button>
+        </div>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="card bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 relative transform scale-105 ring-2 ring-primary">
+        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+          <span class="bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold">Most Popular</span>
+        </div>
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">Pro</h3>
+          <div class="mb-6">
+            <span class="text-4xl font-bold text-primary">$29</span>
+            <span class="text-lg text-slate-600 dark:text-slate-400">/month</span>
+          </div>
+          <ul class="space-y-3 mb-8 text-left">
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Unlimited projects
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Advanced analytics
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Priority support
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-primary mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              API access
+            </li>
+          </ul>
+          <button class="btn btn-primary w-full">Start Pro Trial</button>
+        </div>
+      </div>
+
+      <!-- Enterprise Plan -->
+      <div class="card bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 relative">
+        <div class="text-center">
+          <h3 class="text-2xl font-bold mb-4">Enterprise</h3>
+          <div class="mb-6">
+            <span class="text-4xl font-bold">$99</span>
+            <span class="text-lg opacity-70">/month</span>
+          </div>
+          <ul class="space-y-3 mb-8 text-left">
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Everything in Pro
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Custom integrations
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              24/7 phone support
+            </li>
+            <li class="flex items-center">
+              <svg class="w-5 h-5 text-success mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              SLA guarantee
+            </li>
+          </ul>
+          <button class="btn btn-secondary w-full">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section-colored py-24">
+  <div class="max-w-4xl mx-auto text-center px-6">
+    <h2 class="font-bold text-4xl md:text-6xl text-white mb-6">
+      Ready to Get Started?
+    </h2>
+    <p class="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+      Join thousands of businesses that trust our platform to power their growth
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+
+      <% if user_signed_in? %>
+        <%= link_to "Open App", app_path, class: "btn btn-accent px-8 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" %>
+      <% else %>
+        <%= link_to "Get Started Free", new_registration_path(resource_name), class: "btn btn-accent px-8 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300" %>
+      <% end %>
+
+      <button class="btn px-8 py-4 text-lg font-semibold rounded-full border-2 border-white/30 bg-white/10 hover:bg-white/20 text-white">
+        Schedule a Demo
+      </button>
+    </div>
+  </div>
+</section>

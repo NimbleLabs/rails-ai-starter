@@ -1,63 +1,33 @@
-@import "../stylesheets/default.css";
-@import "../stylesheets/green.css";
 @import "tailwindcss";
 @import "../stylesheets/spinner.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*@theme {*/
+/*    --color-primary: var(--color-purple-500);*/
+/*    --color-primary-hover: var(--color-purple-600);*/
+/*    --color-primary-dark: var(--color-purple-600);*/
+/*}*/
+
 @theme {
-    /* Primary Colors */
-    --color-primary-light: var(--primary-light);
-    --color-primary: var(--primary);
-    --color-primary-hover: var(--primary-hover);
-    --color-primary-dark: var(--primary-dark);
-    
-    /* Secondary Colors */
-    --color-secondary-light: var(--secondary-light);
-    --color-secondary: var(--secondary);
-    --color-secondary-hover: var(--secondary-hover);
-    --color-secondary-dark: var(--secondary-dark);
-    
-    /* Accent Colors */
-    --color-accent-light: var(--accent-light);
-    --color-accent: var(--accent);
-    --color-accent-hover: var(--accent-hover);
-    --color-accent-dark: var(--accent-dark);
-    
-    /* Success Colors */
-    --color-success-light: var(--success-light);
-    --color-success: var(--success);
-    --color-success-hover: var(--success-hover);
-    --color-success-dark: var(--success-dark);
-    
-    /* Warning Colors */
-    --color-warning-light: var(--warning-light);
-    --color-warning: var(--warning);
-    --color-warning-hover: var(--warning-hover);
-    --color-warning-dark: var(--warning-dark);
-    
-    /* Error Colors */
-    --color-error-light: var(--error-light);
-    --color-error: var(--error);
-    --color-error-hover: var(--error-hover);
-    --color-error-dark: var(--error-dark);
+    --color-primary: var(--color-orange-500);
+    --color-primary-hover: var(--color-orange-600);
+    --color-primary-dark: var(--color-orange-600);
 }
 
 @layer components {
 
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"] {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: #fff;
+    }
+
     .body-base {
-        @apply bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-100;
-    }
-
-    .container-bg {
-        @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100;
-    }
-
-    .container-bg-secondary {
-        @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100;
-    }
-
-    .container-bg-tertiary {
-        @apply bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100;
+        @apply bg-white text-sky-900 dark:bg-zinc-900 dark:text-zinc-200;
     }
 
     .slide-out-menu {
@@ -77,54 +47,18 @@
     }
 
     .btn-primary {
-        @apply text-white bg-primary hover:bg-primary-hover focus:ring-primary;
+        @apply cursor-pointer py-2 px-4 rounded-md text-white bg-primary hover:bg-primary-hover focus:ring-primary;
     }
 
-    .btn-secondary {
-        @apply text-secondary bg-secondary-light hover:bg-secondary-hover hover:text-white focus:ring-secondary;
-    }
-
-    .btn-accent {
-        @apply text-white bg-accent hover:bg-accent-hover focus:ring-accent;
-    }
-
-    .btn-success {
-        @apply text-white bg-success hover:bg-success-hover focus:ring-success;
-    }
-
-    .btn-warning {
-        @apply text-white bg-warning hover:bg-warning-hover focus:ring-warning;
-    }
-
-    .btn-error {
-        @apply text-white bg-error hover:bg-error-hover focus:ring-error;
-    }
+    /*.btn-secondary {*/
+    /*    @apply btn text-secondary bg-secondary-light hover:bg-secondary-hover hover:text-white focus:ring-secondary;*/
+    /*}*/
 
     .card {
-        @apply p-6 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800;
+        @apply p-6 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800;
     }
 
-    .card-secondary {
-        @apply p-6 rounded-xl shadow-lg border border-secondary-light dark:border-secondary-dark bg-secondary-light dark:bg-secondary-dark;
-    }
-
-    .section-light {
-        @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100;
-    }
-
-    .section-neutral {
-        @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100;
-    }
-
-    .section-neutral-alt {
-        @apply bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100;
-    }
-
-    .section-primary-accent {
-        @apply bg-primary/5 text-slate-900 dark:bg-primary-dark/10 dark:text-slate-100 border-t border-primary/10 dark:border-primary/20;
-    }
-
-    .section-colored {
-        @apply bg-gradient-to-br from-primary to-primary-dark text-white;
+    .input-form-field {
+        @apply rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm
     }
 }
