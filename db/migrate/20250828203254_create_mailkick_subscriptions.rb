@@ -1,4 +1,4 @@
-class CreateMailkickSubscriptions < ActiveRecord::Migration[7.2]
+class CreateMailkickSubscriptions < ActiveRecord::Migration[8.0]
   def change
     create_table :mailkick_subscriptions do |t|
       t.references :subscriber, polymorphic: true, index: false

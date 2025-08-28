@@ -74,6 +74,11 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    ahoy_email (3.0.0)
+      actionmailer (>= 7.1)
+      addressable (>= 2.8)
+      nokogiri (>= 1.15)
+      safely_block (>= 0.5)
     annotaterb (4.16.0)
       activerecord (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -207,6 +212,8 @@ GEM
       net-imap
       net-pop
       net-smtp
+    mailkick (2.0.0)
+      activesupport (>= 7.1)
     marcel (1.0.4)
     matrix (0.4.3)
     mini_mime (1.1.5)
@@ -365,6 +372,7 @@ GEM
       marcel (~> 1.0)
       zeitwerk (~> 2)
     rubyzip (2.4.1)
+    safely_block (0.5.0)
     sass-embedded (1.89.2-aarch64-linux-gnu)
       google-protobuf (~> 4.31)
     sass-embedded (1.89.2-aarch64-linux-musl)
@@ -479,6 +487,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  ahoy_email
   annotaterb
   bootsnap
   bootstrap-email
@@ -491,6 +500,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
+  mailkick
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)

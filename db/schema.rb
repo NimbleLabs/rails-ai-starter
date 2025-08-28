@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_15_203250) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_203255) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "ahoy_messages", force: :cascade do |t|
+    t.string "user_type"
+    t.bigint "user_id"
+    t.string "to"
+    t.string "mailer"
+    t.text "subject"
+    t.datetime "sent_at"
+    t.integer "email_template_id"
+    t.index ["to"], name: "index_ahoy_messages_on_to"
+    t.index ["user_type", "user_id"], name: "index_ahoy_messages_on_user"
+  end
 
   create_table "chats", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -20,6 +32,38 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_15_203250) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_chats_on_user_id"
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "phone"
+    t.string "company"
+    t.string "budget_range"
+    t.text "message"
+    t.string "slug"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_contacts_on_slug"
+  end
+
+  create_table "email_templates", force: :cascade do |t|
+    t.string "subject"
+    t.text "body"
+    t.string "send_group"
+    t.string "slug"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_email_templates_on_slug"
+  end
+
+  create_table "mailkick_subscriptions", force: :cascade do |t|
+    t.string "subscriber_type"
+    t.bigint "subscriber_id"
+    t.string "list"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subscriber_type", "subscriber_id", "list"], name: "index_mailkick_subscriptions_on_subscriber_and_list", unique: true
   end
 
   create_table "messages", force: :cascade do |t|

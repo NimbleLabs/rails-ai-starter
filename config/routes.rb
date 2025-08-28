@@ -18,6 +18,10 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  resources :contacts
+  resources :email_templates, path: 'email-templates'
+  post "email-templates/:id/send", to: "email_templates#send_to_list"
+
   namespace :api do
     namespace :v1, format: :json do
       get "users/current", to: "users#current"
