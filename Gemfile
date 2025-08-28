@@ -45,6 +45,8 @@ gem "friendly_id"
 gem "ruby_llm", "~> 1.6.2"
 gem "vite_rails"
 gem 'bootstrap-email'
+gem 'ahoy_email'
+gem "mailkick"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
