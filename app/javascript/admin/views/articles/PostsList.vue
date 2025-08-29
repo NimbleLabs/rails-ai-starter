@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1>Posts List</h1>
+  <div class="p-10">
+    <h1 class="font-extrabold text-4xl md:text-5xl tracking-tight">Articles</h1>
 
     <div class="my-5 flex items-center">
       <div>
@@ -8,27 +8,7 @@
           New Post
         </router-link>
       </div>
-
-      <div class="mx-2 flex items-center">
-        <span class="text-gray-700 text-sm mr-2">Category filter:</span>
-        <select class="block rounded-md border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="filter.category">
-          <option v-for="category in model.categories" :value="category">{{ category }}</option>
-        </select>
-      </div>
-
-      <div class="mx-2 flex items-center">
-        <span class="text-gray-700 text-sm mr-2">Author filter:</span>
-        <select class="block rounded-md  border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="filter.author">
-          <option v-for="authorData in model.authors" :value="authorData[0]">{{ authorData[0] }}</option>
-        </select>
-      </div>
-
-      <div v-if="filter.category || filter.author" class="mx-2">
-        <button class="px-4 py-1 bg-zinc-100 rounded-lg" @click="clearFilters()">clear</button>
-      </div>
-
+      
     </div>
 
     <div class="w-full text-sm">

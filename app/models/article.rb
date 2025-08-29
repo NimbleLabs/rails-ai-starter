@@ -3,16 +3,20 @@
 # Table name: articles
 #
 #  id           :bigint           not null, primary key
-#  title        :string
-#  description  :string
 #  author       :string
 #  category     :string
-#  published    :boolean
+#  description  :string
 #  featured     :boolean
+#  published    :boolean
 #  published_at :datetime
 #  slug         :string
+#  title        :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#
+# Indexes
+#
+#  index_articles_on_slug  (slug)
 #
 class Article < ApplicationRecord
   extend FriendlyId

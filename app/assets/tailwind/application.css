@@ -50,9 +50,9 @@
         @apply cursor-pointer py-2 px-4 rounded-md text-white bg-primary hover:bg-primary-hover focus:ring-primary;
     }
 
-    /*.btn-secondary {*/
-    /*    @apply btn text-secondary bg-secondary-light hover:bg-secondary-hover hover:text-white focus:ring-secondary;*/
-    /*}*/
+    .btn-secondary {
+        @apply cursor-pointer py-2 px-4 rounded-md text-gray-700 bg-gray-200 border border-gray-300 hover:bg-gray-300 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-600;
+    }
 
     .card {
         @apply p-6 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800;

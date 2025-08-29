@@ -7,6 +7,10 @@ const starter = {
             email: '',
             slug: ''
         },
+        categories: ["AI"],
+        authors: [
+            ["Harris Reynolds", "harris"]
+        ],
     },
     utils: {},
     services: {

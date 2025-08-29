@@ -2,19 +2,20 @@
 #
 # Table name: contacts
 #
-#  id              :bigint           not null, primary key
-#  name            :string
-#  email           :string
-#  phone           :string
-#  company_name    :string
-#  budget_range    :string
-#  message         :text
-#  slug            :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  company_id      :integer
-#  biggest_problem :text
-#  source          :string
+#  id           :bigint           not null, primary key
+#  budget_range :string
+#  company      :string
+#  email        :string
+#  message      :text
+#  name         :string
+#  phone        :string
+#  slug         :string
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+# Indexes
+#
+#  index_contacts_on_slug  (slug)
 #
 class Contact < ApplicationRecord
   extend FriendlyId

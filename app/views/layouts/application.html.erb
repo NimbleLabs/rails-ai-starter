@@ -12,6 +12,27 @@
     <link rel="apple-touch-icon" href="/favicon.png">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
 
+    <% if action_name == 'new' || action_name == 'edit' %>
+      <style>
+          h1 {
+              font-weight: 800;
+              letter-spacing: -.025em;
+              font-size: 2.25rem;
+          }
+
+          trix-editor {
+              min-height: 400px !important;
+              max-height: 600px !important;
+              overflow-y: auto;
+          }
+
+          .dark .trix-button--icon {
+              -webkit-filter: invert(100%);
+          }
+      </style>
+    <% end %>
+
+
     <script>
         function initAlpineState() {
             return {

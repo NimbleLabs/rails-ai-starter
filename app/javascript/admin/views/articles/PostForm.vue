@@ -1,6 +1,6 @@
 <template>
-  <div class="mb-10">
-    <h1>PostForm</h1>
+  <div class="p-10">
+    <h1 class="font-extrabold text-4xl md:text-5xl tracking-tight">PostForm</h1>
 
     <div class="my-3">
       <button class="w-32 bg-purple-600 hover:bg-purple-800 text-white px-8 py-1 rounded"
@@ -15,23 +15,23 @@
     <div class="pb-10">
       <div class="my-2">
         <label for="titleInput" class="text-sm font-medium">Title</label>
-        <input type="text" class="border-gray-200 rounded py-2 w-full mb-3" id="titleInput" v-model="post.title">
+        <input type="text" class="input-form-field" id="titleInput" v-model="post.title">
       </div>
       <div class="my-2">
         <label for="descriptionInput" class="text-sm font-medium">Description</label>
-        <input type="text" class="border-gray-200 rounded py-2 w-full mb-3" id="descriptionInput"
+        <input type="text" class="input-form-field" id="descriptionInput"
                v-model="post.description">
       </div>
       <div class="my-2">
         <label for="authorInput" class="text-sm font-medium">Author</label>
-        <input type="text" class="border-gray-200 rounded py-2 w-full mb-3" id="authorInput" v-model="post.author">
+        <input type="text" class="input-form-field" id="authorInput" v-model="post.author">
       </div>
 
       <div class="my-2">
         <label for="categoryInput" class="text-sm font-medium">Category</label>
 
         <select
-            class="block rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            class="input-form-field"
             v-model="post.category">
           <option v-for="category in model.categories" :value="category">{{ category }}</option>
         </select>

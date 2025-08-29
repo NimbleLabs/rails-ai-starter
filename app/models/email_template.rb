@@ -3,12 +3,16 @@
 # Table name: email_templates
 #
 #  id         :bigint           not null, primary key
-#  subject    :string
 #  body       :text
 #  send_group :string
 #  slug       :string
+#  subject    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_email_templates_on_slug  (slug)
 #
 class EmailTemplate < ApplicationRecord
   extend FriendlyId
