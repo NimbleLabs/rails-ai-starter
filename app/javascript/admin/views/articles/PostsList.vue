@@ -8,7 +8,7 @@
           New Post
         </router-link>
       </div>
-      
+
     </div>
 
     <div class="w-full text-sm">

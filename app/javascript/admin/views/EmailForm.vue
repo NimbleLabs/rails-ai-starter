@@ -10,7 +10,7 @@
           id="subject"
           v-model="emailTemplate.subject"
           type="text"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-0 sm:text-sm"
+          class="input-form-field"
           placeholder="Enter email subject"
           required
         >
@@ -24,12 +24,12 @@
         <select
           id="send_group"
           v-model="emailTemplate.send_group"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-0 sm:text-sm"
+          class="input-form-field"
           required
         >
           <option value="" disabled>Select recipient group</option>
           <option value="Users">Users</option>
-          <option value="Equipment Finance">Equipment Finance</option>
+          <option value="Contacts">Contacts</option>
         </select>
       </div>
 
