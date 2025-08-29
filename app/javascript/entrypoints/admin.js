@@ -24,6 +24,7 @@ console.log('Vite ⚡️ Rails - Admin App')
 
 // Example: Import a stylesheet in app/frontend/index.css
 // import '~/index.css'
+import Trix from "trix"
 import { createApp } from 'vue'
 import AdminApp from '../admin/AdminApp.vue'
 import router from '../admin/router'

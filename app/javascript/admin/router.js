@@ -5,6 +5,9 @@ import UserDetails from "@/admin/views/UserDetails.vue";
 import EmailTemplates from "@/admin/views/EmailTemplates.vue";
 import EmailForm from "@/admin/views/EmailForm.vue";
 import Contacts from "@/admin/views/Contacts.vue";
+import PostForm from "@/admin/views/articles/PostForm.vue";
+import PostsList from "@/admin/views/articles/PostsList.vue";
+import PostDetails from "@/admin/views/articles/PostDetails.vue";
 
 const router = createRouter({
   history: createWebHistory('/'),
@@ -47,7 +50,27 @@ const router = createRouter({
       path: '/admin/edit-email/:id',
       name: 'edit-email',
       component: EmailForm
-    }
+    },
+    {
+      path: '/admin/posts',
+      name: 'posts',
+      component: PostsList
+    },
+    {
+      path: '/admin/new-post',
+      name: 'new-post',
+      component: PostForm
+    },
+    {
+      path: '/admin/edit-post/:id',
+      name: 'edit-post',
+      component: PostForm
+    },
+    {
+      path: '/admin/post-details/:id',
+      name: 'post-details',
+      component: PostDetails
+    },
   ]
 })
 
