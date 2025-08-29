@@ -29,11 +29,18 @@ class Contact < ApplicationRecord
   belongs_to :company, optional: true
   has_many :messages, class_name: "Ahoy::Message", as: :user
 
+  after_create :on_after_create
+
   def first_name
     name.split[1]
   end
 
   def received_first_outreach_email?
     messages.exists?(['subject ILIKE ?', '%Are You Using AI%'])
+  end
+
+  def on_after_create
+    #UserMailer.with(user: self).welcome_email.deliver_later(wait: 2.seconds)
+    subscribe("Newsletter")
   end
 end

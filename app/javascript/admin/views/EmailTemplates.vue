@@ -47,7 +47,7 @@
             </router-link>
 
             <button @click="onSendClicked(emailTemplate)"
-                    class="ml-2 text-purple-600 hover:text-purple-900 inline-flex items-center">
+                    class="cursor-pointer ml-2 text-purple-600 hover:text-purple-900 inline-flex items-center">
               Send
             </button>
 

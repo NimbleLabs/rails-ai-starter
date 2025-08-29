@@ -28,8 +28,7 @@
           required
         >
           <option value="" disabled>Select recipient group</option>
-          <option value="Users">Users</option>
-          <option value="Contacts">Contacts</option>
+          <option value="Newsletter">Newsletter</option>
         </select>
       </div>
 
