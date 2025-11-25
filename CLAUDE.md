@@ -151,7 +151,7 @@ Most models use FriendlyId with `use: [:slugged, :finders]`. This means:
 Configure in `config/initializers/ruby_llm.rb`. Models using `acts_as_chat` and `acts_as_message` automatically get chat functionality with token tracking and tool calling support.
 
 ### Vite + Rails Integration
-- Vite config base path: `/app/` (see vite.config.ts)
+- Vite config base path: `/app/` (see vite.config.js)
 - Custom elements: `ion-*` and `trix-*` tags whitelisted for Vue
 - Asset paths use Vite helpers: `vite_javascript_tag`, `vite_client_tag`
 

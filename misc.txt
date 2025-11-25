@@ -7,17 +7,35 @@ Next features:
 
 - [ ] Funnel tracking
 - [ ] Stripe Payments
-- [ ] React starter app
+- [X] React starter app
 - [X] Simple design system
 - [ ] AI Configuration
 - [ ] AI Simple Chatbot
 - [ ]
 
 
-Prompt:
 
-I'd like to create a simple theme system that allows a user to select different tailwindcss colors and update the primry color in the tailwind/application.css file.
+rails g migration AddStripeCustomerIdToUsers stripe_customer_id:string stripe_subscription_id:string payment_intent_id:string
 
-There should be a simple selector for the user to select a color that is in the footer HTML file.
+brand      :string
+#  country    :string
+#  exp_month  :integer
+#  exp_year   :integer
+#  last4      :string
+#  stripe_id  :string
+#  user_id    :bigint
+#  created_at :datetime         not null
+#  updated_at :datetime
 
-I'd like this done similarly to how it is done on https://www.nimblelabs.com
+rails g model CreditCard brand:string country:string exp_month:integer exp_year:integer last4:string stripe_id:string user:references
+
+
+
+
+stripe_customer_id     :string
+#  stripe_subscription_id :string
+#  company_name           :string
+#  job_role               :string
+#  metadata               :jsonb
+#  coupon_code            :string
+#  payment_intent_id

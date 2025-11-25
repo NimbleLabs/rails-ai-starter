@@ -39,6 +39,8 @@ gem "vite_rails"
 gem 'bootstrap-email'
 gem 'ahoy_email'
 gem "mailkick"
+gem 'stripe'
+gem "ahoy_matey"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

@@ -23,6 +23,12 @@ Rails.application.routes.draw do
   resources :email_templates, path: 'email-templates'
   post "email-templates/:id/send", to: "email_templates#send_to_list"
 
+  post "payments/create-subscription", to: "payments#create_subscription"
+  post "payments/subscription-complete", to: "payments#payment_complete"
+  post 'payments/purchase', to: 'payments#create_payment_intent'
+  post 'payments/purchase-complete', to: 'payments#one_time_payment_complete'
+  get 'payments/price', to: 'payments#price'
+
   namespace :api do
     namespace :v1, format: :json do
       get "users/current", to: "users#current"
