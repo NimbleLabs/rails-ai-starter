@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''">
+<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''" x-bind:data-theme="theme">
   <head>
     <title><%= content_for(:title) || "Rails Ai Starter" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -10,7 +10,7 @@
     <%= yield :head %>
     <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="/favicon.png">
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app %>
 
     <% if action_name == 'new' || action_name == 'edit' %>
       <style>
@@ -39,6 +39,10 @@
                 open: false,
                 dark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
                 theme: localStorage.colorTheme || 'purple',
+                init() {
+                    // Apply the theme on initialization
+                    this.applyTheme();
+                },
                 toggleDarkMode(isDark) {
                     console.log("toggleDarkMode isDark:", isDark);
                     this.dark = isDark;
@@ -48,12 +52,16 @@
                     console.log("Setting theme to:", name);
                     this.theme = name;
                     localStorage.colorTheme = name;
+                    this.applyTheme();
+                },
+                applyTheme() {
+                    // Remove all theme data attributes
+                    document.documentElement.removeAttribute('data-theme');
 
-                    // if (name === 'default') {
-                    //     localStorage.removeItem('colorTheme');
-                    // } else {
-                    //     localStorage.colorTheme = name;
-                    // }
+                    // Apply the selected theme (if not purple, which is the default)
+                    if (this.theme !== 'purple') {
+                        document.documentElement.setAttribute('data-theme', this.theme);
+                    }
                 }
             };
         }
