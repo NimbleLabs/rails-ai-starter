@@ -2,16 +2,59 @@
 @import "../stylesheets/spinner.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/*@theme {*/
-/*    --color-primary: var(--color-purple-500);*/
-/*    --color-primary-hover: var(--color-purple-600);*/
-/*    --color-primary-dark: var(--color-purple-600);*/
-/*}*/
+/* Default theme (orange) */
+:root {
+    --color-primary: var(--color-purple-500);
+    --color-primary-hover: var(--color-purple-600);
+    --color-primary-dark: var(--color-purple-600);
+    --color-primary-light: var(--color-purple-300);
+}
 
-@theme {
+/* Purple theme */
+[data-theme="orange"] {
     --color-primary: var(--color-orange-500);
     --color-primary-hover: var(--color-orange-600);
     --color-primary-dark: var(--color-orange-600);
+    --color-primary-light: var(--color-orange-300);
+}
+
+/* Purple theme */
+[data-theme="purple"] {
+    --color-primary: var(--color-purple-500);
+    --color-primary-hover: var(--color-purple-600);
+    --color-primary-dark: var(--color-purple-600);
+    --color-primary-light: var(--color-purple-300);
+}
+
+/* Blue theme */
+[data-theme="blue"] {
+    --color-primary: var(--color-blue-500);
+    --color-primary-hover: var(--color-blue-600);
+    --color-primary-dark: var(--color-blue-600);
+    --color-primary-light: var(--color-blue-300);
+}
+
+/* Green theme */
+[data-theme="green"] {
+    --color-primary: var(--color-green-500);
+    --color-primary-hover: var(--color-green-600);
+    --color-primary-dark: var(--color-green-600);
+    --color-primary-light: var(--color-green-300);
+}
+
+/* Amber theme */
+[data-theme="amber"] {
+    --color-primary: var(--color-amber-500);
+    --color-primary-hover: var(--color-amber-600);
+    --color-primary-dark: var(--color-amber-600);
+    --color-primary-light: var(--color-amber-300);
+}
+
+@theme {
+    --color-primary: var(--color-primary);
+    --color-primary-hover: var(--color-primary-hover);
+    --color-primary-dark: var(--color-primary-dark);
+    --color-primary-light: var(--color-primary-light);
 }
 
 @layer components {

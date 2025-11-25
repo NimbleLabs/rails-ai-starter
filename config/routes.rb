@@ -37,6 +37,9 @@ Rails.application.routes.draw do
   get "app", to: "static#app", as: "app"
   get "app/*other" => "static#app"
 
+  get "react-app", to: "static#react_app", as: "react_app"
+  get "react-app/*other" => "static#react_app"
+
   get "admin", to: "static#admin", as: "admin"
   get "admin/*other" => "static#admin"
 end

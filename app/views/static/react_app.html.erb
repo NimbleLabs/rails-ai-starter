@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Starter React App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <script type="module">
+      import RefreshRuntime from '/@react-refresh'
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.$RefreshReg$ = () => {}
+      window.$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+  </script>
+
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <% if Rails.env.development? %>
+    <%= vite_client_tag %>
+  <% end %>
+  <%= vite_javascript_tag 'react-app.jsx' %>
+
+</head>
+<body class="body-base h-screen">
+<div id="react-app" class="h-full"></div>
+</body>
+</html>

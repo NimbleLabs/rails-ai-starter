@@ -1,3 +1,23 @@
 annotaterb models
 
 pg_ctl -D /usr/local/var/postgres start
+
+
+Next features:
+
+- [ ] Funnel tracking
+- [ ] Stripe Payments
+- [ ] React starter app
+- [X] Simple design system
+- [ ] AI Configuration
+- [ ] AI Simple Chatbot
+- [ ]
+
+
+Prompt:
+
+I'd like to create a simple theme system that allows a user to select different tailwindcss colors and update the primry color in the tailwind/application.css file.
+
+There should be a simple selector for the user to select a color that is in the footer HTML file.
+
+I'd like this done similarly to how it is done on https://www.nimblelabs.com
