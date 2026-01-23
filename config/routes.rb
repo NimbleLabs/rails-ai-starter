@@ -34,7 +34,21 @@ Rails.application.routes.draw do
       get "users/current", to: "users#current"
       get "users", to: "users#index"
       get "users/:id", to: "users#show"
+
+      resources :funnels do
+        collection do
+          get :metrics
+        end
+      end
     end
+  end
+
+  # Marketing funnel landing pages
+  scope "/f/:funnel_slug", as: "funnel" do
+    get "lead",            to: "landing_pages#lead_page",            as: "lead"
+    get "book-call",       to: "landing_pages#book_call_page",       as: "book_call"
+    get "order",           to: "landing_pages#order_page",           as: "order"
+    get "order-completed", to: "landing_pages#order_completed_page", as: "order_completed"
   end
 
   # Defines the root path route ("/")

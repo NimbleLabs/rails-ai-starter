@@ -8,6 +8,9 @@ import Contacts from "@/admin/views/Contacts.vue";
 import PostForm from "@/admin/views/articles/PostForm.vue";
 import PostsList from "@/admin/views/articles/PostsList.vue";
 import PostDetails from "@/admin/views/articles/PostDetails.vue";
+import FunnelsList from "@/admin/views/funnels/FunnelsList.vue";
+import FunnelForm from "@/admin/views/funnels/FunnelForm.vue";
+import FunnelMetrics from "@/admin/views/funnels/FunnelMetrics.vue";
 
 const router = createRouter({
   history: createWebHistory('/'),
@@ -71,6 +74,26 @@ const router = createRouter({
       name: 'post-details',
       component: PostDetails
     },
+    {
+      path: '/admin/funnels',
+      name: 'funnels',
+      component: FunnelsList
+    },
+    {
+      path: '/admin/new-funnel',
+      name: 'new-funnel',
+      component: FunnelForm
+    },
+    {
+      path: '/admin/edit-funnel/:id',
+      name: 'edit-funnel',
+      component: FunnelForm
+    },
+    {
+      path: '/admin/funnel-metrics',
+      name: 'funnel-metrics',
+      component: FunnelMetrics
+    }
   ]
 })
 

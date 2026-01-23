@@ -64,6 +64,28 @@
         Articles
       </router-link>
 
+      <router-link
+          @click="onRouteClick()"
+          :to="{ name: 'funnels' }"
+          class="flex items-center px-2 py-1.5 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-primary"
+          :class="{ 'bg-primary-light text-primary': isCurrentRoute('funnels')}">
+        <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        Funnels
+      </router-link>
+
+      <router-link
+          @click="onRouteClick()"
+          :to="{ name: 'funnel-metrics' }"
+          class="flex items-center px-2 py-1.5 text-sm font-medium rounded-md hover:bg-gray-50 hover:text-primary"
+          :class="{ 'bg-primary-light text-primary': isCurrentRoute('funnel-metrics')}">
+        <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Metrics
+      </router-link>
+
     </nav>
   </div>
 </template>

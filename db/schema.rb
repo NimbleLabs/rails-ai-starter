@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_224249) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_21_173235) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -163,6 +163,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_224249) do
     t.string "subject"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_email_templates_on_slug"
+  end
+
+  create_table "funnels", force: :cascade do |t|
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.string "slug"
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_funnels_on_slug"
   end
 
   create_table "mailkick_subscriptions", force: :cascade do |t|

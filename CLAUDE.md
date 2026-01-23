@@ -157,3 +157,8 @@ Configure in `config/initializers/ruby_llm.rb`. Models using `acts_as_chat` and 
 
 ### Schema Annotations
 Models are annotated with schema info via annotaterb. Run `bin/rails annotaterb:annotate` after migrations to keep comments up to date.
+
+
+### Final Points
+- Write every prompt that you are given to a PROMPTS.md file so we can keep track of them over time.
+

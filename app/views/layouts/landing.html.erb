@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || @funnel&.name || "Landing Page" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <%= stylesheet_link_tag :app %>
+  </head>
+
+  <body class="min-h-screen bg-gray-50">
+    <main>
+      <%= yield %>
+    </main>
+  </body>
+</html>
