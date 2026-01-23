@@ -2,18 +2,20 @@
 #
 # Table name: tool_calls
 #
-#  id           :bigint           not null, primary key
-#  arguments    :jsonb
-#  name         :string           not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  message_id   :bigint           not null
-#  tool_call_id :string           not null
+#  id                :bigint           not null, primary key
+#  arguments         :jsonb
+#  name              :string           not null
+#  thought_signature :string
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  message_id        :bigint           not null
+#  tool_call_id      :string           not null
 #
 # Indexes
 #
 #  index_tool_calls_on_message_id    (message_id)
-#  index_tool_calls_on_tool_call_id  (tool_call_id)
+#  index_tool_calls_on_name          (name)
+#  index_tool_calls_on_tool_call_id  (tool_call_id) UNIQUE
 #
 # Foreign Keys
 #
