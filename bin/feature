@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Feature workflow wrapper script
+# Quick access to feature management rake tasks
+
+set -e
+
+case "$1" in
+  list)
+    bundle exec rake feature:list
+    ;;
+  start)
+    if [ -z "$2" ]; then
+      echo "Usage: bin/feature start <slug>"
+      exit 1
+    fi
+    bundle exec rake "feature:start[$2]"
+    ;;
+  complete)
+    bundle exec rake feature:complete
+    ;;
+  current)
+    bundle exec rake feature:current
+    ;;
+  show)
+    if [ -z "$2" ]; then
+      echo "Usage: bin/feature show <slug>"
+      exit 1
+    fi
+    bundle exec rake "feature:show[$2]"
+    ;;
+  *)
+    echo "Feature Workflow Commands"
+    echo ""
+    echo "Usage: bin/feature <command> [args]"
+    echo ""
+    echo "Commands:"
+    echo "  list           List planned features from production"
+    echo "  show <slug>    Show details for a specific feature"
+    echo "  start <slug>   Start working on a feature (creates branch, updates status)"
+    echo "  complete       Complete current feature (updates status, optional PR)"
+    echo "  current        Show current feature being worked on"
+    echo ""
+    echo "Examples:"
+    echo "  bin/feature list"
+    echo "  bin/feature start add-user-authentication"
+    echo "  bin/feature current"
+    echo "  bin/feature complete"
+    ;;
+esac

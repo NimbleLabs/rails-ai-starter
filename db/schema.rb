@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_23_151615) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_11_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -167,6 +167,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_23_151615) do
     t.index ["slug"], name: "index_email_templates_on_slug"
   end
 
+  create_table "features", force: :cascade do |t|
+    t.text "acceptance_criteria"
+    t.string "area"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.text "implementation_notes"
+    t.text "plan"
+    t.integer "priority"
+    t.string "slug"
+    t.datetime "started_at"
+    t.integer "status"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["slug"], name: "index_features_on_slug"
+    t.index ["user_id"], name: "index_features_on_user_id"
+  end
+
   create_table "funnels", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
@@ -244,6 +263,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_23_151615) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "auth_token"
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "current_sign_in_ip"
@@ -262,6 +282,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_23_151615) do
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.datetime "updated_at", null: false
+    t.index ["auth_token"], name: "index_users_on_auth_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["slug"], name: "index_users_on_slug"
@@ -272,6 +293,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_23_151615) do
   add_foreign_key "chats", "models"
   add_foreign_key "chats", "users"
   add_foreign_key "credit_cards", "users"
+  add_foreign_key "features", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
   add_foreign_key "messages", "tool_calls"

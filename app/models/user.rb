@@ -32,6 +32,8 @@ class User < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: [:slugged, :finders]
   has_subscriptions
+  has_secure_token :auth_token
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -44,5 +46,11 @@ class User < ApplicationRecord
   def on_after_create
     UserMailer.with(user: self).welcome_email.deliver_later(wait: 2.seconds)
     subscribe("Newsletter")
+  end
+
+  # Find user by auth token for API authentication
+  def self.find_by_auth_token(token)
+    return nil if token.blank?
+    find_by(auth_token: token)
   end
 end

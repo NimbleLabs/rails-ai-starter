@@ -11,6 +11,8 @@ import PostDetails from "@/admin/views/articles/PostDetails.vue";
 import FunnelsList from "@/admin/views/funnels/FunnelsList.vue";
 import FunnelForm from "@/admin/views/funnels/FunnelForm.vue";
 import FunnelMetrics from "@/admin/views/funnels/FunnelMetrics.vue";
+import FeaturesList from "@/admin/views/features/FeaturesList.vue";
+import FeatureForm from "@/admin/views/features/FeatureForm.vue";
 
 const router = createRouter({
   history: createWebHistory('/'),
@@ -93,6 +95,21 @@ const router = createRouter({
       path: '/admin/funnel-metrics',
       name: 'funnel-metrics',
       component: FunnelMetrics
+    },
+    {
+      path: '/admin/features',
+      name: 'features',
+      component: FeaturesList
+    },
+    {
+      path: '/admin/new-feature',
+      name: 'new-feature',
+      component: FeatureForm
+    },
+    {
+      path: '/admin/edit-feature/:id',
+      name: 'edit-feature',
+      component: FeatureForm
     }
   ]
 })

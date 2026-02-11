@@ -159,6 +159,58 @@ Configure in `config/initializers/ruby_llm.rb`. Models using `acts_as_chat` and 
 Models are annotated with schema info via annotaterb. Run `bin/rails annotaterb:annotate` after migrations to keep comments up to date.
 
 
+## Feature Workflow
+
+Pull features from the production yourdomainhere.com Features API to manage development workflow.
+
+**Setup:**
+1. Get your API token from: Production Admin → Users → Your User → Copy API Token
+2. Add to `.env`: `STARTER_API_TOKEN=<your-token>`
+
+**Commands:**
+```bash
+# Rake tasks
+rake feature:list                    # List planned features from production
+rake feature:show[slug]              # Show details for a specific feature
+rake feature:start[slug]             # Create branch, update status to in_progress
+rake feature:complete                # Complete current feature (detects from branch)
+rake feature:current                 # Show current feature being worked on
+
+# Shell wrappers (quick access)
+bin/feature list                     # Alias for rake feature:list
+bin/feature start <slug>             # Alias for rake feature:start
+bin/feature complete                 # Alias for rake feature:complete
+bin/feature current                  # Alias for rake feature:current
+```
+
+**Workflow:**
+1. `rake feature:list` - See available features
+2. `rake feature:start[slug]` - Creates `feature/<slug>` branch, marks as in_progress
+3. Work on the feature, commit changes
+4. `rake feature:complete` - Marks as completed, optionally creates PR
+
+## API Token Authentication
+
+Users have an `auth_token` column for stateless API authentication.
+
+**ApplicationController Methods:**
+- `authenticate_with_token` - Token-only auth via `x-api-token` header
+- `authenticate_user_or_token` - Token OR Devise session auth
+- Both set `@current_user` and work with `current_user` helper
+
+**Usage in controllers:**
+```ruby
+before_action :authenticate_with_token      # Token only
+before_action :authenticate_user_or_token   # Token or session
+```
+
+**User model:**
+```ruby
+user.auth_token                  # Get token
+user.regenerate_auth_token       # Generate new token
+User.find_by_auth_token(token)   # Find by token
+```
+
 ### Final Points
 - Write every prompt that you are given to a PROMPTS.md file so we can keep track of them over time.
 
