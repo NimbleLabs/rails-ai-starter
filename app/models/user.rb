@@ -33,6 +33,7 @@ class User < ApplicationRecord
   friendly_id :name, use: [:slugged, :finders]
   has_subscriptions
   has_secure_token :auth_token
+  has_many :chats, dependent: :destroy
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable

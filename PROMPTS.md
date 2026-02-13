@@ -13,3 +13,10 @@ I want to create a system that allows me to track various marketing funnels. Her
 
 **Prompt:**
 I am having trouble running rake db:migrate and getting the database in a good state because it always says that the chats relation already exists... please do whatever is necessary to get the database in a good state
+
+## Integrate assistant-ui for AI Chat
+
+**Date:** 2026-02-12
+
+**Prompt:**
+Implement the plan to integrate assistant-ui for AI Chat. This includes: Rails backend with Chat CRUD API endpoints and SSE streaming completions controller using ActionController::Live and ruby_llm, React frontend using @assistant-ui/react with LocalRuntime + RemoteThreadListAdapter for multi-thread chat support, thread sidebar with create/delete, message streaming via SSE, and message history loading. Uses the existing Chat/Message/ToolCall models with acts_as_chat/acts_as_message from ruby_llm gem.

@@ -36,6 +36,15 @@ Rails.application.routes.draw do
       get "users", to: "users#index"
       get "users/:id", to: "users#show"
 
+      resources :models, only: [:index]
+
+      resources :chats, only: [:index, :create, :show, :update, :destroy] do
+        member do
+          get :messages
+        end
+        resource :completions, only: [:create], controller: 'chat_completions'
+      end
+
       resources :funnels do
         collection do
           get :metrics

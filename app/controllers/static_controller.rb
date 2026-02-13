@@ -1,5 +1,5 @@
 class StaticController < ApplicationController
-  before_action :authenticate_user!, only: %i[ app admin ]
+  before_action :authenticate_user!, only: %i[ app admin react_app ]
 
   layout :get_layout
 

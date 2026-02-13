@@ -6,7 +6,7 @@
   "development": {
     "autoBuild": true,
     "publicOutputDir": "",
-    "port": 3038
+    "port": 3039
   },
   "test": {
     "autoBuild": true,

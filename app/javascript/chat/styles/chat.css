@@ -1,0 +1,530 @@
+/* ============================================
+   Chat UI — ChatGPT-style layout
+   ============================================ */
+
+/* --- Sidebar --- */
+
+.aui-sidebar {
+  width: 260px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.aui-new-chat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.aui-new-chat-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.aui-thread-item {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  margin-bottom: 1px;
+}
+
+.aui-thread-item:hover {
+  background: #e5e7eb;
+}
+
+.aui-thread-item[data-current] {
+  background: #e5e7eb;
+}
+
+.aui-thread-item[data-current] .aui-thread-trigger {
+  font-weight: 500;
+  color: #111827;
+}
+
+.aui-thread-trigger {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #4b5563;
+  text-align: left;
+  min-width: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.aui-thread-delete {
+  opacity: 0;
+  padding: 4px;
+  margin-right: 6px;
+  border-radius: 4px;
+  color: #9ca3af;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.aui-thread-item:hover .aui-thread-delete {
+  opacity: 1;
+}
+
+.aui-thread-delete:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+
+/* --- Thread header --- */
+
+.aui-thread-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  background: white;
+  min-height: 48px;
+}
+
+
+/* --- Model selector --- */
+
+.aui-model-selector {
+  position: relative;
+}
+
+.aui-model-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.aui-model-selector-btn:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.aui-model-chevron {
+  width: 14px;
+  height: 14px;
+  color: #9ca3af;
+  transition: transform 0.15s;
+}
+
+.aui-model-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 220px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+}
+
+.aui-model-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  color: #374151;
+  transition: background 0.15s;
+}
+
+.aui-model-option:hover {
+  background: #f3f4f6;
+}
+
+.aui-model-option.active {
+  background: #f0f0ff;
+  color: #4f46e5;
+}
+
+.aui-model-option-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.aui-model-option-ctx {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.aui-model-check {
+  width: 14px;
+  height: 14px;
+  color: #4f46e5;
+}
+
+
+/* --- Thread area --- */
+
+.aui-thread-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+.aui-thread-viewport {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  position: relative;
+}
+
+.aui-messages-container {
+  max-width: 768px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 16px 8px;
+}
+
+
+/* --- Messages --- */
+
+.aui-msg {
+  margin-bottom: 24px;
+}
+
+.aui-msg-user {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.aui-msg-user-bubble {
+  max-width: 75%;
+  background: #111827;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 20px 20px 4px 20px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.aui-msg-assistant {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.aui-avatar {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-top: 2px;
+}
+
+.aui-msg-assistant-content {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1f2937;
+}
+
+.aui-action-bar {
+  margin-top: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.aui-msg-assistant:hover .aui-action-bar {
+  opacity: 1;
+}
+
+.aui-action-btn {
+  padding: 4px;
+  border-radius: 4px;
+  color: #9ca3af;
+  transition: color 0.15s, background 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.aui-action-btn:hover {
+  color: #4b5563;
+  background: #f3f4f6;
+}
+
+
+/* --- Markdown --- */
+
+.aui-markdown {
+  line-height: 1.7;
+}
+
+.aui-markdown p {
+  margin: 0 0 12px;
+}
+
+.aui-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.aui-markdown h1, .aui-markdown h2, .aui-markdown h3 {
+  font-weight: 600;
+  margin: 20px 0 8px;
+}
+
+.aui-markdown h1 { font-size: 1.25em; }
+.aui-markdown h2 { font-size: 1.125em; }
+.aui-markdown h3 { font-size: 1em; }
+
+.aui-markdown ul, .aui-markdown ol {
+  padding-left: 1.5em;
+  margin: 8px 0;
+}
+
+.aui-markdown li {
+  margin: 4px 0;
+}
+
+.aui-markdown pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.aui-markdown code:not(pre code) {
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.aui-markdown blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 12px;
+  margin: 12px 0;
+  color: #6b7280;
+}
+
+.aui-markdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.aui-markdown th, .aui-markdown td {
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.aui-markdown th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.aui-markdown a {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.aui-markdown hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 16px 0;
+}
+
+
+/* --- Empty state --- */
+
+.aui-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 48px 24px;
+}
+
+.aui-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 16px;
+}
+
+
+/* --- Scroll to bottom --- */
+
+.aui-scroll-to-bottom {
+  position: sticky;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.aui-scroll-to-bottom:hover {
+  color: #111827;
+  background: #f9fafb;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+
+/* --- Composer --- */
+
+.aui-composer-area {
+  border-top: 1px solid #f3f4f6;
+  padding: 16px 16px 12px;
+  background: white;
+}
+
+.aui-composer-container {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.aui-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 8px 12px 8px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.aui-composer:focus-within {
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.aui-composer-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 6px 0;
+  max-height: 160px;
+  color: #111827;
+  field-sizing: content;
+  min-height: 28px;
+}
+
+.aui-composer-input::placeholder {
+  color: #9ca3af;
+}
+
+.aui-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 2px;
+}
+
+.aui-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #111827;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.aui-send-btn:hover {
+  background: #1f2937;
+}
+
+.aui-send-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.aui-stop-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.aui-stop-btn:hover {
+  background: #fee2e2;
+}
