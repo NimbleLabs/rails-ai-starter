@@ -1,5 +1,6 @@
-import { listChats, createChat, renameChat, deleteChat, getChatMessages } from '../lib/api';
+import { listChats, createChat, renameChat, deleteChat, getChatMessages, getChat } from '../lib/api';
 import { ExportedMessageRepository } from '@assistant-ui/react';
+import { createAssistantStream } from 'assistant-stream';
 
 /**
  * RemoteThreadListAdapter for assistant-ui's unstable_useRemoteThreadListRuntime.
@@ -46,9 +47,15 @@ export class RailsThreadListAdapter {
     await deleteChat(remoteId);
   }
 
-  generateTitle() {
-    // We auto-generate titles on the backend, so return an empty stream
-    return Promise.resolve(new ReadableStream());
+  async generateTitle(remoteId) {
+    // The backend already set the title during completion.
+    // Fetch it and return as an AssistantStream so the UI updates.
+    const chat = await getChat(remoteId);
+    const title = chat.title || 'New Chat';
+    return createAssistantStream((controller) => {
+      controller.appendText(title);
+      controller.close();
+    });
   }
 
   async fetch(threadId) {
