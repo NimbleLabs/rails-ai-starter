@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''" x-bind:data-theme="theme">
+<html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''">
   <head>
     <title><%= content_for(:title) || "Rails Ai Starter" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -33,34 +33,68 @@
     <% end %>
 
 
+    <script>window.__themes = <%= raw themes_json %>;</script>
     <script>
+        var radiusMap = { none: '0', sm: '0.25rem', md: '0.375rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' };
+        var shadowMap = {
+            none: 'none',
+            sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+            md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+            lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+            xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)'
+        };
+
         function initAlpineState() {
             return {
                 open: false,
                 dark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-                theme: localStorage.colorTheme || 'purple',
+                theme: localStorage.colorTheme || '<%= default_theme_slug %>',
+                themes: window.__themes || [],
                 init() {
-                    // Apply the theme on initialization
                     this.applyTheme();
                 },
                 toggleDarkMode(isDark) {
-                    console.log("toggleDarkMode isDark:", isDark);
                     this.dark = isDark;
                     localStorage.theme = isDark ? 'dark' : 'light';
+                    this.applyTheme();
                 },
-                setTheme(name) {
-                    console.log("Setting theme to:", name);
-                    this.theme = name;
-                    localStorage.colorTheme = name;
+                setTheme(slug) {
+                    this.theme = slug;
+                    localStorage.colorTheme = slug;
                     this.applyTheme();
                 },
                 applyTheme() {
-                    // Remove all theme data attributes
-                    document.documentElement.removeAttribute('data-theme');
-
-                    // Apply the selected theme (if not purple, which is the default)
-                    if (this.theme !== 'purple') {
-                        document.documentElement.setAttribute('data-theme', this.theme);
+                    var themes = window.__themes || [];
+                    var t = themes.find(function(th) { return th.slug === this.theme; }.bind(this)) || themes[0];
+                    if (!t) return;
+                    var colors = this.dark ? t.darkMode : t.lightMode;
+                    var s = document.documentElement.style;
+                    s.setProperty('--theme-primary', colors.primary);
+                    s.setProperty('--theme-secondary', colors.secondary);
+                    s.setProperty('--theme-accent', colors.accent);
+                    s.setProperty('--theme-background', colors.background);
+                    s.setProperty('--theme-surface', colors.surface);
+                    s.setProperty('--theme-text', colors.text);
+                    s.setProperty('--theme-text-muted', colors.textMuted);
+                    s.setProperty('--theme-display-font', "'" + t.displayFont + "', system-ui, sans-serif");
+                    s.setProperty('--theme-body-font', "'" + t.bodyFont + "', system-ui, sans-serif");
+                    s.setProperty('--theme-border-radius', radiusMap[t.borderRadius] || '0.5rem');
+                    s.setProperty('--theme-shadow', shadowMap[t.shadow] || shadowMap.md);
+                    this.loadThemeFonts(t);
+                },
+                loadThemeFonts(t) {
+                    var id = 'theme-fonts-' + t.slug;
+                    if (!document.getElementById(id)) {
+                        var link = document.createElement('link');
+                        link.id = id;
+                        link.rel = 'stylesheet';
+                        var displayWeight = t.displayWeight === 'bold' ? '700' : '400';
+                        var bodyWeight = t.bodyWeight === 'bold' ? '700' : '400';
+                        link.href = 'https://fonts.googleapis.com/css2?family=' +
+                            encodeURIComponent(t.displayFont) + ':wght@' + displayWeight +
+                            '&family=' + encodeURIComponent(t.bodyFont) + ':wght@' + bodyWeight +
+                            '&display=swap';
+                        document.head.appendChild(link);
                     }
                 }
             };

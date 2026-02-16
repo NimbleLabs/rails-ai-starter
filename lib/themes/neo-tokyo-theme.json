@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "exportedAt": "2026-02-16T15:33:10.959Z",
+  "theme": {
+    "id": "6",
+    "slug": "neo-tokyo",
+    "name": "Neo Tokyo",
+    "description": "Futuristic cyberpunk theme with neon accents and sharp geometric type",
+    "displayFont": "Orbitron",
+    "displayWeight": "bold",
+    "bodyFont": "Exo 2",
+    "bodyWeight": "normal",
+    "lightMode": {
+      "primary": "#7c3aed",
+      "secondary": "#06b6d4",
+      "accent": "#ec4899",
+      "background": "#f5f3ff",
+      "surface": "#ede9fe",
+      "text": "#1e1b4b",
+      "textMuted": "#6b7280"
+    },
+    "darkMode": {
+      "primary": "#a78bfa",
+      "secondary": "#22d3ee",
+      "accent": "#f472b6",
+      "background": "#0a0118",
+      "surface": "#150225",
+      "text": "#e0e7ff",
+      "textMuted": "#7c85a3"
+    },
+    "borderRadius": "none",
+    "shadow": "lg",
+    "createdAt": "2026-02-12T16:44:47.876Z",
+    "updatedAt": "2026-02-12T16:44:47.876Z",
+    "systemTheme": true,
+    "userId": 2
+  }
+}

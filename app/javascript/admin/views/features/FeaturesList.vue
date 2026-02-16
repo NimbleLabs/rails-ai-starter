@@ -36,6 +36,8 @@
       <table class="min-w-full bg-white border border-gray-200">
         <thead class="bg-gray-50">
           <tr>
+            <th v-if="showingPlanned" class="px-2 py-3 w-8"></th>
+            <th v-if="showingPlanned" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-12">#</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
@@ -44,10 +46,36 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
-          <tr v-for="feature in filteredFeatures" :key="feature.id" class="hover:bg-gray-50">
+        <tbody ref="tableBody" class="divide-y divide-gray-200">
+          <tr
+            v-for="feature in filteredFeatures"
+            :key="feature.id"
+            :data-id="feature.id"
+            class="hover:bg-gray-50"
+            :class="{ 'cursor-grab active:cursor-grabbing': showingPlanned }"
+          >
+            <!-- Drag handle -->
+            <td v-if="showingPlanned" class="px-2 py-4 text-gray-300 hover:text-gray-500">
+              <svg class="w-4 h-4 drag-handle cursor-grab" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="9" cy="5" r="1.5"/>
+                <circle cx="15" cy="5" r="1.5"/>
+                <circle cx="9" cy="12" r="1.5"/>
+                <circle cx="15" cy="12" r="1.5"/>
+                <circle cx="9" cy="19" r="1.5"/>
+                <circle cx="15" cy="19" r="1.5"/>
+              </svg>
+            </td>
+            <!-- Position -->
+            <td v-if="showingPlanned" class="px-3 py-4">
+              <span class="text-xs font-mono text-gray-400">{{ feature.position }}</span>
+            </td>
             <td class="px-6 py-4">
-              <div class="font-medium text-gray-900">{{ feature.title }}</div>
+              <router-link
+                :to="{ name: 'feature-details', params: { id: feature.slug }}"
+                class="font-medium text-gray-900 hover:text-purple-600"
+              >
+                {{ feature.title }}
+              </router-link>
               <div v-if="feature.description" class="text-gray-500 text-xs truncate max-w-xs">
                 {{ feature.description }}
               </div>
@@ -66,6 +94,12 @@
             <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ formatDate(feature.created_at) }}</td>
             <td class="px-6 py-4 flex whitespace-nowrap gap-3">
               <router-link
+                :to="{ name: 'feature-details', params: { id: feature.slug }}"
+                class="text-blue-600 hover:text-blue-900 inline-flex items-center"
+              >
+                View
+              </router-link>
+              <router-link
                 :to="{ name: 'edit-feature', params: { id: feature.slug }}"
                 class="text-purple-600 hover:text-purple-900 inline-flex items-center"
               >
@@ -77,12 +111,21 @@
             </td>
           </tr>
           <tr v-if="filteredFeatures.length === 0">
-            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+            <td :colspan="showingPlanned ? 8 : 6" class="px-6 py-8 text-center text-gray-500">
               No features found.
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Reorder save indicator -->
+    <div v-if="reorderPending" class="mt-3 flex items-center gap-2 text-sm text-amber-600">
+      <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      </svg>
+      Saving order...
     </div>
 
     <confirm-modal
@@ -98,6 +141,7 @@
 </template>
 
 <script>
+import Sortable from 'sortablejs'
 import RestService from '../../../services/RestService.js'
 import ConfirmModal from "../../../components/ConfirmModal.vue"
 
@@ -112,20 +156,49 @@ export default {
       showDeleteModal: false,
       featureToDelete: null,
       filterStatus: '',
-      filterPriority: ''
+      filterPriority: '',
+      sortableInstance: null,
+      reorderPending: false
     }
   },
   computed: {
+    showingPlanned() {
+      return this.filterStatus === 'planned' || this.filterStatus === ''
+    },
     filteredFeatures() {
-      return this.features.filter(f => {
+      let filtered = this.features.filter(f => {
         if (this.filterStatus && f.status !== this.filterStatus) return false
         if (this.filterPriority && f.priority !== this.filterPriority) return false
         return true
       })
+
+      // When viewing planned (or all), sort planned features by position first
+      if (!this.filterStatus || this.filterStatus === 'planned') {
+        filtered.sort((a, b) => {
+          // Planned features with positions come first, sorted by position
+          if (a.status === 'planned' && b.status === 'planned') {
+            return (a.position || 9999) - (b.position || 9999)
+          }
+          // Planned features before others when viewing all
+          if (a.status === 'planned') return -1
+          if (b.status === 'planned') return 1
+          return 0
+        })
+      }
+
+      return filtered
+    }
+  },
+  watch: {
+    filterStatus() {
+      this.$nextTick(() => this.initSortable())
     }
   },
   mounted() {
     this.fetchFeatures()
+  },
+  beforeUnmount() {
+    this.destroySortable()
   },
   methods: {
     async fetchFeatures() {
@@ -136,6 +209,70 @@ export default {
         console.error('Error fetching features:', error)
       } finally {
         this.model.loading = false
+        this.$nextTick(() => this.initSortable())
+      }
+    },
+    initSortable() {
+      this.destroySortable()
+      if (!this.$refs.tableBody) return
+
+      // Only enable drag when viewing planned features
+      const plannedIds = this.filteredFeatures
+        .filter(f => f.status === 'planned')
+        .map(f => String(f.id))
+
+      if (plannedIds.length === 0) return
+
+      this.sortableInstance = Sortable.create(this.$refs.tableBody, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'bg-purple-50',
+        chosenClass: 'bg-purple-100',
+        dragClass: 'opacity-50',
+        filter: (evt, el) => {
+          // Only allow dragging planned features
+          const id = el.getAttribute('data-id')
+          return !plannedIds.includes(id)
+        },
+        onEnd: (evt) => {
+          if (evt.oldIndex === evt.newIndex) return
+          this.onReorder()
+        }
+      })
+    },
+    destroySortable() {
+      if (this.sortableInstance) {
+        this.sortableInstance.destroy()
+        this.sortableInstance = null
+      }
+    },
+    async onReorder() {
+      // Read new order from DOM
+      const rows = this.$refs.tableBody.querySelectorAll('tr[data-id]')
+      const positions = []
+      let pos = 1
+
+      rows.forEach(row => {
+        const id = parseInt(row.getAttribute('data-id'))
+        const feature = this.features.find(f => f.id === id)
+        if (feature && feature.status === 'planned') {
+          feature.position = pos
+          positions.push({ id, position: pos })
+          pos++
+        }
+      })
+
+      // Save to backend
+      this.reorderPending = true
+      try {
+        await this.service.executePut(
+          '/features/reorder.json',
+          { positions }
+        )
+      } catch (error) {
+        console.error('Error saving order:', error)
+      } finally {
+        this.reorderPending = false
       }
     },
     formatDate(dateString) {

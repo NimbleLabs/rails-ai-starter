@@ -1,4 +1,5 @@
 class FeaturesController < ApplicationController
+  skip_before_action :verify_authenticity_token, if: -> { request.headers['x-api-token'].present? }
   before_action :authenticate_user_or_token
   before_action :ensure_admin
   before_action :set_feature, only: %i[ show update destroy ]
@@ -6,7 +7,7 @@ class FeaturesController < ApplicationController
   # GET /features
   # GET /features.json
   def index
-    @features = Feature.all
+    @features = Feature.all.order(position: :asc, created_at: :desc)
   end
 
   # GET /features/1
@@ -44,6 +45,19 @@ class FeaturesController < ApplicationController
     head :no_content
   end
 
+  # PATCH /features/reorder
+  def reorder
+    positions = params.require(:positions)
+
+    Feature.transaction do
+      positions.each do |entry|
+        Feature.where(id: entry[:id]).update_all(position: entry[:position])
+      end
+    end
+
+    head :no_content
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_feature
@@ -52,6 +66,6 @@ class FeaturesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def feature_params
-      params.expect(feature: [ :title, :description, :status, :priority, :area, :plan, :implementation_notes, :acceptance_criteria, :started_at, :completed_at ])
+      params.expect(feature: [ :title, :description, :status, :priority, :area, :plan, :implementation_notes, :acceptance_criteria, :started_at, :completed_at, :position ])
     end
 end

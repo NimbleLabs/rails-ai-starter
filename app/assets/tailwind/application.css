@@ -2,59 +2,27 @@
 @import "../stylesheets/spinner.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Default theme (orange) */
+/* Theme variable defaults (Nimble Labs light mode) — overridden at runtime by Alpine.js */
 :root {
-    --color-primary: var(--color-purple-500);
-    --color-primary-hover: var(--color-purple-600);
-    --color-primary-dark: var(--color-purple-600);
-    --color-primary-light: var(--color-purple-300);
+    --theme-primary: #0891b2;
+    --theme-secondary: #6366f1;
+    --theme-accent: #f59e0b;
+    --theme-background: #ffffff;
+    --theme-surface: #f8fafc;
+    --theme-text: #0f172a;
+    --theme-text-muted: #64748b;
+    --theme-display-font: 'Space Grotesk', system-ui, sans-serif;
+    --theme-body-font: 'Inter', system-ui, sans-serif;
+    --theme-border-radius: 0.5rem;
+    --theme-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-/* Purple theme */
-[data-theme="orange"] {
-    --color-primary: var(--color-orange-500);
-    --color-primary-hover: var(--color-orange-600);
-    --color-primary-dark: var(--color-orange-600);
-    --color-primary-light: var(--color-orange-300);
-}
-
-/* Purple theme */
-[data-theme="purple"] {
-    --color-primary: var(--color-purple-500);
-    --color-primary-hover: var(--color-purple-600);
-    --color-primary-dark: var(--color-purple-600);
-    --color-primary-light: var(--color-purple-300);
-}
-
-/* Blue theme */
-[data-theme="blue"] {
-    --color-primary: var(--color-blue-500);
-    --color-primary-hover: var(--color-blue-600);
-    --color-primary-dark: var(--color-blue-600);
-    --color-primary-light: var(--color-blue-300);
-}
-
-/* Green theme */
-[data-theme="green"] {
-    --color-primary: var(--color-green-500);
-    --color-primary-hover: var(--color-green-600);
-    --color-primary-dark: var(--color-green-600);
-    --color-primary-light: var(--color-green-300);
-}
-
-/* Amber theme */
-[data-theme="amber"] {
-    --color-primary: var(--color-amber-500);
-    --color-primary-hover: var(--color-amber-600);
-    --color-primary-dark: var(--color-amber-600);
-    --color-primary-light: var(--color-amber-300);
-}
-
+/* Bridge theme variables to Tailwind color tokens */
 @theme {
-    --color-primary: var(--color-primary);
-    --color-primary-hover: var(--color-primary-hover);
-    --color-primary-dark: var(--color-primary-dark);
-    --color-primary-light: var(--color-primary-light);
+    --color-primary: var(--theme-primary);
+    --color-secondary: var(--theme-secondary);
+    --color-accent: var(--theme-accent);
+    --color-surface: var(--theme-surface);
 }
 
 @layer components {
@@ -70,7 +38,9 @@
     }
 
     .body-base {
-        @apply bg-white text-sky-900 dark:bg-zinc-900 dark:text-zinc-200;
+        background-color: var(--theme-background);
+        color: var(--theme-text);
+        font-family: var(--theme-body-font);
     }
 
     .slide-out-menu {
@@ -86,19 +56,33 @@
     }
 
     .btn {
-        @apply cursor-pointer py-2 px-4 rounded-md;
+        @apply cursor-pointer py-2 px-4;
+        border-radius: var(--theme-border-radius);
     }
 
     .btn-primary {
-        @apply cursor-pointer py-2 px-4 rounded-md text-white bg-primary hover:bg-primary-hover focus:ring-primary;
+        @apply cursor-pointer py-2 px-4 text-white;
+        background-color: var(--theme-primary);
+        border-radius: var(--theme-border-radius);
+    }
+
+    .btn-primary:hover {
+        filter: brightness(0.9);
+    }
+
+    .btn-primary:focus {
+        outline-color: var(--theme-primary);
     }
 
     .btn-secondary {
-        @apply cursor-pointer py-2 px-4 rounded-md text-gray-700 bg-gray-200 border border-gray-300 hover:bg-gray-300 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-600;
+        @apply cursor-pointer py-2 px-4 text-gray-700 bg-gray-200 border border-gray-300 hover:bg-gray-300 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-600;
+        border-radius: var(--theme-border-radius);
     }
 
     .card {
-        @apply p-6 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800;
+        @apply p-6 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800;
+        border-radius: var(--theme-border-radius);
+        box-shadow: var(--theme-shadow);
     }
 
     .card-border {
@@ -106,6 +90,7 @@
     }
 
     .input-form-field {
-        @apply rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm
+        @apply relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm;
+        border-radius: var(--theme-border-radius);
     }
 }
