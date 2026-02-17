@@ -2,7 +2,6 @@ annotaterb models
 
 pg_ctl -D /usr/local/var/postgres start
 
-
 Next features:
 
 - [ ] Funnel tracking
@@ -14,28 +13,7 @@ Next features:
 - [ ]
 
 
-
 rails g migration AddStripeCustomerIdToUsers stripe_customer_id:string stripe_subscription_id:string payment_intent_id:string
-
-brand      :string
-#  country    :string
-#  exp_month  :integer
-#  exp_year   :integer
-#  last4      :string
-#  stripe_id  :string
-#  user_id    :bigint
-#  created_at :datetime         not null
-#  updated_at :datetime
 
 rails g model CreditCard brand:string country:string exp_month:integer exp_year:integer last4:string stripe_id:string user:references
 
-
-
-
-stripe_customer_id     :string
-#  stripe_subscription_id :string
-#  company_name           :string
-#  job_role               :string
-#  metadata               :jsonb
-#  coupon_code            :string
-#  payment_intent_id
