@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby "3.4.7"
+
 gem "rails", "~> 8.1.1"
 gem "propshaft"
 gem "pg", "~> 1.1"
@@ -34,7 +36,7 @@ gem "image_processing", "~> 1.2"
 
 gem "devise"
 gem "friendly_id"
-gem "ruby_llm", "~> 1.12.0"
+gem "ruby_llm", "~> 1.14.1"
 gem "vite_rails"
 gem 'bootstrap-email'
 gem 'ahoy_email'
