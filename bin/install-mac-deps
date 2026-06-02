@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+#
+# rails-ai-starter — macOS toolchain installer
+#
+# Installs ONLY what this Rails app needs to run locally. Idempotent.
+#
+# After this finishes, run `bin/setup` to install gems and prepare the DB.
+#
+# Usage:
+#   bin/install-mac-deps                       # interactive
+#   NONINTERACTIVE=1 bin/install-mac-deps      # skip confirm prompts
+#
+# Overrides:
+#   POSTGRES_FORMULA=postgresql@16             # use a different Postgres
+#   RUBY_VERSION_OVERRIDE=3.4.7                # override .ruby-version
+#
+
+set -euo pipefail
+
+APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$APP_ROOT"
+
+# ---------------------------------------------------------------------------
+# Defaults / overrides
+# ---------------------------------------------------------------------------
+POSTGRES_FORMULA="${POSTGRES_FORMULA:-postgresql@17}"
+
+if [ -n "${RUBY_VERSION_OVERRIDE:-}" ]; then
+  RUBY_VERSION="$RUBY_VERSION_OVERRIDE"
+elif [ -f .ruby-version ]; then
+  RUBY_VERSION="$(sed 's/^ruby-//' .ruby-version | tr -d '[:space:]')"
+else
+  RUBY_VERSION="3.4.7"
+fi
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+if [ -t 1 ]; then
+  C_RESET="\033[0m"; C_BOLD="\033[1m"
+  C_GREEN="\033[32m"; C_YELLOW="\033[33m"; C_BLUE="\033[34m"; C_RED="\033[31m"
+else
+  C_RESET=""; C_BOLD=""; C_GREEN=""; C_YELLOW=""; C_BLUE=""; C_RED=""
+fi
+log()  { printf "%b\n" "${C_BLUE}${C_BOLD}==>${C_RESET} $*"; }
+ok()   { printf "%b\n" "${C_GREEN}  ✓${C_RESET} $*"; }
+warn() { printf "%b\n" "${C_YELLOW}  !${C_RESET} $*"; }
+die()  { printf "%b\n" "${C_RED}  ✗${C_RESET} $*" >&2; exit 1; }
+has()  { command -v "$1" >/dev/null 2>&1; }
+
+[ "$(uname -s)" = "Darwin" ] || die "This script targets macOS. On Linux, install Ruby/Postgres/Node with your distro's package manager."
+
+rc_file() {
+  case "${SHELL:-}" in
+    */zsh)  echo "$HOME/.zshrc" ;;
+    */bash) echo "$HOME/.bash_profile" ;;
+    *)      echo "$HOME/.profile" ;;
+  esac
+}
+ensure_line() {
+  local line="$1" file="$2"
+  [ -f "$file" ] || touch "$file"
+  grep -qsF -- "$line" "$file" || printf '\n%s\n' "$line" >> "$file"
+}
+load_brew_path() {
+  if [ -x /opt/homebrew/bin/brew ]; then eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x /usr/local/bin/brew ]; then  eval "$(/usr/local/bin/brew shellenv)"
+  fi
+}
+
+log "rails-ai-starter dev toolchain installer"
+echo "  Ruby:     $RUBY_VERSION  (from .ruby-version)"
+echo "  Postgres: $POSTGRES_FORMULA"
+echo "  Shell rc: $(rc_file)"
+echo
+
+# ---------------------------------------------------------------------------
+# Xcode Command Line Tools
+# ---------------------------------------------------------------------------
+log "Xcode Command Line Tools"
+if xcode-select -p >/dev/null 2>&1; then
+  ok "already installed"
+else
+  warn "triggering installer GUI — accept the prompt, then re-run this script"
+  xcode-select --install || true
+  die "Re-run after Command Line Tools finish installing."
+fi
+
+# ---------------------------------------------------------------------------
+# Homebrew
+# ---------------------------------------------------------------------------
+log "Homebrew"
+if has brew; then
+  ok "already installed"
+else
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+load_brew_path
+if [ -x /opt/homebrew/bin/brew ]; then
+  ensure_line 'eval "$(/opt/homebrew/bin/brew shellenv)"' "$(rc_file)"
+fi
+
+# ---------------------------------------------------------------------------
+# Core packages
+# ---------------------------------------------------------------------------
+log "Core packages (git, node, yarn, openssl, libyaml)"
+for pkg in git node yarn openssl@3 libyaml gmp; do
+  if brew list --formula "$pkg" >/dev/null 2>&1; then
+    ok "$pkg already installed"
+  else
+    brew install "$pkg"
+  fi
+done
+
+# ---------------------------------------------------------------------------
+# PostgreSQL
+# ---------------------------------------------------------------------------
+log "PostgreSQL ($POSTGRES_FORMULA)"
+if brew list --formula "$POSTGRES_FORMULA" >/dev/null 2>&1; then
+  ok "$POSTGRES_FORMULA already installed"
+else
+  brew install "$POSTGRES_FORMULA"
+fi
+if brew services list | grep -E "^$POSTGRES_FORMULA\s+started" >/dev/null 2>&1; then
+  ok "$POSTGRES_FORMULA service running"
+else
+  brew services start "$POSTGRES_FORMULA"
+fi
+PG_PREFIX="$(brew --prefix "$POSTGRES_FORMULA")"
+ensure_line "export PATH=\"$PG_PREFIX/bin:\$PATH\"" "$(rc_file)"
+export PATH="$PG_PREFIX/bin:$PATH"
+
+# ---------------------------------------------------------------------------
+# RVM + Ruby
+# ---------------------------------------------------------------------------
+log "RVM + Ruby $RUBY_VERSION"
+if [ -d "$HOME/.rvm" ] && [ -s "$HOME/.rvm/scripts/rvm" ]; then
+  ok "RVM already installed"
+else
+  gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys \
+    409B6B1796C275462A1703113804BB82D39DC0E3 \
+    7D2BAF1CF37B13E2069D6956105BD0E739499BDB || warn "GPG key import failed — RVM may warn"
+  curl -sSL https://get.rvm.io | bash -s stable
+fi
+# RVM scripts reference unbound vars; disable nounset while sourcing.
+set +u
+# shellcheck disable=SC1091
+source "$HOME/.rvm/scripts/rvm"
+set -u
+
+if rvm list strings | grep -q "ruby-$RUBY_VERSION"; then
+  ok "Ruby $RUBY_VERSION already installed"
+else
+  rvm install "$RUBY_VERSION"
+fi
+set +u
+rvm use "$RUBY_VERSION" --default
+set -u
+
+gem list -i bundler >/dev/null 2>&1 || gem install bundler
+
+# ---------------------------------------------------------------------------
+# Verify
+# ---------------------------------------------------------------------------
+log "Verification"
+printf "  git:      %s\n" "$(git --version 2>/dev/null || echo MISSING)"
+printf "  ruby:     %s\n" "$(ruby -v 2>/dev/null || echo MISSING)"
+printf "  bundler:  %s\n" "$(bundler -v 2>/dev/null || echo MISSING)"
+printf "  node:     %s\n" "$(node -v 2>/dev/null || echo MISSING)"
+printf "  yarn:     %s\n" "$(yarn -v 2>/dev/null || echo MISSING)"
+printf "  postgres: %s\n" "$(psql --version 2>/dev/null || echo MISSING)"
+
+echo
+log "Done."
+echo "Next:"
+echo "  1. Open a NEW terminal so PATH/RVM updates take effect"
+echo "  2. Run: bin/setup        # installs gems, prepares the DB, starts the app"
