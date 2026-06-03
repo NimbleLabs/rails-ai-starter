@@ -20,3 +20,21 @@ I am having trouble running rake db:migrate and getting the database in a good s
 
 **Prompt:**
 Replace the old 5-color theme picker (purple/orange/blue/green/amber) with a full theme system that applies all properties from JSON theme definitions in lib/themes/. The new system supports dark/light mode per theme, dynamically loads Google Fonts, and applies 7 color tokens (primary/secondary/accent/background/surface/text/textMuted) plus typography, border-radius, and shadow via CSS custom properties. A Rails ThemeHelper reads theme JSON files, injects them as window.__themes, and Alpine.js applies the selected theme at runtime. Any new theme JSON added to lib/themes/ is automatically picked up.
+
+## Starter Audit & Cleanup
+
+**Date:** 2026-06-02
+
+**Prompt:**
+Please review this and let me know your thoughts — followed by: I dont see .env in github and it is in .gitignore. We need to confirm that is really an issue before doing anything. Everything else please fix.
+
+Scope covered (cross-repo, from parent starter dir): added rack-cors gem + config/initializers/cors.rb gated on CORS_ORIGINS, created .env.example listing required keys, fixed bin/dev default PORT 3001 → 3000. Mobile side: signOut now calls DELETE /api/v1/sessions before clearing local token; users/current handler stopped accepting two shapes and asserts { user }; README rewritten from stock Expo boilerplate to starter-specific docs. Parent CLAUDE.md typo fixed (cd ails-ai-starter).
+
+## bin/new-app — one-command fork of the starter
+
+**Date:** 2026-06-02
+
+**Prompt:**
+The goal of this setup is to make it lightning fast to clone and create new applications so that my clients can use AI agents to build applications themselves. (After scoping discussion:) build bin/new-app first but do not do this piece: Second layer: generators that scaffold the full vertical for common patterns.
+
+Built rails-ai-starter/bin/new-app: Ruby script (stdlib only) that rewrites RailsAiStarter / rails-ai-starter / rails_ai_starter / "Rails AI Starter" placeholders across the Rails repo and the sibling mobile-app-starter, patches app.json (name/slug/scheme/ios.bundleIdentifier/android.package), removes config/credentials.yml.enc + master.key so credentials:edit can regenerate, resets PROMPTS.md, and optionally nukes .git for a fresh history. Flags: --name --slug --module --bundle-id --github-org --fresh-git --skip-mobile --non-interactive. Verified end-to-end on copies in /tmp: 13 Rails files + 4 mobile files rewritten, app.json correctly structured, idempotent on re-run, fresh-git produces single Initial commit on both repos.

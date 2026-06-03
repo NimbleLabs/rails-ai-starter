@@ -1,0 +1,280 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/new-app — fork the starter into a fresh application.
+#
+# Rewrites the Rails repo (and the sibling mobile-app-starter repo, if present)
+# from the "RailsAiStarter / rails-ai-starter / mobile-app-starter" placeholders
+# to the names you provide, generates fresh secrets, and (optionally) resets git
+# history + creates GitHub repos via `gh`.
+#
+# Run from the Rails repo root:
+#   bin/new-app                           # interactive
+#   bin/new-app --name "Acme Recipes"     # mostly-derived defaults
+#   bin/new-app --name "Acme Recipes" \
+#               --slug acme-recipes \
+#               --module AcmeRecipes \
+#               --bundle-id com.acme.recipes \
+#               --github-org acmecorp \
+#               --fresh-git \
+#               --non-interactive
+#
+# What it does NOT do: rename the directories themselves, create the database,
+# or push deploys. It prints the next steps for those.
+
+require "fileutils"
+require "json"
+require "optparse"
+require "securerandom"
+
+RAILS_DIR   = Dir.pwd
+MOBILE_DIR  = File.expand_path("../mobile-app-starter", RAILS_DIR)
+
+# Directories inside each repo that the rewriter will walk. Anything outside
+# these (node_modules, vendor, tmp, log, storage, .git) is left alone.
+RAILS_WALK  = %w[app bin config db lib test .kamal Dockerfile Gemfile Gemfile.lock Procfile.dev README.md].freeze
+MOBILE_WALK = %w[app.json package.json package-lock.json README.md src].freeze
+
+SKIP_DIRS = %w[node_modules .git vendor tmp log storage public/assets public/vite].freeze
+
+# --- options ------------------------------------------------------------------
+
+options = {
+  name: nil, slug: nil, module_name: nil, bundle_id: nil,
+  github_org: nil, fresh_git: false, skip_mobile: false,
+  non_interactive: false
+}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: bin/new-app [options]"
+  opts.on("--name NAME",         "Human-readable app name (e.g. 'Acme Recipes')")    { |v| options[:name] = v }
+  opts.on("--slug SLUG",         "URL slug (e.g. 'acme-recipes')")                   { |v| options[:slug] = v }
+  opts.on("--module MOD",        "Ruby module / PascalCase (e.g. 'AcmeRecipes')")    { |v| options[:module_name] = v }
+  opts.on("--bundle-id ID",      "iOS bundle id (e.g. 'com.acme.recipes')")          { |v| options[:bundle_id] = v }
+  opts.on("--github-org ORG",    "Create private GitHub repos under this org/user")  { |v| options[:github_org] = v }
+  opts.on("--fresh-git",         "Delete .git and start a new history (initial commit)") { options[:fresh_git] = true }
+  opts.on("--skip-mobile",       "Don't touch the mobile-app-starter sibling")       { options[:skip_mobile] = true }
+  opts.on("--non-interactive",   "Don't prompt; fail if required fields missing")    { options[:non_interactive] = true }
+end.parse!
+
+# --- helpers ------------------------------------------------------------------
+
+def prompt(label, default: nil, required: true, non_interactive: false)
+  if non_interactive
+    abort "Missing --#{label.downcase.tr(' ', '-')} (running --non-interactive)" if default.nil? || default.empty?
+    return default
+  end
+  loop do
+    print default ? "#{label} [#{default}]: " : "#{label}: "
+    answer = $stdin.gets&.chomp
+    return default if answer.nil? || answer.empty?
+    return answer if !required || !answer.strip.empty?
+  end
+end
+
+def pascalize(name)
+  name.split(/[\s_\-]+/).map { |part| part.sub(/^./, &:upcase) }.join
+end
+
+def slugify(name)
+  name.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/^-|-$/, "")
+end
+
+def confirm(question, non_interactive:)
+  return true if non_interactive
+  print "#{question} [y/N]: "
+  $stdin.gets&.chomp&.downcase == "y"
+end
+
+def walk_files(root, entries)
+  entries.flat_map do |entry|
+    path = File.join(root, entry)
+    next [] unless File.exist?(path)
+    if File.directory?(path)
+      Dir.glob(File.join(path, "**", "*"), File::FNM_DOTMATCH).select do |f|
+        next false unless File.file?(f)
+        rel_segments = f.sub(/\A#{Regexp.escape(root)}\/?/, "").split("/")
+        (rel_segments & SKIP_DIRS).empty?
+      end
+    else
+      [path]
+    end
+  end
+end
+
+def rewrite_file(path, replacements)
+  return false unless File.file?(path)
+  # Skip files that don't look like text (cheap check — read first 4KB).
+  sample = File.binread(path, 4096) || ""
+  return false if sample.include?("\x00")
+
+  original = File.read(path)
+  updated  = replacements.reduce(original) { |acc, (from, to)| acc.gsub(from, to) }
+  return false if updated == original
+
+  File.write(path, updated)
+  true
+end
+
+def apply_replacements(label, root, walk_list, replacements)
+  changed = 0
+  walk_files(root, walk_list).each do |path|
+    changed += 1 if rewrite_file(path, replacements)
+  end
+  puts "  #{label}: rewrote #{changed} file#{changed == 1 ? '' : 's'}"
+end
+
+def section(title)
+  puts "\n== #{title} =="
+end
+
+# --- collect inputs -----------------------------------------------------------
+
+abort "Run this from the rails-ai-starter repo root." unless File.exist?("config/application.rb")
+
+ni = options[:non_interactive]
+
+name        = options[:name]        || prompt("App name (human-readable)", non_interactive: ni)
+slug_default = slugify(name)
+slug        = options[:slug]        || prompt("URL slug", default: slug_default, non_interactive: ni)
+mod_default = pascalize(name)
+module_name = options[:module_name] || prompt("Ruby module / PascalCase", default: mod_default, non_interactive: ni)
+bundle_default = "com.example.#{slug.tr('-', '')}"
+bundle_id   = options[:bundle_id]   || prompt("iOS bundle id", default: bundle_default, non_interactive: ni)
+github_org  = options[:github_org]
+fresh_git   = options[:fresh_git]
+skip_mobile = options[:skip_mobile] || !File.directory?(MOBILE_DIR)
+
+# Derived names
+slug_snake = slug.tr("-", "_")
+slug_flat  = slug.tr("-", "")
+mobile_slug = "#{slug}-mobile"
+
+puts "\nAbout to fork the starter into:"
+puts "  App name:      #{name}"
+puts "  Slug:          #{slug}"
+puts "  Module:        #{module_name}"
+puts "  iOS bundle id: #{bundle_id}"
+puts "  Mobile repo:   #{skip_mobile ? '(skipped)' : MOBILE_DIR}"
+puts "  Fresh git:     #{fresh_git ? 'yes (will delete .git)' : 'no'}"
+puts "  GitHub org:    #{github_org || '(none — skip gh repo create)'}"
+
+abort "Aborted." unless confirm("Proceed?", non_interactive: ni)
+
+# --- rewrite Rails ------------------------------------------------------------
+
+section "Rewriting Rails repo"
+
+rails_replacements = {
+  "RailsAiStarter"   => module_name,
+  "rails_ai_starter" => slug_snake,
+  "rails-ai-starter" => slug,
+  "Rails AI Starter" => name
+}
+
+apply_replacements("rails", RAILS_DIR, RAILS_WALK, rails_replacements)
+
+# --- regenerate Rails secrets -------------------------------------------------
+
+section "Regenerating Rails secrets"
+
+cred_file = File.join(RAILS_DIR, "config/credentials.yml.enc")
+key_file  = File.join(RAILS_DIR, "config/master.key")
+[cred_file, key_file].each do |f|
+  if File.exist?(f)
+    File.delete(f)
+    puts "  removed #{f.sub(RAILS_DIR + '/', '')}"
+  end
+end
+puts "  run `EDITOR=vim bin/rails credentials:edit` after setup to create a fresh master.key"
+
+# --- reset PROMPTS.md ---------------------------------------------------------
+
+prompts_file = File.join(RAILS_DIR, "PROMPTS.md")
+if File.exist?(prompts_file)
+  File.write(prompts_file, "# Prompts Log\n\nA running log of the prompts given to Claude Code in this repo.\n")
+  puts "  reset PROMPTS.md"
+end
+
+# --- rewrite Mobile ----------------------------------------------------------
+
+unless skip_mobile
+  section "Rewriting mobile repo"
+
+  mobile_replacements = {
+    "mobile-app-starter" => mobile_slug,
+    "mobileappstarter"   => slug_flat,
+    "MobileAppStarter"   => module_name,
+    "Mobile App Starter" => name
+  }
+  apply_replacements("mobile", MOBILE_DIR, MOBILE_WALK, mobile_replacements)
+
+  # app.json needs structured edits: set display name, ensure bundle ids exist.
+  app_json_path = File.join(MOBILE_DIR, "app.json")
+  if File.exist?(app_json_path)
+    app_json = JSON.parse(File.read(app_json_path))
+    expo = app_json["expo"] ||= {}
+    expo["name"] = name
+    expo["slug"] = slug                     # Expo slug should match what EAS expects
+    expo["scheme"] = slug_flat
+    (expo["ios"] ||= {})["bundleIdentifier"] = bundle_id
+    (expo["android"] ||= {})["package"] = bundle_id
+    File.write(app_json_path, JSON.pretty_generate(app_json) + "\n")
+    puts "  patched app.json (name/slug/scheme/bundle id)"
+  end
+end
+
+# --- fresh git ----------------------------------------------------------------
+
+if fresh_git
+  section "Resetting git history"
+  [RAILS_DIR, skip_mobile ? nil : MOBILE_DIR].compact.each do |dir|
+    FileUtils.rm_rf(File.join(dir, ".git"))
+    Dir.chdir(dir) do
+      system("git", "init", "-q", "-b", "main") || warn("git init failed in #{dir}")
+      system("git", "add", ".")
+      system("git", "-c", "commit.gpgsign=false", "commit", "-q", "-m", "Initial commit from starter")
+      puts "  #{File.basename(dir)}: new history, single initial commit"
+    end
+  end
+end
+
+# --- gh repo create -----------------------------------------------------------
+
+if github_org
+  section "Creating GitHub repos"
+  unless system("gh --version > /dev/null 2>&1")
+    warn "  `gh` CLI not found — skipping. Install from https://cli.github.com/ and run:"
+    warn "    gh repo create #{github_org}/#{slug}-api    --private --source=#{RAILS_DIR}  --push"
+    warn "    gh repo create #{github_org}/#{mobile_slug} --private --source=#{MOBILE_DIR} --push" unless skip_mobile
+  else
+    Dir.chdir(RAILS_DIR) do
+      system("gh", "repo", "create", "#{github_org}/#{slug}-api", "--private", "--source=.", "--push") ||
+        warn("  gh repo create for Rails failed (does the repo already exist?)")
+    end
+    unless skip_mobile
+      Dir.chdir(MOBILE_DIR) do
+        system("gh", "repo", "create", "#{github_org}/#{mobile_slug}", "--private", "--source=.", "--push") ||
+          warn("  gh repo create for mobile failed (does the repo already exist?)")
+      end
+    end
+  end
+end
+
+# --- next steps ---------------------------------------------------------------
+
+section "Next steps"
+puts <<~STEPS
+  1. cp .env.example .env  and fill in API keys (OPENAI_API_KEY, etc.)
+  2. EDITOR=vim bin/rails credentials:edit   # creates a fresh config/master.key
+  3. bin/setup                               # creates DB (#{slug_snake}_dev), runs migrations, seeds
+  4. bin/dev                                 # starts Rails on :3000
+  #{skip_mobile ? '' : "5. cd #{File.basename(MOBILE_DIR)} && npm install && cp .env.example .env && npx expo start"}
+
+  Optional: rename the directories themselves so paths match the new project:
+    mv #{File.basename(RAILS_DIR)} #{slug}-api
+  #{skip_mobile ? '' : "  mv #{File.basename(MOBILE_DIR)} #{mobile_slug}"}
+
+  If you skipped --bundle-id, the default is com.example.* — change it in
+  mobile-app-starter/app.json before submitting to TestFlight.
+STEPS
