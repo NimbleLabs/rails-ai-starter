@@ -14,6 +14,8 @@ namespace :deploy do
       ssh.exec!("dokku apps:create #{app_name}")
       ssh.exec!("dokku postgres:create #{app_name}-database")
       ssh.exec!("dokku postgres:link #{app_name}-database #{app_name}")
+      ssh.exec!("dokku buildpacks:add #{app_name} --index 1 https://github.com/heroku/heroku-buildpack-nodejs")
+      ssh.exec!("dokku buildpacks:add #{app_name} --index 2 https://github.com/heroku/heroku-buildpack-ruby")
     end
   end
 

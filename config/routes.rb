@@ -37,6 +37,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1, format: :json do
+      # JSON auth for mobile / API clients
+      post   "sessions",      to: "sessions#create"      # sign in
+      delete "sessions",      to: "sessions#destroy"     # sign out (rotates token)
+      post   "registrations", to: "registrations#create" # sign up
+
       get "users/current", to: "users#current"
       get "users", to: "users#index"
       get "users/:id", to: "users#show"
