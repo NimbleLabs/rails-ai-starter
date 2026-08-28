@@ -13,8 +13,9 @@
   <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   <% if Rails.env.development? %>
     <%= vite_client_tag %>
+    <%= vite_react_refresh_tag %>
   <% end %>
-  <%= vite_javascript_tag 'admin' %>
+  <%= vite_javascript_tag 'admin.jsx' %>
 
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.5/dist/trix.css">
   <style>

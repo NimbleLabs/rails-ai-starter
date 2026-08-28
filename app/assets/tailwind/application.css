@@ -180,6 +180,29 @@
     .nav-link { @apply flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl text-ink-muted transition-colors hover:bg-primary/10 hover:text-primary; }
     .nav-link-active { @apply bg-primary text-white hover:bg-primary-hover hover:text-white shadow-pill; }
 
+
+    /* ---- Rendered rich text (Action Text / Trix output) ---- */
+    /* Applied to admin-authored HTML rendered with dangerouslySetInnerHTML, and
+       to article bodies in ERB. There is no typography plugin installed, so
+       these rules are what actually style that markup. */
+    .rich-text { @apply text-ink leading-relaxed; }
+    .rich-text > * + * { @apply mt-4; }
+    .rich-text h1 { @apply font-display text-3xl font-extrabold tracking-tight mt-8; }
+    .rich-text h2 { @apply font-display text-2xl font-bold tracking-tight mt-8; }
+    .rich-text h3 { @apply font-display text-xl font-bold mt-6; }
+    .rich-text p { @apply text-ink; }
+    .rich-text a { @apply text-primary font-medium underline underline-offset-2 hover:text-primary-hover; }
+    .rich-text ul { @apply list-disc list-outside pl-5 space-y-1; }
+    .rich-text ol { @apply list-decimal list-outside pl-5 space-y-1; }
+    .rich-text blockquote { @apply border-l-4 border-line pl-4 italic text-ink-muted; }
+    .rich-text pre { @apply bg-surface-muted rounded-card p-4 text-sm overflow-x-auto; }
+    .rich-text code { @apply text-primary text-sm; }
+    .rich-text img, .rich-text video, .rich-text iframe { @apply max-w-full h-auto rounded-xl; }
+    .rich-text figure { @apply my-6; }
+    .rich-text figcaption { @apply text-sm text-ink-muted mt-2; }
+    .rich-text hr { @apply border-line my-8; }
+    .rich-text table { @apply w-full text-sm; }
+
     /* ---- Brand mark (purple tile) ---- */
     .brand-mark { @apply inline-flex items-center justify-center rounded-2xl bg-primary text-white font-extrabold tracking-tight shadow-pill; }
 }

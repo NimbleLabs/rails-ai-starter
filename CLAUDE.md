@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Tech Stack
 
 - **Backend**: Rails 8.1.1 with PostgreSQL
-- **Frontend**: Vue 3 with Vite, served via vite_rails
+- **Frontend**: React 19 with Vite, served via vite_rails. **React is the standard for
+  every SPA in this app — do not add Vue, Svelte or another framework.**
 - **Styling**: Tailwind CSS 4.x, CSS-first config. Design tokens and the shared
   component classes live in `app/assets/tailwind/application.css` — see "Design system".
 - **Authentication**: Devise
@@ -48,6 +49,7 @@ bin/rails test                    # Run all tests
 bin/rails test:system             # Run system tests only
 bin/rails test test/models/user_test.rb  # Run single test file
 bin/rails test test/models/log_test.rb   # Internal logging system
+npx vite build                           # Type-free build check for the React apps
 ```
 
 ### Code Quality
@@ -61,38 +63,69 @@ bin/rails annotaterb:annotate # Update model schema annotations
 
 ## Architecture
 
-### Dual Vue Applications
+### Two React Applications
 
-The project has **two separate Vue 3 SPAs**:
+The project has **two React 19 SPAs**, both mounted on a `#app` div by a bare Rails
+view and both sharing one component kit:
 
 1. **User App** (`/app/*`)
-   - Entrypoint: `app/javascript/entrypoints/application.js`
-   - Root component: `app/javascript/app/App.vue`
-   - Router: `app/javascript/app/router.js`
-   - Mounted on: `#app` div in `app/views/static/app.html.erb`
+   - Entrypoint: `app/javascript/entrypoints/application.jsx`
+   - Root: `app/javascript/app/UserApp.jsx` (react-router, `basename="/app"`)
+   - Host page: `app/views/static/app.html.erb`
+   - Deliberately minimal — the starting point for a real product UI.
 
 2. **Admin App** (`/admin/*`)
-   - Entrypoint: `app/javascript/entrypoints/admin.js`
-   - Root component: `app/javascript/admin/AdminApp.vue`
-   - Router: `app/javascript/admin/router.js`
-   - Mounted on: `#app` div in `app/views/static/admin.html.erb`
-   - Uses Trix editor for rich text
-   - Pages: dashboard, users, contacts, email templates, articles, funnels,
-     metrics, features, and **logs** (`/admin/logs`, `/admin/log/:id`,
-     `/admin/log-notifications`)
+   - Entrypoint: `app/javascript/entrypoints/admin.jsx`
+   - Root: `app/javascript/admin/AdminApp.jsx` (react-router, `basename="/admin"`)
+   - Host page: `app/views/static/admin.html.erb`
+   - Layout: `app/javascript/admin/layout/` — permanent sidebar at `lg+`, off-canvas
+     drawer below it. Nav items are data in `layout/navItems.js`.
+   - Pages: `app/javascript/admin/pages/` — dashboard, users, contacts, email
+     templates, articles, funnels, metrics, features, logs.
 
-Both apps share a model object exposed as `window.starter` for Rails integration.
+Both host pages serialize the signed-in user into `window.__currentUser`, so the SPAs
+boot without a round trip. Rails catch-all routes (`get "admin/*other"`) make deep
+links and refreshes work.
+
+### Shared frontend building blocks
+
+Import with the `~` alias (= `app/javascript`).
+
+- **`~/lib/api`** — `api.get/post/put/patch/delete`, plus `resource(basePath)` and
+  `toFormData(model, attrs)` for multipart. Sends the CSRF token, never blindly
+  `JSON.parse`s a response, and throws `ApiError` (which exposes `.fieldErrors` and
+  `.messages` from the Rails error envelope).
+- **`~/lib/hooks`** — `useResource` (load + loading/error, aborts on unmount),
+  `useMutation` (pending/error around a save), `useFlash`, `useTitle`.
+- **`~/components/ui`** — `Page`, `PageHeader`, `Card`, `DataTable`, `Button`, `Badge`,
+  `Field`, `Toolbar`, `DetailList`, `Pagination`, `ConfirmModal`, `Alert`/`ErrorAlert`,
+  `StatTile`, `EmptyState`, `Spinner`.
+- **`~/components/TrixEditor`** — Action Text rich-text editing. Attachments are
+  disabled (there is no upload endpoint in this app).
+
+**`DataTable` is how every list is built.** It renders a real `<table>` at `md+` and
+**stacked cards below `md`** — a table is unusable on a phone. Because of that, columns
+are declared as data (`{ key, header, primary, render, wide }`) rather than hand-written
+`<td>`s. Mark exactly one column `primary`; it becomes the card heading on mobile.
+
+### Mobile
+
+Every React screen must work on a phone: no fixed pixel widths, no horizontal page
+scroll, tap targets at least 40px, grids that start at one column, form action rows
+that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
+`break-words`. Use `DataTable` rather than a bare `<table>`.
 
 ### Rails Routes Structure
 
 - Static pages: Root `/`, About, Privacy, Terms
 - Devise auth: `/sign-in`, `/register`, `/logout`
 - Resources: `/articles`, `/contacts`, `/email-templates`, `/features`, `/logs`, `/log-subscriptions`
-  (the last three are JSON-only, consumed by the Vue admin)
+  (the last three are JSON-only, consumed by the React admin)
 - API: `/api/v1/users/*`, `/api/v1/sessions`, `/api/v1/registrations` (JSON format)
 - Mobile ingestion: `POST /api/v1/logs` (errors), `POST /api/v1/events` (Ahoy analytics)
 - Ahoy JS/native endpoints: `/ahoy/visits`, `/ahoy/events`
-- Vue apps: `/app/*` and `/admin/*` (catch-all routes to respective SPAs)
+- Admin dashboard metrics: `GET /dashboard/metrics.json?days=N`
+- React SPAs: `/app/*` and `/admin/*` (catch-all routes to the respective apps)
 
 ### Key Models
 
@@ -195,13 +228,21 @@ Component classes: `.btn-primary` `.btn-secondary` `.btn-outline` `.btn-danger`
 `.page-header` `.page-title` `.page-subtitle` `.section-title` `.eyebrow`,
 `.nav-link`/`.nav-link-active`, `.brand-mark`.
 
-Rules: no hex colors in views or `.vue` files; add a token here rather than a
+Rules: no hex colors in `.erb` or `.jsx` files; add a token here rather than a
 one-off utility; `.btn`, `.badge` and `.alert` are `@utility` (not `@layer
 components`) precisely so the variants can `@apply` them — Tailwind 4 cannot
 `@apply` a plain component class. Rebuild with `bin/rails tailwindcss:build`
 (`bin/dev` watches).
 
 ## Analytics (Ahoy)
+
+The admin dashboard at `/admin` is built entirely on Ahoy: `DashboardMetrics`
+(`app/services/dashboard_metrics.rb`) turns `ahoy_visits` / `ahoy_events` into visit
+counts, a dense per-day series, top events/pages/referrers, device split and recent
+sign-ups, served by `GET /dashboard/metrics.json?days=N`. That page is the argument for
+keeping analytics in our own Postgres: it is one request, plain SQL, and it joins
+straight against `users`.
+
 
 **Ahoy is the analytics and metrics tool for this app. Do not add a third-party
 analytics SDK** (Google Analytics as a product-metrics source, Segment, Mixpanel,
@@ -358,9 +399,11 @@ Most models use FriendlyId with `use: [:slugged, :finders]`. This means:
 Configure in `config/initializers/ruby_llm.rb`. Models using `acts_as_chat` and `acts_as_message` automatically get chat functionality with token tracking and tool calling support.
 
 ### Vite + Rails Integration
-- Vite config base path: `/app/` (see vite.config.js)
-- Custom elements: `ion-*` and `trix-*` tags whitelisted for Vue
-- Asset paths use Vite helpers: `vite_javascript_tag`, `vite_client_tag`
+- Vite config base path: `/app/` (see vite.config.js); the only plugins are
+  `vite-plugin-ruby` and `@vitejs/plugin-react`.
+- Entrypoints are `.jsx`, so the host pages must name the extension:
+  `vite_javascript_tag 'admin.jsx'`. Development also needs
+  `vite_react_refresh_tag` alongside `vite_client_tag` or Fast Refresh breaks.
 
 ### Schema Annotations
 Models are annotated with schema info via annotaterb. Run `bin/rails annotaterb:annotate` after migrations to keep comments up to date.

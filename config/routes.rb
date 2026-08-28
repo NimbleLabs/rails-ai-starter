@@ -29,7 +29,10 @@ Rails.application.routes.draw do
   resources :email_templates, path: 'email-templates'
   post "email-templates/:id/send", to: "email_templates#send_to_list"
 
-  # Internal error log (admin JSON; Vue admin at /admin/logs)
+  # Admin dashboard metrics (Ahoy) — consumed by the React admin
+  get "dashboard/metrics", to: "dashboard#metrics"
+
+  # Internal error log (admin JSON; React admin at /admin/logs)
   resources :logs, only: %i[index show update destroy] do
     collection do
       patch  :resolve_all
@@ -84,9 +87,6 @@ Rails.application.routes.draw do
 
   get "app", to: "static#app", as: "app"
   get "app/*other" => "static#app"
-
-  get "react-app", to: "static#react_app", as: "react_app"
-  get "react-app/*other" => "static#react_app"
 
   get "admin", to: "static#admin", as: "admin"
   get "admin/*other" => "static#admin"

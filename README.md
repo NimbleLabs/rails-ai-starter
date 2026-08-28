@@ -13,7 +13,7 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 
 - **Auth** — Devise with sign-in / register / logout, FriendlyId slugs, role enum
   (user / admin), API-token authentication for mobile clients.
-- **Two Vue 3 SPAs** — a customer-facing app at `/app/*` and an admin app at
+- **Two React 19 SPAs** — a customer-facing app at `/app/*` and an admin app at
   `/admin/*`, both served via `vite_rails`.
 - **AI** — [`ruby_llm`](https://github.com/crmne/ruby_llm) wired up for OpenAI +
   Anthropic, with `acts_as_chat` / `acts_as_message` models that track tokens
@@ -41,7 +41,7 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 | Language | Ruby 3.4.7 |
 | Framework | Rails 8.1 |
 | Database | PostgreSQL |
-| Frontend | Vue 3 + Vite (admin + user SPAs) |
+| Frontend | React 19 + Vite + react-router (admin + user SPAs) |
 | Styling | Tailwind CSS 4 |
 | Auth | Devise + token auth for mobile |
 | LLM | ruby_llm (OpenAI + Anthropic) |
@@ -133,8 +133,10 @@ app/
     payments_controller.rb
     landing_pages_controller.rb
   javascript/
-    app/                  # customer Vue SPA (/app/*)
-    admin/                # admin Vue SPA (/admin/*)
+    app/                  # customer React SPA (/app/*)
+    admin/                # admin React SPA (/admin/*)
+    components/ui/        # shared React component kit (both SPAs)
+    lib/                  # api client + data hooks
     entrypoints/          # Vite entrypoints
   models/
     user.rb               # Devise + roles + API tokens + Mailkick subs
@@ -189,7 +191,7 @@ it documents the architecture, conventions, and common workflows.
 
 A few prompts to try after `claude` starts:
 
-- "Explain how the two Vue SPAs share state with Rails."
+- "Explain how the two React SPAs share state with Rails."
 - "Add a new model `Project` with FriendlyId slugs and a `/projects` REST resource."
 - "Wire up a new `/api/v1/projects` endpoint that authenticates by token."
 
