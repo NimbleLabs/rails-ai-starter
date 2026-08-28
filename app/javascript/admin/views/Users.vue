@@ -1,44 +1,45 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Users</h1>
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Users</h1>
+        <p class="page-subtitle">Everyone with an account, including admins.</p>
+      </div>
+    </div>
+
     <!-- User Cards -->
-    <div v-if="users && users.length > 0" class="flex flex-wrap gap-4 sm:gap-6">
-      <div 
-        v-for="user in users" 
-        :key="user.id" 
-        class="p-2 w-full card my-1 flex-shrink-0"
+    <div v-if="users && users.length > 0" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        v-for="user in users"
+        :key="user.id"
+        class="card flex items-center gap-4"
       >
         <!-- User Avatar/Initials -->
-        <div class="flex items-center space-x-4">
-          <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
-            <span class="text-slate-600 font-semibold text-lg">
-              {{ getUserInitials(user.name) }}
-            </span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-medium text-gray-900 truncate">
-
-              <router-link :to="{ name: 'user-details', params: { id: user.slug } }" class="pointer">
-                {{ user.name }}
-              </router-link>
-            </h3>
-            <p class="text-sm text-gray-500 truncate">
-              {{ user.email }}
-            </p>
-          </div>
+        <div class="w-12 h-12 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+          <span class="font-display font-bold text-lg">
+            {{ getUserInitials(user.name) }}
+          </span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-display text-base font-bold truncate">
+            <router-link :to="{ name: 'user-details', params: { id: user.slug } }" class="table-link">
+              {{ user.name }}
+            </router-link>
+          </h3>
+          <p class="text-sm text-ink-muted truncate">
+            {{ user.email }}
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Empty state when no users exist -->
-    <div v-else-if="usersLoaded" class="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
-      <div class="mx-auto max-w-md">
-        <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-        <p class="text-gray-500 mb-6">There are currently no users in this list. Users will appear here once they've been added to the system.</p>
-      </div>
+    <div v-else-if="usersLoaded" class="card text-center py-12">
+      <svg class="h-12 w-12 text-ink-muted mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <h3 class="section-title mb-2">No users found</h3>
+      <p class="text-ink-muted max-w-md mx-auto">There are currently no users in this list. Users will appear here once they've been added to the system.</p>
     </div>
   </div>
 </template>
@@ -89,12 +90,12 @@ export default {
 
     getUserInitials(name) {
       if (!name) return '?';
-      
+
       const names = name.trim().split(' ');
       if (names.length === 1) {
         return names[0].charAt(0).toUpperCase();
       }
-      
+
       return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
     }
   }

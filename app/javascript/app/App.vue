@@ -24,23 +24,11 @@ export default {
     }
   },
   mounted() {
-    // const service = new RestService('users')
-    // let url = '/api/v1/users/current'
-    // service.executeGet(url).then((response) => {
-    //   this.model.user = response
-    //   nimbleai.services.userService = new UserService(this.model.user)
-    //   nimbleai.services.llmService = new RestService('foundation-models', '/')
-    //
-    //   nimbleai.services.llmService.list().then((foundationModels) => {
-    //     this.model.foundationModels = foundationModels
-    //   }).catch((message) => {
-    //     console.log('error loading foundation models')
-    //     console.log(message)
-    //   })
-    // }).catch((message) => {
-    //   console.log('error loading current user')
-    //   console.log(message)
-    // })
+    // The host page (app/views/static/app.html.erb) serializes the signed-in
+    // user into window.__currentUser, so the app boots without a round trip.
+    if (window.__currentUser) {
+      this.model.user = window.__currentUser
+    }
   }
 }
 </script>

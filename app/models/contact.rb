@@ -26,7 +26,6 @@ class Contact < ApplicationRecord
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   # validates :message, presence: true
 
-  belongs_to :company, optional: true
   has_many :messages, class_name: "Ahoy::Message", as: :user
 
   after_create :on_after_create

@@ -1,17 +1,16 @@
-<div id="<%= dom_id email_template %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Subject:</strong>
-    <%= email_template.subject %>
-  </p>
+<div id="<%= dom_id email_template %>" class="card space-y-5">
+  <div>
+    <p class="stat-label">Subject</p>
+    <p class="text-ink font-medium"><%= email_template.subject %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Body:</strong>
-    <%= email_template.body %>
-  </p>
+  <div>
+    <p class="stat-label">Body</p>
+    <div class="text-ink leading-relaxed whitespace-pre-line"><%= email_template.body %></div>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Send group:</strong>
-    <%= email_template.send_group %>
-  </p>
-
+  <div>
+    <p class="stat-label">Send group</p>
+    <p class="text-ink"><%= email_template.send_group %></p>
+  </div>
 </div>

@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "theme": {
+    "slug": "starter",
+    "name": "Starter",
+    "description": "Default starter theme — warm neutrals, soft rounded surfaces, purple brand accent (shared with FitnessHQ and mobile-app-starter).",
+    "displayFont": "Outfit",
+    "displayWeight": "bold",
+    "bodyFont": "Outfit",
+    "bodyWeight": "normal",
+    "lightMode": {
+      "primary": "#7c3aed",
+      "secondary": "#6366f1",
+      "accent": "#f59e0b",
+      "background": "#fffaf0",
+      "surface": "#ffffff",
+      "text": "#1c1410",
+      "textMuted": "#6b6560"
+    },
+    "darkMode": {
+      "primary": "#8b5cf6",
+      "secondary": "#818cf8",
+      "accent": "#f59e0b",
+      "background": "#141019",
+      "surface": "#1d1726",
+      "text": "#f3f0fb",
+      "textMuted": "#a9a3b8"
+    },
+    "borderRadius": "xl",
+    "shadow": "md",
+    "systemTheme": true
+  }
+}

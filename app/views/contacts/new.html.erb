@@ -1,5 +1,11 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Contact Us</h1>
+<div class="max-w-2xl mx-auto px-6 py-12">
+  <div class="text-center mb-8">
+    <p class="eyebrow mb-3">Get in touch</p>
+    <h1 class="page-title">Contact Us</h1>
+    <p class="page-subtitle">Tell us a little about your project and we'll get back to you.</p>
+  </div>
 
-  <%= render "form", contact: @contact %>
+  <div class="card">
+    <%= render "form", contact: @contact %>
+  </div>
 </div>

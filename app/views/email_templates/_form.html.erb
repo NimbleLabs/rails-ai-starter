@@ -1,9 +1,9 @@
-<%= form_with(model: email_template, class: "contents") do |form| %>
+<%= form_with(model: email_template, class: "space-y-5") do |form| %>
   <% if email_template.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(email_template.errors.count, "error") %> prohibited this email_template from being saved:</h2>
+    <div id="error_explanation" class="alert-error">
+      <h2 class="font-semibold text-sm mb-1"><%= pluralize(email_template.errors.count, "error") %> prohibited this email_template from being saved:</h2>
 
-      <ul>
+      <ul class="list-disc list-inside space-y-0.5">
         <% email_template.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,22 +11,22 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :subject %>
-    <%= form.text_field :subject, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :subject, class: "form-label" %>
+    <%= form.text_field :subject, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :body %>
-    <%= form.text_area :body, rows: 4, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :body, class: "form-label" %>
+    <%= form.text_area :body, rows: 4, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :send_group %>
-    <%= form.text_field :send_group, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :send_group, class: "form-label" %>
+    <%= form.text_field :send_group, class: "input-form-field" %>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="pt-2">
+    <%= form.submit class: "btn-primary" %>
   </div>
 <% end %>

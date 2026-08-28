@@ -1,12 +1,88 @@
-<section class="py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h1 class="text-primary font-extrabold tracking-tight text-4xl md:text-6xl mb-6">
-        Rails AI Starter
-      </h1>
-      <h2 class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </h2>
+<%#
+  Starter homepage — hero → three pillars → final CTA.
+  Uses the shared design tokens (.btn-primary/.btn-secondary/.card/.eyebrow)
+  from app/assets/tailwind/application.css.
+%>
+
+<%# Hero %>
+<section class="py-24 md:py-32">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <p class="eyebrow mb-4">Rails · Vue · Expo</p>
+
+    <h1 class="text-ink text-4xl md:text-6xl leading-tight mb-6">
+      Ship your next app in days, not months.
+    </h1>
+
+    <p class="text-lg md:text-xl text-ink-muted mb-10">
+      A production-ready Rails 8 API, a Vue admin, and an Expo mobile app &mdash;
+      already wired together with auth, email, background jobs, and AI. Clone it, rename it, build.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <% if user_signed_in? %>
+        <%= link_to "Open the app", app_path, class: "btn-primary btn-lg" %>
+      <% else %>
+        <%= link_to "Get started", new_user_registration_path, class: "btn-primary btn-lg" %>
+        <%= link_to "Sign in", new_user_session_path, class: "btn-secondary btn-lg" %>
+      <% end %>
     </div>
+
+    <p class="mt-6 text-sm text-ink-muted">
+      Open source. Bring your own API keys.
+    </p>
+  </div>
+</section>
+
+<%# Three pillars %>
+<section class="py-20 bg-primary/10">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <h2 class="text-3xl md:text-4xl text-ink mb-4">Everything you need, nothing you don't</h2>
+      <p class="text-lg text-ink-muted max-w-2xl mx-auto">
+        Three apps, one contract. The API defines the JSON; the web and mobile clients conform.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="card text-center">
+        <div class="text-4xl mb-4" aria-hidden="true">🚀</div>
+        <h3 class="text-xl text-ink mb-2">Rails 8 API + Vue admin</h3>
+        <p class="text-ink-muted">
+          Devise auth, token-based JSON endpoints, Solid Queue jobs, Action Text, and a Vue 3 admin
+          served by Vite &mdash; all on PostgreSQL.
+        </p>
+      </div>
+      <div class="card text-center">
+        <div class="text-4xl mb-4" aria-hidden="true">📱</div>
+        <h3 class="text-xl text-ink mb-2">Expo mobile app</h3>
+        <p class="text-ink-muted">
+          A React Native app that signs in against the same API and shares the design system,
+          ready for TestFlight and the Play Store.
+        </p>
+      </div>
+      <div class="card text-center">
+        <div class="text-4xl mb-4" aria-hidden="true">🤖</div>
+        <h3 class="text-xl text-ink mb-2">AI-ready with ruby_llm</h3>
+        <p class="text-ink-muted">
+          Chats, messages, and tool calls modeled out of the box. Plug in OpenAI or Anthropic
+          with a single environment variable.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Final CTA %>
+<section class="py-24">
+  <div class="max-w-2xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-4xl text-ink mb-4">Ready to build?</h2>
+    <p class="text-lg text-ink-muted mb-8">
+      Create an account, open the app, and start from a working product instead of a blank repo.
+    </p>
+    <% if user_signed_in? %>
+      <%= link_to "Open the app", app_path, class: "btn-primary btn-lg" %>
+    <% else %>
+      <%= link_to "Get started", new_user_registration_path, class: "btn-primary btn-lg" %>
+    <% end %>
   </div>
 </section>

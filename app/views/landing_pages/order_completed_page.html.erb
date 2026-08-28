@@ -1,33 +1,33 @@
 <% content_for(:title) { "#{@funnel.name} - Order Complete" } %>
 
-<div class="max-w-4xl mx-auto px-4 py-16">
+<div class="max-w-4xl mx-auto px-6 py-16">
   <div class="text-center">
-    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-      <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
       </svg>
     </div>
 
-    <h1 class="text-4xl font-bold text-gray-900 mb-4">Thank You!</h1>
-    <p class="text-xl text-gray-600 mb-8">Your order has been successfully completed.</p>
+    <h1 class="text-4xl md:text-5xl text-ink mb-4">Thank You!</h1>
+    <p class="text-xl text-ink-muted mb-8">Your order has been successfully completed.</p>
 
-    <div class="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-      <h2 class="text-xl font-semibold mb-4">What's Next?</h2>
-      <ul class="text-left space-y-3 text-gray-600">
+    <div class="card max-w-md mx-auto">
+      <h2 class="text-xl text-ink mb-4">What's Next?</h2>
+      <ul class="text-left space-y-3 text-ink-muted">
         <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-5 h-5 text-emerald-500 mr-2 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
           Check your email for confirmation
         </li>
         <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-5 h-5 text-emerald-500 mr-2 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
           You'll receive access details within 24 hours
         </li>
         <li class="flex items-start">
-          <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <svg class="w-5 h-5 text-emerald-500 mr-2 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
           </svg>
           Contact support if you have any questions
@@ -36,7 +36,7 @@
     </div>
 
     <div class="mt-8">
-      <%= link_to "Return Home", root_path, class: "text-purple-600 hover:text-purple-800 font-medium" %>
+      <%= link_to "Return Home", root_path, class: "font-semibold text-primary hover:text-primary-hover" %>
     </div>
   </div>
 </div>

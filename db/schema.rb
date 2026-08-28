@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_18_184242) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_030720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -195,6 +195,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_184242) do
     t.string "slug"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_funnels_on_slug"
+  end
+
+  create_table "log_subscriptions", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.integer "channel", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "destination", null: false
+    t.datetime "last_notified_at"
+    t.integer "min_level", default: 2, null: false
+    t.string "name"
+    t.integer "throttle_minutes", default: 60, null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_log_subscriptions_on_active"
+  end
+
+  create_table "logs", force: :cascade do |t|
+    t.text "backtrace"
+    t.jsonb "context", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.string "error_class"
+    t.string "fingerprint", null: false
+    t.datetime "last_seen_at", null: false
+    t.integer "level", default: 2, null: false
+    t.text "message", null: false
+    t.datetime "notified_at"
+    t.integer "occurrences", default: 1, null: false
+    t.string "path"
+    t.string "request_id"
+    t.datetime "resolved_at"
+    t.string "source", default: "web", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["fingerprint", "resolved_at"], name: "index_logs_on_fingerprint_and_resolved_at"
+    t.index ["last_seen_at"], name: "index_logs_on_last_seen_at"
+    t.index ["level", "last_seen_at"], name: "index_logs_on_level_and_last_seen_at"
+    t.index ["resolved_at"], name: "index_logs_on_resolved_at"
+    t.index ["user_id"], name: "index_logs_on_user_id"
   end
 
   create_table "mailkick_subscriptions", force: :cascade do |t|
@@ -416,6 +453,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_184242) do
   add_foreign_key "chats", "users"
   add_foreign_key "credit_cards", "users"
   add_foreign_key "features", "users"
+  add_foreign_key "logs", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
   add_foreign_key "messages", "tool_calls"

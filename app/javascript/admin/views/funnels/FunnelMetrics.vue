@@ -1,12 +1,22 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Funnel Metrics</h1>
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Funnel Metrics</h1>
+        <p class="page-subtitle">Page views at each stage and how many visitors move on.</p>
+      </div>
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'funnels' }" class="btn-secondary">
+          Back to Funnels
+        </router-link>
+      </div>
+    </div>
 
     <!-- Filters -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap gap-4 items-end">
+    <div class="card flex flex-wrap items-end gap-4 mb-6">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Funnel</label>
-        <select v-model="filters.funnelSlug" @change="fetchMetrics" class="input-form-field w-48">
+        <label class="form-label">Funnel</label>
+        <select v-model="filters.funnelSlug" @change="fetchMetrics" class="input-form-field w-auto min-w-48">
           <option value="">All Funnels</option>
           <option v-for="funnel in funnels" :key="funnel.id" :value="funnel.slug">
             {{ funnel.name }}
@@ -14,90 +24,100 @@
         </select>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-        <input type="date" v-model="filters.startDate" @change="fetchMetrics" class="input-form-field">
+        <label class="form-label">Start Date</label>
+        <input type="date" v-model="filters.startDate" @change="fetchMetrics" class="input-form-field w-auto">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-        <input type="date" v-model="filters.endDate" @change="fetchMetrics" class="input-form-field">
+        <label class="form-label">End Date</label>
+        <input type="date" v-model="filters.endDate" @change="fetchMetrics" class="input-form-field w-auto">
       </div>
-      <button @click="clearFilters" class="text-purple-600 hover:text-purple-800 text-sm">
-        Clear Filters
+      <button type="button" @click="clearFilters" class="btn-ghost">
+        Clear
       </button>
     </div>
 
-    <!-- Funnel Visualization -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Conversion Funnel</h2>
+    <!-- Stage totals -->
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+      <div class="stat-tile">
+        <p class="stat-label">Lead Page</p>
+        <p class="stat-value">{{ metrics.lead_page }}</p>
+      </div>
+      <div class="stat-tile">
+        <p class="stat-label">Book Call Page</p>
+        <p class="stat-value">{{ metrics.book_call_page }}</p>
+      </div>
+      <div class="stat-tile">
+        <p class="stat-label">Order Page</p>
+        <p class="stat-value">{{ metrics.order_page }}</p>
+      </div>
+      <div class="stat-tile">
+        <p class="stat-label">Order Completed</p>
+        <p class="stat-value text-emerald-600">{{ metrics.order_completed_page }}</p>
+      </div>
+    </div>
 
-      <div class="space-y-4">
-        <!-- Lead Page -->
-        <div class="funnel-stage">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-medium">Lead Page</span>
-            <span class="text-2xl font-bold">{{ metrics.lead_page }}</span>
-          </div>
-          <div class="h-8 bg-purple-600 rounded" style="width: 100%"></div>
-        </div>
-
-        <!-- Arrow + Conversion Rate -->
-        <div class="flex items-center justify-center text-gray-500">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-          </svg>
-          <span class="ml-2 text-sm">{{ conversionRates.lead_to_book_call }}% conversion</span>
-        </div>
-
-        <!-- Book Call Page -->
-        <div class="funnel-stage">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-medium">Book Call Page</span>
-            <span class="text-2xl font-bold">{{ metrics.book_call_page }}</span>
-          </div>
-          <div class="h-8 bg-purple-500 rounded" :style="{ width: calculateWidth('book_call_page') }"></div>
-        </div>
-
-        <!-- Arrow + Conversion Rate -->
-        <div class="flex items-center justify-center text-gray-500">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-          </svg>
-          <span class="ml-2 text-sm">{{ conversionRates.book_call_to_order }}% conversion</span>
-        </div>
-
-        <!-- Order Page -->
-        <div class="funnel-stage">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-medium">Order Page</span>
-            <span class="text-2xl font-bold">{{ metrics.order_page }}</span>
-          </div>
-          <div class="h-8 bg-purple-400 rounded" :style="{ width: calculateWidth('order_page') }"></div>
-        </div>
-
-        <!-- Arrow + Conversion Rate -->
-        <div class="flex items-center justify-center text-gray-500">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-          </svg>
-          <span class="ml-2 text-sm">{{ conversionRates.order_to_completed }}% conversion</span>
-        </div>
-
-        <!-- Order Completed -->
-        <div class="funnel-stage">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-medium">Order Completed</span>
-            <span class="text-2xl font-bold text-green-600">{{ metrics.order_completed_page }}</span>
-          </div>
-          <div class="h-8 bg-green-500 rounded" :style="{ width: calculateWidth('order_completed_page') }"></div>
+    <!-- Conversion by stage -->
+    <div class="card-flush overflow-x-auto">
+      <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line">
+        <h2 class="section-title">Conversion Funnel</h2>
+        <div class="text-right">
+          <p class="eyebrow">Overall conversion</p>
+          <p class="font-display text-2xl font-extrabold text-primary leading-tight">{{ conversionRates.overall }}%</p>
+          <p class="text-xs text-ink-muted">Lead Page to Order Completed</p>
         </div>
       </div>
-
-      <!-- Overall Conversion Rate -->
-      <div class="mt-8 p-4 bg-gray-50 rounded-lg text-center">
-        <p class="text-sm text-gray-600">Overall Conversion Rate</p>
-        <p class="text-3xl font-bold text-purple-600">{{ conversionRates.overall }}%</p>
-        <p class="text-sm text-gray-500">From Lead Page to Order Completed</p>
-      </div>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Views</th>
+            <th>From previous</th>
+            <th class="w-1/2">Share of leads</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-medium whitespace-nowrap">Lead Page</td>
+            <td class="font-semibold">{{ metrics.lead_page }}</td>
+            <td class="text-ink-muted">-</td>
+            <td>
+              <div class="h-3 rounded-full bg-primary/10 overflow-hidden">
+                <div class="h-3 rounded-full bg-primary" style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-medium whitespace-nowrap">Book Call Page</td>
+            <td class="font-semibold">{{ metrics.book_call_page }}</td>
+            <td><span class="badge-brand">{{ conversionRates.lead_to_book_call }}%</span></td>
+            <td>
+              <div class="h-3 rounded-full bg-primary/10 overflow-hidden">
+                <div class="h-3 rounded-full bg-primary/80" :style="{ width: calculateWidth('book_call_page') }"></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-medium whitespace-nowrap">Order Page</td>
+            <td class="font-semibold">{{ metrics.order_page }}</td>
+            <td><span class="badge-brand">{{ conversionRates.book_call_to_order }}%</span></td>
+            <td>
+              <div class="h-3 rounded-full bg-primary/10 overflow-hidden">
+                <div class="h-3 rounded-full bg-primary/60" :style="{ width: calculateWidth('order_page') }"></div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-medium whitespace-nowrap">Order Completed</td>
+            <td class="font-semibold text-emerald-600">{{ metrics.order_completed_page }}</td>
+            <td><span class="badge-green">{{ conversionRates.order_to_completed }}%</span></td>
+            <td>
+              <div class="h-3 rounded-full bg-primary/10 overflow-hidden">
+                <div class="h-3 rounded-full bg-emerald-500" :style="{ width: calculateWidth('order_completed_page') }"></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

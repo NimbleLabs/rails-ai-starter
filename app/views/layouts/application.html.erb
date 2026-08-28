@@ -10,16 +10,14 @@
     <%= yield :head %>
     <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"></noscript>
+
     <%= stylesheet_link_tag :app %>
 
     <% if action_name == 'new' || action_name == 'edit' %>
       <style>
-          h1 {
-              font-weight: 800;
-              letter-spacing: -.025em;
-              font-size: 2.25rem;
-          }
-
           trix-editor {
               min-height: 400px !important;
               max-height: 600px !important;
@@ -32,6 +30,10 @@
       </style>
     <% end %>
 
+    <% if Ahoy.api %>
+      <script src="https://cdn.jsdelivr.net/npm/ahoy.js@0.4.2/dist/ahoy.min.js"></script>
+      <script>ahoy.configure({ visitsUrl: "/ahoy/visits", eventsUrl: "/ahoy/events", platform: "Web", useBeacon: true, startOnReady: true, trackVisits: true, cookies: true, visitDuration: 30, visitorDuration: 2 * 365 * 24 * 60 }); ahoy.trackView(); window.ahoy = ahoy;</script>
+    <% end %>
 
     <script>window.__themes = <%= raw themes_json %>;</script>
     <script>
@@ -106,9 +108,19 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body x-cloak class="body-base">
+  <body x-cloak class="min-h-screen flex flex-col">
     <%= render "shared/nav" %>
-    <main>
+
+    <% if flash.any? %>
+      <div class="max-w-7xl mx-auto w-full px-6 mt-4 space-y-2">
+        <% flash.each do |type, msg| %>
+          <% next if msg.blank? %>
+          <div class="<%= case type.to_s when 'notice' then 'alert-success' when 'alert' then 'alert-error' else 'alert-info' end %>" role="status"><%= msg %></div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <main class="flex-1">
       <%= yield %>
     </main>
     <%= render "shared/footer" %>

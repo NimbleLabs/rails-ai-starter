@@ -1,87 +1,88 @@
 <template>
-  <div class="p-10">
-    <h1 class="font-extrabold text-4xl md:text-5xl tracking-tight">PostForm</h1>
-
-    <div class="my-3">
-      <button class="w-32 bg-purple-600 hover:bg-purple-800 text-white px-8 py-1 rounded"
-              @click.prevent="onSaveClick">Save
-      </button>
-      <router-link :to="{ name: 'posts' }"
-                   class="ml-5 w-32 bg-white hover:bg-gray-100 border border-gray-300 text-slate-800 px-8 py-1 rounded">
-        Cancel
-      </router-link>
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">{{ post.id ? 'Edit Article' : 'New Article' }}</h1>
+        <p class="page-subtitle">Content autosaves while you're editing the body.</p>
+      </div>
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'posts' }" class="btn-secondary">
+          Cancel
+        </router-link>
+        <button type="button" class="btn-primary" @click.prevent="onSaveClick">Save</button>
+      </div>
     </div>
 
-    <div class="pb-10">
-      <div class="my-2">
-        <label for="titleInput" class="text-sm font-medium">Title</label>
-        <input type="text" class="input-form-field" id="titleInput" v-model="post.title">
-      </div>
-      <div class="my-2">
-        <label for="descriptionInput" class="text-sm font-medium">Description</label>
-        <input type="text" class="input-form-field" id="descriptionInput"
-               v-model="post.description">
-      </div>
-      <div class="my-2">
-        <label for="authorInput" class="text-sm font-medium">Author</label>
-        <input type="text" class="input-form-field" id="authorInput" v-model="post.author">
+    <div class="max-w-4xl space-y-6">
+      <div class="card">
+        <h2 class="section-title mb-4">Details</h2>
+
+        <div class="mb-4">
+          <label for="titleInput" class="form-label">Title</label>
+          <input type="text" class="input-form-field" id="titleInput" v-model="post.title">
+        </div>
+        <div class="mb-4">
+          <label for="descriptionInput" class="form-label">Description</label>
+          <input type="text" class="input-form-field" id="descriptionInput"
+                 v-model="post.description">
+          <p class="form-hint">Short summary shown in listings and previews.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="authorInput" class="form-label">Author</label>
+            <input type="text" class="input-form-field" id="authorInput" v-model="post.author">
+          </div>
+          <div>
+            <label for="categoryInput" class="form-label">Category</label>
+            <select
+                id="categoryInput"
+                class="input-form-field"
+                v-model="post.category">
+              <option v-for="category in model.categories" :value="category">{{ category }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-6">
+          <label class="inline-flex items-center gap-2 text-sm text-ink">
+            <input type="checkbox" v-model="post.published" class="form-checkbox">
+            <span>Published</span>
+          </label>
+
+          <label class="inline-flex items-center gap-2 text-sm text-ink">
+            <input type="checkbox" v-model="post.featured" class="form-checkbox">
+            <span>Featured</span>
+          </label>
+        </div>
       </div>
 
-      <div class="my-2">
-        <label for="categoryInput" class="text-sm font-medium">Category</label>
-
-        <select
-            class="input-form-field"
-            v-model="post.category">
-          <option v-for="category in model.categories" :value="category">{{ category }}</option>
-        </select>
-      </div>
-
-      <div class="my-2">
-        <label class="inline-flex items-center">
-          <input type="checkbox" v-model="post.published" class="rounded border-gray-300 text-indigo-600 shadow-sm
-                          focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50">
-          <span class="ml-2">Published</span>
-        </label>
-      </div>
-
-      <div class="my-2">
-        <label class="inline-flex items-center">
-          <input type="checkbox" v-model="post.featured" class="rounded border-gray-300 text-indigo-600 shadow-sm
-                          focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50">
-          <span class="ml-2">Featured</span>
-        </label>
-      </div>
-
-      <div v-if="contentReady" class="my-2">
-        <label for="contentInput" class="text-sm font-medium">Content</label>
+      <div v-if="contentReady" class="card">
+        <h2 class="section-title mb-4">Content</h2>
+        <label for="articleContentEditor" class="form-label">Body</label>
         <vue3-trix-editor :data-object="post" field-name="content" text-id="articleContentEditor"
                           @onFocus="onFocus" @onFocusOut="onFocusOut"></vue3-trix-editor>
       </div>
 
-      <div class="my-2">
-        <div for="featuredInput" class="text-sm font-medium">Featured Image</div>
-        <button class="bg-purple-500 text-white px-4 py-1 rounded-lg" @click="showImageModal = true">Select Image
-        </button>
+      <div class="card">
+        <h2 class="section-title mb-4">Featured Image</h2>
+        <button type="button" class="btn-outline btn-sm" @click="showImageModal = true">Select Image</button>
 
-        <div v-if="selectedImage" class="my-2">
-          <img class="w-96" :src="selectedImage.url">
+        <div v-if="selectedImage" class="mt-4">
+          <img class="w-96 max-w-full rounded-xl border border-line" :src="selectedImage.url">
         </div>
       </div>
-      <!--      <div class="my-2">-->
-      <!--        <label for="publishedAtInput" class="text-sm font-medium">Published at</label>-->
-      <!--        <input type="text" class="border-gray-200 rounded py-2 w-full mb-3" id="published_atInput"-->
+      <!--      <div class="mb-4">-->
+      <!--        <label for="publishedAtInput" class="form-label">Published at</label>-->
+      <!--        <input type="text" class="input-form-field" id="published_atInput"-->
       <!--               v-model="post.published_at">-->
       <!--      </div>-->
 
-      <div class="mb-3">
-        <button class="w-32 bg-purple-600 hover:bg-purple-800 text-white px-8 py-1 rounded"
-                @click.prevent="onSaveClick">Save
-        </button>
-        <router-link :to="{ name: 'posts' }"
-                     class="ml-5 w-32 bg-white hover:bg-gray-100 border border-gray-300 text-slate-800 px-8 py-1 rounded">
+      <div class="flex gap-3 justify-end">
+        <router-link :to="{ name: 'posts' }" class="btn-secondary">
           Cancel
         </router-link>
+        <button type="button" class="btn-primary" @click.prevent="onSaveClick">Save</button>
       </div>
 
     </div>
@@ -199,7 +200,7 @@ export default {
 
     savePost() {
       let request = {
-        post: this.post
+        article: this.post
       }
 
       let objectId = this.post.id

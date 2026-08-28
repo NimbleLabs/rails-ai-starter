@@ -9,11 +9,14 @@
     <%= csp_meta_tag %>
     <%= yield :head %>
     <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"></noscript>
     <%= stylesheet_link_tag :app %>
   </head>
 
-  <body class="min-h-screen bg-gray-50">
-    <main>
+  <body class="min-h-screen flex flex-col bg-canvas text-ink">
+    <main class="flex-1">
       <%= yield %>
     </main>
   </body>

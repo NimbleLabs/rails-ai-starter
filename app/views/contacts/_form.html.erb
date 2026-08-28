@@ -1,9 +1,9 @@
-<%= form_with(model: contact, class: "contents") do |form| %>
+<%= form_with(model: contact, class: "space-y-5") do |form| %>
   <% if contact.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(contact.errors.count, "error") %> prohibited this contact from being saved:</h2>
+    <div id="error_explanation" class="alert-error">
+      <h2 class="font-semibold text-sm mb-1"><%= pluralize(contact.errors.count, "error") %> prohibited this contact from being saved:</h2>
 
-      <ul>
+      <ul class="list-disc list-inside space-y-0.5">
         <% contact.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,37 +11,37 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :email %>
-    <%= form.text_field :email, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :email, class: "form-label" %>
+    <%= form.text_field :email, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :phone %>
-    <%= form.text_field :phone, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :phone, class: "form-label" %>
+    <%= form.text_field :phone, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :company %>
-    <%= form.text_field :company, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :company, class: "form-label" %>
+    <%= form.text_field :company, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :budget_range %>
-    <%= form.text_field :budget_range, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :budget_range, class: "form-label" %>
+    <%= form.text_field :budget_range, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :message %>
-    <%= form.text_area :message, rows: 4, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :message, class: "form-label" %>
+    <%= form.text_area :message, rows: 4, class: "input-form-field" %>
   </div>
 
-  <div class="inline">
-    <%= form.submit 'Send', class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="pt-2">
+    <%= form.submit 'Send', class: "btn-primary" %>
   </div>
 <% end %>

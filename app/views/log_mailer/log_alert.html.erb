@@ -1,0 +1,27 @@
+<div style="font-family: Outfit, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background:#fffaf0; padding:32px 16px; color:#1c1410;">
+  <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e8e2dc; border-radius:16px; padding:28px;">
+    <p style="margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:#7c3aed;"><%= @app_name %> · <%= @log.level.upcase %> · <%= @log.source %></p>
+    <h1 style="margin:0 0 16px; font-size:22px; letter-spacing:-.4px; line-height:1.25;"><%= @log.title %></h1>
+
+    <table style="width:100%; font-size:14px; border-collapse:collapse;">
+      <% { "When" => @log.last_seen_at&.strftime("%b %-d, %Y %H:%M %Z"), "Occurrences" => @log.occurrences, "Path" => @log.path, "User" => @log.user&.email, "Request" => @log.request_id }.compact.each do |k, v| %>
+        <tr><td style="padding:6px 0; color:#6b6560; width:120px;"><%= k %></td><td style="padding:6px 0;"><%= v %></td></tr>
+      <% end %>
+    </table>
+
+    <% if @log.backtrace.present? %>
+      <p style="margin:20px 0 6px; font-size:12px; font-weight:700; text-transform:uppercase; color:#6b6560;">Backtrace</p>
+      <pre style="margin:0; padding:12px; background:#f5f3ff; border-radius:12px; font-size:12px; line-height:1.5; overflow:auto; white-space:pre-wrap;"><%= @log.backtrace.lines.first(12).join %></pre>
+    <% end %>
+
+    <% if @log.context.present? %>
+      <p style="margin:20px 0 6px; font-size:12px; font-weight:700; text-transform:uppercase; color:#6b6560;">Context</p>
+      <pre style="margin:0; padding:12px; background:#f5f3ff; border-radius:12px; font-size:12px; line-height:1.5; overflow:auto; white-space:pre-wrap;"><%= JSON.pretty_generate(@log.context) %></pre>
+    <% end %>
+
+    <% if @log.persisted? %>
+      <p style="margin:24px 0 0;"><a href="<%= @admin_url %>" style="display:inline-block; background:#7c3aed; color:#fff; text-decoration:none; font-weight:600; padding:12px 20px; border-radius:16px;">Open in admin</a></p>
+    <% end %>
+  </div>
+  <p style="max-width:600px; margin:16px auto 0; font-size:12px; color:#6b6560;">You're receiving this because a log notification subscription in the <%= @app_name %> admin points at this address. Manage it under Admin → Logs → Notifications.</p>
+</div>

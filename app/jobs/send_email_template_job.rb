@@ -1,6 +1,6 @@
 class SendEmailTemplateJob < ApplicationJob
   queue_as :default
-  
+
   retry_on ActiveRecord::RecordNotFound, wait: 5.seconds, attempts: 3
   retry_on StandardError, wait: 30.seconds, attempts: 3
 
@@ -30,7 +30,7 @@ class SendEmailTemplateJob < ApplicationJob
       end
     end
 
-    #SlackService.system_alert_service.email_sent_event(email_template.subject, sent_count, already_sent_count, error_count)
+    SlackService.system_alert_service.email_sent_event(email_template.subject, sent_count, already_sent_count, error_count)
   end
 
   private
@@ -47,4 +47,4 @@ class SendEmailTemplateJob < ApplicationJob
     #   raise ArgumentError, "Invalid send_group: #{send_group}"
     # end
   end
-end 
+end

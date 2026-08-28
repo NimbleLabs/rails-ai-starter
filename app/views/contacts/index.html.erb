@@ -1,21 +1,40 @@
-<div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-  <% end %>
+<% content_for :title, "Contacts" %>
 
-  <% content_for :title, "Contacts" %>
-
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Contacts</h1>
-    <%= link_to "New contact", new_contact_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+<div class="max-w-7xl mx-auto px-6 py-12 lg:px-8">
+  <div class="page-header">
+    <h1 class="page-title">Contacts</h1>
+    <%= link_to "New contact", new_contact_path, class: "btn-primary" %>
   </div>
 
-  <div id="contacts" class="min-w-full">
-    <% @contacts.each do |contact| %>
-      <%= render contact %>
-      <p>
-        <%= link_to "Show this contact", contact, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
-    <% end %>
+  <div id="contacts" class="card-flush overflow-x-auto">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Company</th>
+          <th>Budget range</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @contacts.empty? %>
+          <tr><td colspan="6" class="empty-state">No contacts yet.</td></tr>
+        <% end %>
+        <% @contacts.each do |contact| %>
+          <tr id="<%= dom_id contact %>">
+            <td class="font-medium"><%= contact.name %></td>
+            <td class="text-ink-muted"><%= contact.email %></td>
+            <td class="text-ink-muted"><%= contact.phone %></td>
+            <td class="text-ink-muted"><%= contact.company %></td>
+            <td class="text-ink-muted"><%= contact.budget_range %></td>
+            <td class="text-right">
+              <%= link_to "Show this contact", contact, class: "table-link" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -1,38 +1,61 @@
 <template>
-  <div>
-    <h1>Posts Details</h1>
-
-    <div class="p-5 border border-gray-300">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
       <div>
-        <strong>Title:</strong> {{ post.title }}
+        <h1 class="page-title">Article Details</h1>
+        <p class="page-subtitle">{{ post.title || 'Loading article…' }}</p>
       </div>
-      <div>
-        <strong>Description:</strong> {{ post.description }}
-      </div>
-      <div>
-        <strong>Author:</strong> {{ post.author }}
-      </div>
-      <div>
-        <strong>Category:</strong> {{ post.category }}
-      </div>
-      <div>
-        <strong>Published:</strong> {{ post.published }}
-      </div>
-      <div>
-        <strong>Featured:</strong> {{ post.featured }}
-      </div>
-      <div>
-        <strong>Published At:</strong> {{ post.published_at }}
-      </div>
-      <div>
-        <strong>Author Slug:</strong> {{ post.author_slug }}
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'posts' }" class="btn-secondary">
+          Back to Articles
+        </router-link>
+        <router-link :to="{ name: 'edit-post', params: { id: $route.params.id } }" class="btn-primary">
+          Edit
+        </router-link>
       </div>
     </div>
 
-    <div class="mt-5">
-      <h2 class="text-3xl my-5">Content</h2>
-      <hr class="mb-3">
-      <div v-html="post.content"></div>
+    <div class="card mb-6">
+      <div class="flex flex-wrap items-center gap-2 mb-6">
+        <span :class="post.published ? 'badge-green' : 'badge-gray'">
+          {{ post.published ? 'Published' : 'Draft' }}
+        </span>
+        <span v-if="post.featured" class="badge-amber">Featured</span>
+        <span v-if="post.category" class="badge-brand">{{ post.category }}</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+          <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">Title</p>
+          <div class="text-ink">{{ post.title || '-' }}</div>
+        </div>
+        <div class="md:col-span-2">
+          <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">Description</p>
+          <div class="text-ink">{{ post.description || '-' }}</div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">Author</p>
+          <div class="text-ink">{{ post.author || '-' }}</div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">Author Slug</p>
+          <div class="text-ink font-mono text-sm">{{ post.author_slug || '-' }}</div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">Category</p>
+          <div class="text-ink">{{ post.category || '-' }}</div>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-ink-muted mb-1">Published At</p>
+          <div class="text-ink">{{ post.published_at || '-' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title mb-4">Content</h2>
+      <div v-if="post.content" class="trix-content max-w-none text-ink" v-html="post.content"></div>
+      <p v-else class="text-sm text-ink-muted">No content yet.</p>
     </div>
 
   </div>
@@ -80,4 +103,3 @@ export default {
   },
 }
 </script>
-

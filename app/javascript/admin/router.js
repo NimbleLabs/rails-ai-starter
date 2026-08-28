@@ -14,6 +14,9 @@ import FunnelMetrics from "@/admin/views/funnels/FunnelMetrics.vue";
 import FeaturesList from "@/admin/views/features/FeaturesList.vue";
 import FeatureForm from "@/admin/views/features/FeatureForm.vue";
 import FeatureDetails from "@/admin/views/features/FeatureDetails.vue";
+import LogsList from "@/admin/views/logs/LogsList.vue";
+import LogDetails from "@/admin/views/logs/LogDetails.vue";
+import LogSubscriptions from "@/admin/views/logs/LogSubscriptions.vue";
 
 const router = createRouter({
   history: createWebHistory('/'),

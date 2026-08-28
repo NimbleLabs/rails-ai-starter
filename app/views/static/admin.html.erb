@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Starter Admin App</title>
+  <title><%= content_for(:title) || "Admin" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <link rel="icon" href="/favicon.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
 
   <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   <% if Rails.env.development? %>
@@ -13,32 +17,16 @@
   <%= vite_javascript_tag 'admin' %>
 
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.5/dist/trix.css">
-
   <style>
-      h1, h2, h3 {
-          font-weight: 800;
-          letter-spacing: -.025em;
-      }
-
-       h1 {
-           font-weight: 800;
-           letter-spacing: -.025em;
-           font-size: 2.25rem;
-       }
-
-      trix-editor {
-          min-height: 400px !important;
-          max-height: 600px !important;
-          overflow-y: auto;
-      }
-
-      .dark .trix-button--icon {
-          -webkit-filter: invert(100%);
-      }
+      trix-editor { min-height: 400px !important; max-height: 600px !important; overflow-y: auto; }
+      .dark .trix-button--icon { -webkit-filter: invert(100%); }
   </style>
-
+  <script>
+    // Current user for the admin SPA (avoids an extra round trip on boot).
+    window.__currentUser = <%= raw({ id: current_user.id, name: current_user.name, email: current_user.email, admin: current_user.admin? }.to_json) %>;
+  </script>
 </head>
-<body class="body-base h-screen">
+<body class="h-screen">
 <div id="app" class="h-full"></div>
 </body>
 </html>

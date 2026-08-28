@@ -1,32 +1,31 @@
-<div id="<%= dom_id contact %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Name:</strong>
-    <%= contact.name %>
-  </p>
+<div id="<%= dom_id contact %>" class="card grid grid-cols-1 sm:grid-cols-2 gap-5">
+  <div>
+    <p class="stat-label">Name</p>
+    <p class="text-ink font-medium"><%= contact.name %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Email:</strong>
-    <%= contact.email %>
-  </p>
+  <div>
+    <p class="stat-label">Email</p>
+    <p class="text-ink"><%= contact.email %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Phone:</strong>
-    <%= contact.phone %>
-  </p>
+  <div>
+    <p class="stat-label">Phone</p>
+    <p class="text-ink"><%= contact.phone %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Company:</strong>
-    <%= contact.company %>
-  </p>
+  <div>
+    <p class="stat-label">Company</p>
+    <p class="text-ink"><%= contact.company %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Budget range:</strong>
-    <%= contact.budget_range %>
-  </p>
+  <div>
+    <p class="stat-label">Budget range</p>
+    <p class="text-ink"><%= contact.budget_range %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Message:</strong>
-    <%= contact.message %>
-  </p>
-
+  <div class="sm:col-span-2">
+    <p class="stat-label">Message</p>
+    <p class="text-ink leading-relaxed whitespace-pre-line"><%= contact.message %></p>
+  </div>
 </div>

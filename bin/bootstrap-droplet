@@ -1,0 +1,403 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/bootstrap-droplet — provision a DigitalOcean droplet, install Dokku-side
+# config (app, Postgres, letsencrypt), wire up a local git remote.
+#
+# Goal: paste a DO API token + domain, get a deploy-ready droplet in ~10 min.
+# This script does NOT push code by default — it provisions infrastructure and
+# prints `git push dokku main` as the final step. Use --deploy to push too.
+#
+# Usage:
+#   bin/bootstrap-droplet                                  # fully interactive
+#   bin/bootstrap-droplet \
+#     --token "$DO_API_TOKEN" \
+#     --app acme-recipes \
+#     --domain api.acme.com --email ops@acme.com \
+#     --region nyc3 --size s-1vcpu-2gb \
+#     --ssh-key my-laptop \
+#     --yes
+#
+# Requirements: ruby (stdlib), ssh client, gh CLI (only if you use --github-org),
+# a DO API token with read+write scope, and an SSH key already uploaded to your
+# DO account whose private half is in your local ssh-agent or ~/.ssh.
+
+require "fileutils"
+require "json"
+require "net/http"
+require "optparse"
+require "socket"
+require "uri"
+
+RAILS_DIR = Dir.pwd
+
+abort "Run this from the rails-ai-starter repo root." unless File.exist?("config/application.rb")
+
+# --- options ------------------------------------------------------------------
+
+options = {
+  token: ENV["DO_API_TOKEN"] || ENV["DIGITALOCEAN_TOKEN"],
+  app: nil, droplet_name: nil,
+  region: "nyc3", size: "s-1vcpu-2gb", image: nil,
+  ssh_key: nil, domain: nil, email: nil,
+  push_env: false, deploy: false,
+  non_interactive: false, yes: false
+}
+
+OptionParser.new do |o|
+  o.banner = "Usage: bin/bootstrap-droplet [options]"
+  o.on("--token TOKEN",        "DO API token (or set DO_API_TOKEN env)") { |v| options[:token] = v }
+  o.on("--app NAME",           "Dokku app name (default: derived from Ruby module)") { |v| options[:app] = v }
+  o.on("--droplet-name NAME",  "Droplet name (default: <app>-prod)") { |v| options[:droplet_name] = v }
+  o.on("--region SLUG",        "DO region (default: nyc3)") { |v| options[:region] = v }
+  o.on("--size SLUG",          "Droplet size (default: s-1vcpu-2gb, ~$18/mo)") { |v| options[:size] = v }
+  o.on("--image SLUG",         "DO image (default: marketplace Dokku image, auto-discovered)") { |v| options[:image] = v }
+  o.on("--ssh-key NAME_OR_ID", "SSH key name or numeric id from your DO account") { |v| options[:ssh_key] = v }
+  o.on("--domain DOMAIN",      "Custom domain (e.g. api.acme.com) — enables letsencrypt") { |v| options[:domain] = v }
+  o.on("--email EMAIL",        "Email for letsencrypt registration") { |v| options[:email] = v }
+  o.on("--push-env",           "Push non-secret vars from local .env to Dokku app config") { options[:push_env] = true }
+  o.on("--deploy",             "Also `git push dokku main` at the end") { options[:deploy] = true }
+  o.on("--non-interactive",    "Don't prompt; fail if required fields missing") { options[:non_interactive] = true }
+  o.on("--yes",                "Skip the final 'proceed?' confirmation (you accept the cost)") { options[:yes] = true }
+end.parse!
+
+ni = options[:non_interactive]
+
+def prompt(label, default: nil, required: true)
+  loop do
+    print default ? "#{label} [#{default}]: " : "#{label}: "
+    a = $stdin.gets&.chomp
+    return default if (a.nil? || a.empty?) && default
+    return a if !required || (a && !a.strip.empty?)
+  end
+end
+
+def secret_prompt(label)
+  require "io/console"
+  print "#{label}: "
+  v = $stdin.noecho(&:gets)&.chomp
+  puts
+  v
+end
+
+def confirm(question, default_no: true)
+  print "#{question} #{default_no ? '[y/N]' : '[Y/n]'}: "
+  a = $stdin.gets&.chomp&.downcase
+  return !default_no if a.nil? || a.empty?
+  a == "y" || a == "yes"
+end
+
+def section(title)
+  puts "\n== #{title} =="
+end
+
+# --- DO API client ------------------------------------------------------------
+
+class DO
+  BASE = "https://api.digitalocean.com"
+
+  def initialize(token); @token = token; end
+
+  def get(path);              request(Net::HTTP::Get,  path); end
+  def post(path, body);       request(Net::HTTP::Post, path, body); end
+
+  def request(klass, path, body = nil)
+    uri = URI("#{BASE}#{path}")
+    req = klass.new(uri)
+    req["Authorization"] = "Bearer #{@token}"
+    req["Content-Type"]  = "application/json"
+    req.body = body.to_json if body
+
+    res = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |h| h.request(req) }
+    code = res.code.to_i
+    parsed = res.body.to_s.empty? ? {} : (JSON.parse(res.body) rescue { "raw" => res.body })
+    unless code.between?(200, 299)
+      abort "DO API #{klass.name.split('::').last.upcase} #{path} → #{code}\n#{parsed.inspect}"
+    end
+    parsed
+  end
+end
+
+# --- resolve inputs -----------------------------------------------------------
+
+# Derive default app name from Ruby module → "AcmeRecipes" → "acme-recipes"
+def default_app_name
+  txt = File.read("config/application.rb")
+  if txt =~ /^module\s+([A-Z][A-Za-z0-9_]+)/
+    $1.gsub(/([a-z\d])([A-Z])/, '\1-\2').downcase
+  end
+end
+
+options[:token]   ||= (abort "Missing --token (or DO_API_TOKEN env)" if ni; secret_prompt("DigitalOcean API token (input hidden)"))
+options[:app]     ||= (abort "Missing --app" if ni; prompt("Dokku app name", default: default_app_name))
+options[:droplet_name] ||= "#{options[:app]}-prod"
+
+do_client = DO.new(options[:token])
+
+section "Validating DO token"
+account = do_client.get("/v2/account")["account"]
+puts "  ok — logged in as #{account["email"]} (status: #{account["status"]})"
+
+# Resolve image
+section "Selecting image"
+if options[:image].nil?
+  imgs = do_client.get("/v2/images?type=distribution&per_page=200")["images"] +
+         do_client.get("/v2/images?type=application&per_page=200")["images"]
+  dokku = imgs.select { |i| i["slug"]&.start_with?("dokku") || i["name"].to_s.downcase.include?("dokku") }
+              .sort_by { |i| i["created_at"] }.reverse
+  if dokku.empty?
+    options[:image] = "ubuntu-24-04-x64"
+    puts "  no Dokku marketplace image found — falling back to #{options[:image]} (you'll need to install Dokku manually)"
+    abort "Cancelled." unless confirm("Continue with plain Ubuntu?", default_no: true)
+  else
+    options[:image] = dokku.first["slug"]
+    puts "  using marketplace image: #{options[:image]} (#{dokku.first["name"]})"
+  end
+else
+  puts "  using image: #{options[:image]}"
+end
+
+# Resolve SSH key
+section "Resolving SSH key"
+keys = do_client.get("/v2/account/keys")["ssh_keys"]
+abort "No SSH keys on your DO account. Add one at https://cloud.digitalocean.com/account/security and re-run." if keys.empty?
+
+ssh_key_id =
+  if options[:ssh_key]
+    match = keys.find { |k| k["name"] == options[:ssh_key] || k["id"].to_s == options[:ssh_key].to_s }
+    abort "SSH key #{options[:ssh_key].inspect} not found on DO account." unless match
+    match["id"]
+  elsif keys.length == 1
+    puts "  using only key on account: #{keys.first["name"]}"
+    keys.first["id"]
+  elsif ni
+    abort "Multiple SSH keys on account — pass --ssh-key NAME or ID."
+  else
+    puts "  available keys:"
+    keys.each_with_index { |k, i| puts "    [#{i + 1}] #{k["name"]} (id=#{k["id"]})" }
+    pick = prompt("Pick one (number)", default: "1")
+    keys[pick.to_i - 1]["id"]
+  end
+
+# Domain + email
+if options[:domain] && options[:email].nil?
+  options[:email] = ni ? (abort "Missing --email (required with --domain)") : prompt("Email for letsencrypt")
+end
+
+# --- plan + confirm -----------------------------------------------------------
+
+section "Plan"
+puts <<~PLAN
+  Droplet:       #{options[:droplet_name]} (#{options[:size]} @ #{options[:region]})
+  Image:         #{options[:image]}
+  SSH key:       id=#{ssh_key_id}
+  Dokku app:     #{options[:app]}
+  Postgres:      #{options[:app]}-db (linked → DATABASE_URL)
+  Domain:        #{options[:domain] || '(none — Dokku will route on the droplet IP)'}
+  Letsencrypt:   #{options[:domain] ? "yes (#{options[:email]})" : 'skipped'}
+  Push env:      #{options[:push_env] ? 'yes (from local .env)' : 'no (only RAILS_MASTER_KEY)'}
+  Deploy now:    #{options[:deploy] ? 'yes (git push at end)' : 'no'}
+
+  This will create a real DO droplet billed at the size's published rate
+  (s-1vcpu-2gb is ~$18/mo / ~$0.027/hr at the time of writing).
+PLAN
+
+unless options[:yes] || ni
+  abort "Aborted." unless confirm("Create droplet now?", default_no: true)
+end
+
+# --- create droplet -----------------------------------------------------------
+
+section "Creating droplet"
+
+create_body = {
+  name:     options[:droplet_name],
+  region:   options[:region],
+  size:     options[:size],
+  image:    options[:image],
+  ssh_keys: [ssh_key_id],
+  backups:  false,
+  ipv6:     true,
+  monitoring: true,
+  tags:     ["dokku", options[:app]]
+}
+
+resp = do_client.post("/v2/droplets", create_body)
+droplet_id = resp["droplet"]["id"]
+puts "  droplet id: #{droplet_id} — waiting for it to become active…"
+
+# Poll for active + ipv4
+ip = nil
+180.times do |i|
+  sleep 5
+  d = do_client.get("/v2/droplets/#{droplet_id}")["droplet"]
+  v4 = d["networks"]["v4"].find { |n| n["type"] == "public" }
+  if d["status"] == "active" && v4
+    ip = v4["ip_address"]
+    puts "  active — #{ip} (after #{(i + 1) * 5}s)"
+    break
+  end
+  print "." if i.even?
+end
+abort "Droplet never became active." unless ip
+
+# --- wait for SSH -------------------------------------------------------------
+
+section "Waiting for SSH"
+def tcp_open?(host, port, timeout: 3)
+  Socket.tcp(host, port, connect_timeout: timeout) { true }
+rescue StandardError
+  false
+end
+
+60.times do |i|
+  if tcp_open?(ip, 22)
+    puts "  ssh port reachable (after ~#{(i + 1) * 5}s)"
+    break
+  end
+  sleep 5
+end
+abort "SSH never became reachable on #{ip}:22" unless tcp_open?(ip, 22)
+
+# Marketplace Dokku images run initial setup on first boot — wait for the
+# `/home/dokku/.dokku/VERSION` marker, which indicates Dokku CLI is ready.
+section "Waiting for Dokku to finish first-boot setup"
+SSH_OPTS = %w[-o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR].freeze
+
+def ssh(ip, cmd)
+  full = ["ssh", *SSH_OPTS, "root@#{ip}", cmd]
+  ok = system(*full)
+  raise "ssh failed: #{cmd}" unless ok
+end
+
+def ssh_capture(ip, cmd)
+  IO.popen(["ssh", *SSH_OPTS, "root@#{ip}", cmd], err: %i[child out], &:read)
+end
+
+90.times do |i|
+  out = ssh_capture(ip, "test -x /usr/bin/dokku && dokku version 2>/dev/null || echo NOTREADY")
+  if out.include?("dokku version") || out =~ /^v?\d+\.\d+/
+    puts "  dokku ready: #{out.strip.lines.last}"
+    break
+  end
+  sleep 10
+  print "." if i.even?
+end
+
+# --- configure Dokku ----------------------------------------------------------
+
+app   = options[:app]
+db    = "#{app}-db"
+slug_snake = app.tr("-", "_")
+extra_dbs = ["#{slug_snake}_production_cache", "#{slug_snake}_production_cable"]
+
+section "Configuring Dokku"
+
+ssh(ip, "dokku apps:exists #{app} 2>/dev/null || dokku apps:create #{app}")
+puts "  app: #{app}"
+
+# Postgres plugin may be missing on a plain Ubuntu fallback; install if needed.
+unless ssh_capture(ip, "dokku plugin:list 2>/dev/null | awk '{print $1}'").lines.map(&:strip).include?("postgres")
+  ssh(ip, "dokku plugin:install https://github.com/dokku/dokku-postgres.git postgres")
+end
+
+ssh(ip, "dokku postgres:info #{db} >/dev/null 2>&1 || dokku postgres:create #{db}")
+# Idempotency: if DATABASE_URL is already set on the app, the service is linked.
+ssh(ip, "dokku config:get #{app} DATABASE_URL >/dev/null 2>&1 || dokku postgres:link #{db} #{app}")
+puts "  postgres: #{db} linked (sets DATABASE_URL)"
+
+# Create the cache/cable databases inside the postgres service so Rails' multi-db
+# config (db/cache_migrate, db/cable_migrate) has somewhere to land.
+extra_dbs.each do |dbname|
+  sql = "CREATE DATABASE \\\"#{dbname}\\\";"
+  cmd = %Q{docker exec $(docker ps -qf name=dokku.postgres.#{db}) psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='#{dbname}'" | grep -q 1 || docker exec $(docker ps -qf name=dokku.postgres.#{db}) psql -U postgres -c "#{sql}"}
+  ssh(ip, cmd)
+  puts "  postgres: ensured database #{dbname}"
+end
+
+# Required env: master key (no key → no boot). Read from local config/master.key.
+master_key_path = File.join(RAILS_DIR, "config/master.key")
+master_key = File.exist?(master_key_path) ? File.read(master_key_path).strip : nil
+abort "config/master.key missing — run `EDITOR=vim bin/rails credentials:edit` first." if master_key.nil? || master_key.empty?
+
+env_to_set = {
+  "RAILS_MASTER_KEY" => master_key,
+  "RAILS_LOG_TO_STDOUT" => "true",
+  "RAILS_SERVE_STATIC_FILES" => "true"
+}
+env_to_set["CORS_ORIGINS"] = "https://#{options[:domain]}" if options[:domain]
+
+# Optionally pull additional vars from the local .env file.
+if options[:push_env] && File.exist?(".env")
+  File.readlines(".env").each do |line|
+    next if line.strip.empty? || line.strip.start_with?("#")
+    k, v = line.strip.split("=", 2)
+    next if v.nil? || v.empty?
+    # Don't blindly push DOKKU_* or things the script already sets.
+    next if k.start_with?("DOKKU_") || env_to_set.key?(k)
+    env_to_set[k] = v
+  end
+  puts "  pulling #{env_to_set.size - 3} extra var(s) from local .env"
+end
+
+config_str = env_to_set.map { |k, v| "#{k}=#{v.shellescape}" }.join(" ")
+ssh(ip, "dokku config:set --no-restart #{app} #{config_str}")
+puts "  config: set #{env_to_set.size} env var(s)"
+
+if options[:domain]
+  unless ssh_capture(ip, "dokku plugin:list 2>/dev/null | awk '{print $1}'").lines.map(&:strip).include?("letsencrypt")
+    ssh(ip, "dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git")
+  end
+  ssh(ip, "dokku domains:set #{app} #{options[:domain]}")
+  ssh(ip, "dokku letsencrypt:set #{app} email #{options[:email]}")
+  ssh(ip, "dokku letsencrypt:cron-job --add")
+  puts "  domain: #{options[:domain]} configured (letsencrypt will run after first deploy)"
+end
+
+# --- local git remote ---------------------------------------------------------
+
+section "Local git remote"
+remote_url = "dokku@#{ip}:#{app}"
+existing = `git remote get-url dokku 2>/dev/null`.strip
+if existing.empty?
+  system("git", "remote", "add", "dokku", remote_url)
+  puts "  added `dokku` → #{remote_url}"
+elsif existing == remote_url
+  puts "  `dokku` remote already set to #{remote_url}"
+else
+  warn "  warning: `dokku` remote already exists pointing at #{existing}. Not touching it."
+end
+
+# --- optional deploy ----------------------------------------------------------
+
+if options[:deploy]
+  section "Deploying"
+  puts "  git push dokku main  (this is the first build — give it a few minutes)"
+  ok = system("git", "push", "dokku", "main")
+  abort "Deploy failed. Check the dokku build log above." unless ok
+  if options[:domain]
+    ssh(ip, "dokku letsencrypt:enable #{app}")
+    puts "  letsencrypt: certificate issued for #{options[:domain]}"
+  end
+end
+
+# --- summary ------------------------------------------------------------------
+
+section "Done"
+puts <<~DONE
+  Droplet IP:      #{ip}
+  Dokku app:       #{app}
+  Postgres:        #{db}  (DATABASE_URL set, cache/cable DBs created)
+  Domain:          #{options[:domain] || '(none)'}
+  Git remote:      #{remote_url}
+
+  Next steps:
+    1. Point DNS A record for #{options[:domain] || '<your-domain>'} → #{ip}
+    2. git push dokku main          # build + deploy via your Dockerfile
+  #{options[:domain] ? "  3. ssh root@#{ip} 'dokku letsencrypt:enable #{app}'   # after DNS propagates" : ""}
+
+  Manage:
+    ssh root@#{ip} 'dokku logs #{app} -t'
+    ssh root@#{ip} 'dokku config #{app}'
+    ssh root@#{ip} 'dokku postgres:backup-auth #{db} <AWS_KEY> <AWS_SECRET>'   # optional S3 backups
+DONE

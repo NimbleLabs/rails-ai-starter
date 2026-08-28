@@ -1,9 +1,9 @@
-<%= form_with(model: article, class: "contents") do |form| %>
+<%= form_with(model: article, class: "space-y-5") do |form| %>
   <% if article.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(article.errors.count, "error") %> prohibited this article from being saved:</h2>
+    <div id="error_explanation" class="alert-error">
+      <h2 class="font-semibold text-sm mb-1"><%= pluralize(article.errors.count, "error") %> prohibited this article from being saved:</h2>
 
-      <ul>
+      <ul class="list-disc list-inside space-y-0.5">
         <% article.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,52 +11,54 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :title %>
+  <div>
+    <%= form.label :title, class: "form-label" %>
     <%= form.text_field :title, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :description %>
+  <div>
+    <%= form.label :description, class: "form-label" %>
     <%= form.text_field :description, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :content %>
+  <div>
+    <%= form.label :content, class: "form-label" %>
     <%= form.rich_text_area :content %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :author %>
+  <div>
+    <%= form.label :author, class: "form-label" %>
     <%= form.text_field :author, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :category %>
+  <div>
+    <%= form.label :category, class: "form-label" %>
     <%= form.text_field :category, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :published %>
-    <%= form.check_box :published, class: "block mt-2 h-5 w-5" %>
+  <div class="flex items-center gap-6">
+    <label class="flex items-center gap-2 text-sm text-ink">
+      <%= form.check_box :published, class: "form-checkbox" %>
+      <%= form.label :published, class: "cursor-pointer" %>
+    </label>
+
+    <label class="flex items-center gap-2 text-sm text-ink">
+      <%= form.check_box :featured, class: "form-checkbox" %>
+      <%= form.label :featured, class: "cursor-pointer" %>
+    </label>
   </div>
 
-  <div class="my-5">
-    <%= form.label :featured %>
-    <%= form.check_box :featured, class: "block mt-2 h-5 w-5" %>
+  <div>
+    <%= form.label :published_at, class: "form-label" %>
+    <%= form.datetime_field :published_at, class: "input-form-field" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :published_at %>
-    <%= form.datetime_field :published_at, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :featured_image, class: "form-label" %>
+    <%= form.file_field :featured_image, class: "block w-full text-sm text-ink-muted file:mr-4 file:rounded-xl file:border file:border-line file:bg-surface file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-ink file:cursor-pointer" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :featured_image %>
-    <%= form.file_field :featured_image %>
-  </div>
-
-  <div class="inline">
+  <div class="pt-2">
     <%= form.submit class: "btn-primary" %>
   </div>
 <% end %>

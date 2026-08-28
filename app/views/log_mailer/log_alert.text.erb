@@ -1,0 +1,13 @@
+[<%= @app_name %>] <%= @log.level.upcase %> in <%= @log.source %>
+
+<%= @log.title %>
+
+When:        <%= @log.last_seen_at %>
+Occurrences: <%= @log.occurrences %>
+<% if @log.path.present? %>Path:        <%= @log.path %>
+<% end %><% if @log.user %>User:        <%= @log.user.email %>
+<% end %>
+<% if @log.backtrace.present? %>Backtrace:
+<%= @log.backtrace.lines.first(12).join %>
+<% end %>
+<% if @log.persisted? %>Open in admin: <%= @admin_url %><% end %>

@@ -1,23 +1,29 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Contacts/Leads</h1>
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Contacts</h1>
+        <p class="page-subtitle">Leads and newsletter sign-ups captured from the site.</p>
+      </div>
+    </div>
 
-    <div class="overflow-x-auto text-sm">
-      <table class="min-w-full bg-white border border-gray-200">
-        <thead class="bg-gray-50">
+    <div class="card-flush overflow-x-auto">
+      <table class="admin-table">
+        <thead>
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Created</th>
         </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
-        <tr v-for="contact in contacts" :key="contact.id" class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap">
-              {{ contact.name }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ contact.email }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ formatDate(contact.created_at) }}</td>
+        <tbody>
+        <tr v-for="contact in contacts" :key="contact.id">
+          <td class="whitespace-nowrap font-medium">{{ contact.name }}</td>
+          <td class="whitespace-nowrap">{{ contact.email }}</td>
+          <td class="whitespace-nowrap text-ink-muted">{{ formatDate(contact.created_at) }}</td>
+        </tr>
+        <tr v-if="contacts.length === 0">
+          <td colspan="3" class="empty-state">No contacts yet.</td>
         </tr>
         </tbody>
       </table>

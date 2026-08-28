@@ -1,19 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Starter App</title>
+  <title><%= content_for(:title) || "App" %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <link rel="icon" href="/favicon.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
 
   <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
   <% if Rails.env.development? %>
     <%= vite_client_tag %>
   <% end %>
   <%= vite_javascript_tag 'application' %>
-
+  <script>
+    window.__currentUser = <%= raw({ id: current_user.id, name: current_user.name, email: current_user.email, admin: current_user.admin? }.to_json) %>;
+  </script>
 </head>
-<body class="body-base h-screen">
+<body class="h-screen">
 <div id="app" class="h-full"></div>
 </body>
 </html>

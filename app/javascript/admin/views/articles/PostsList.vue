@@ -1,64 +1,81 @@
 <template>
-  <div class="p-10">
-    <h1 class="font-extrabold text-4xl md:text-5xl tracking-tight">Articles</h1>
-
-    <div class="my-5 flex items-center">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
       <div>
-        <router-link :to="{ name: 'new-post' }" class="bg-purple-600 hover:bg-purple-800 text-white px-8 py-2 rounded-lg">
+        <h1 class="page-title">Articles</h1>
+        <p class="page-subtitle">Blog posts and long-form content for the marketing site.</p>
+      </div>
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'new-post' }" class="btn-primary">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
           New Post
         </router-link>
       </div>
-
     </div>
 
-    <div class="w-full text-sm">
-      <table class="min-w-full">
+    <div class="card-flush overflow-x-auto">
+      <table class="admin-table">
         <thead>
         <tr>
           <th>Title</th>
           <th>Author</th>
           <th>Category</th>
-          <th>Published</th>
+          <th>Status</th>
           <th>Featured</th>
           <th>Published At</th>
-          <th></th>
+          <th class="text-right">Actions</th>
         </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
-        <tr v-for="post in filteredPosts" class="my-1">
-          <td class="py-3">{{ post.title }}</td>
-          <td class="py-3">{{ post.author }}</td>
-          <td class="py-3">{{ post.category }}</td>
-          <td class="py-3">
-            <i class="fas fa-check-circle" :class="post.published ? 'text-green-500' : 'text-zinc-200'"></i>
-          </td>
-          <td class="py-3">
-            <i class="fas fa-check-circle" :class="post.featured ? 'text-green-500' : 'text-zinc-200'"></i>
-          </td>
-          <td class="py-3">{{ post.published_at }}</td>
-          <td class="py-3">
-            <div class="flex">
-            <router-link :to="{ name: 'post-details', params: {id: post.slug} }" class="mr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                   class="feather feather-grid">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-              </svg>
+        <tbody>
+        <tr v-for="post in filteredPosts" :key="post.id">
+          <td>
+            <router-link :to="{ name: 'post-details', params: {id: post.slug} }" class="table-link">
+              {{ post.title }}
             </router-link>
+          </td>
+          <td class="whitespace-nowrap">{{ post.author }}</td>
+          <td class="whitespace-nowrap">
+            <span v-if="post.category" class="badge-brand">{{ post.category }}</span>
+            <span v-else class="text-ink-muted">-</span>
+          </td>
+          <td class="whitespace-nowrap">
+            <span :class="post.published ? 'badge-green' : 'badge-gray'">
+              {{ post.published ? 'Published' : 'Draft' }}
+            </span>
+          </td>
+          <td class="whitespace-nowrap">
+            <span v-if="post.featured" class="badge-amber">Featured</span>
+            <span v-else class="text-ink-muted">-</span>
+          </td>
+          <td class="whitespace-nowrap text-ink-muted">{{ post.published_at || '-' }}</td>
+          <td class="whitespace-nowrap">
+            <div class="flex justify-end gap-1">
+              <router-link :to="{ name: 'post-details', params: {id: post.slug} }" class="btn-ghost btn-sm" title="View">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="feather feather-grid">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </router-link>
 
-            <router-link :to="{ name: 'edit-post', params: {id: post.slug} }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                   class="feather feather-edit">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </router-link>
+              <router-link :to="{ name: 'edit-post', params: {id: post.slug} }" class="btn-ghost btn-sm" title="Edit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="feather feather-edit">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </router-link>
             </div>
           </td>
+        </tr>
+        <tr v-if="filteredPosts.length === 0">
+          <td colspan="7" class="empty-state">No articles yet.</td>
         </tr>
         </tbody>
       </table>
@@ -130,4 +147,3 @@ export default {
 <style scoped>
 
 </style>
-

@@ -2,32 +2,44 @@ require "test_helper"
 
 class StaticControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
-    get static_index_url
+    get root_url
     assert_response :success
   end
 
   test "should get about" do
-    get static_about_url
+    get about_url
     assert_response :success
   end
 
   test "should get privacy" do
-    get static_privacy_url
+    get privacy_url
     assert_response :success
   end
 
   test "should get terms" do
-    get static_terms_url
+    get terms_url
     assert_response :success
   end
 
-  test "should get app" do
-    get static_app_url
+  test "app requires authentication" do
+    get app_url
+    assert_redirected_to new_user_session_url
+  end
+
+  test "admin requires authentication" do
+    get admin_url
+    assert_redirected_to new_user_session_url
+  end
+
+  test "signed-in user can load the app shell" do
+    sign_in users(:two)
+    get app_url
     assert_response :success
   end
 
-  test "should get admin" do
-    get static_admin_url
+  test "signed-in user can load the admin shell" do
+    sign_in users(:one)
+    get admin_url
     assert_response :success
   end
 end

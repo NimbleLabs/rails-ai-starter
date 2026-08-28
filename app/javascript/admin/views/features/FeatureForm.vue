@@ -1,144 +1,161 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-6">{{ isEditing ? 'Edit Feature' : 'New Feature' }}</h1>
-
-    <form @submit.prevent="handleSubmit" class="space-y-6">
-      <!-- Title -->
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
       <div>
-        <label for="title" class="block text-sm font-medium text-gray-700">Title *</label>
-        <input
-          id="title"
-          v-model="feature.title"
-          type="text"
-          class="input-form-field"
-          placeholder="e.g., Add user authentication"
-          required
-        >
+        <h1 class="page-title">{{ isEditing ? 'Edit Feature' : 'New Feature' }}</h1>
+        <p class="page-subtitle">Describe the work, set its status and priority, and capture the plan.</p>
       </div>
-
-      <!-- Description -->
-      <div>
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea
-          id="description"
-          v-model="feature.description"
-          class="input-form-field"
-          rows="3"
-          placeholder="Brief description of the feature"
-        ></textarea>
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'features' }" class="btn-secondary">
+          Back to Features
+        </router-link>
       </div>
+    </div>
 
-      <!-- Status and Priority Row -->
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-          <select
-            id="status"
-            v-model="feature.status"
-            class="input-form-field"
-          >
-            <option value="backlog">Backlog</option>
-            <option value="planned">Planned</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
+    <form @submit.prevent="handleSubmit" class="max-w-4xl space-y-6">
+      <!-- Details -->
+      <div class="card">
+        <h2 class="section-title mb-4">Details</h2>
 
-        <div>
-          <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
-          <select
-            id="priority"
-            v-model="feature.priority"
-            class="input-form-field"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Area -->
-      <div>
-        <label for="area" class="block text-sm font-medium text-gray-700">Area</label>
-        <input
-          id="area"
-          v-model="feature.area"
-          type="text"
-          class="input-form-field"
-          placeholder="e.g., Backend, Frontend, API, Infrastructure"
-        >
-      </div>
-
-      <!-- Acceptance Criteria -->
-      <div>
-        <label for="acceptance_criteria" class="block text-sm font-medium text-gray-700">Acceptance Criteria</label>
-        <textarea
-          id="acceptance_criteria"
-          v-model="feature.acceptance_criteria"
-          class="input-form-field"
-          rows="4"
-          placeholder="- Criteria 1&#10;- Criteria 2&#10;- Criteria 3"
-        ></textarea>
-      </div>
-
-      <!-- Plan -->
-      <div>
-        <label for="plan" class="block text-sm font-medium text-gray-700">Implementation Plan</label>
-        <textarea
-          id="plan"
-          v-model="feature.plan"
-          class="input-form-field"
-          rows="4"
-          placeholder="High-level plan for implementing this feature"
-        ></textarea>
-      </div>
-
-      <!-- Implementation Notes -->
-      <div>
-        <label for="implementation_notes" class="block text-sm font-medium text-gray-700">Implementation Notes</label>
-        <textarea
-          id="implementation_notes"
-          v-model="feature.implementation_notes"
-          class="input-form-field"
-          rows="4"
-          placeholder="Technical notes, decisions made, etc."
-        ></textarea>
-      </div>
-
-      <!-- Dates Row -->
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label for="started_at" class="block text-sm font-medium text-gray-700">Started At</label>
+        <div class="mb-4">
+          <label for="title" class="form-label">Title *</label>
           <input
-            id="started_at"
-            v-model="feature.started_at"
-            type="datetime-local"
+            id="title"
+            v-model="feature.title"
+            type="text"
             class="input-form-field"
+            placeholder="e.g., Add user authentication"
+            required
           >
         </div>
 
-        <div>
-          <label for="completed_at" class="block text-sm font-medium text-gray-700">Completed At</label>
-          <input
-            id="completed_at"
-            v-model="feature.completed_at"
-            type="datetime-local"
+        <div class="mb-4">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            id="description"
+            v-model="feature.description"
             class="input-form-field"
+            rows="3"
+            placeholder="Brief description of the feature"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="status" class="form-label">Status</label>
+            <select
+              id="status"
+              v-model="feature.status"
+              class="input-form-field"
+            >
+              <option value="backlog">Backlog</option>
+              <option value="planned">Planned</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="priority" class="form-label">Priority</label>
+            <select
+              id="priority"
+              v-model="feature.priority"
+              class="input-form-field"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="area" class="form-label">Area</label>
+          <input
+            id="area"
+            v-model="feature.area"
+            type="text"
+            class="input-form-field"
+            placeholder="e.g., Backend, Frontend, API, Infrastructure"
           >
+        </div>
+      </div>
+
+      <!-- Planning -->
+      <div class="card">
+        <h2 class="section-title mb-4">Planning</h2>
+
+        <div class="mb-4">
+          <label for="acceptance_criteria" class="form-label">Acceptance Criteria</label>
+          <textarea
+            id="acceptance_criteria"
+            v-model="feature.acceptance_criteria"
+            class="input-form-field"
+            rows="4"
+            placeholder="- Criteria 1&#10;- Criteria 2&#10;- Criteria 3"
+          ></textarea>
+        </div>
+
+        <div class="mb-4">
+          <label for="plan" class="form-label">Implementation Plan</label>
+          <textarea
+            id="plan"
+            v-model="feature.plan"
+            class="input-form-field"
+            rows="4"
+            placeholder="High-level plan for implementing this feature"
+          ></textarea>
+        </div>
+
+        <div>
+          <label for="implementation_notes" class="form-label">Implementation Notes</label>
+          <textarea
+            id="implementation_notes"
+            v-model="feature.implementation_notes"
+            class="input-form-field"
+            rows="4"
+            placeholder="Technical notes, decisions made, etc."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="card">
+        <h2 class="section-title mb-4">Timeline</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="started_at" class="form-label">Started At</label>
+            <input
+              id="started_at"
+              v-model="feature.started_at"
+              type="datetime-local"
+              class="input-form-field"
+            >
+          </div>
+
+          <div>
+            <label for="completed_at" class="form-label">Completed At</label>
+            <input
+              id="completed_at"
+              v-model="feature.completed_at"
+              type="datetime-local"
+              class="input-form-field"
+            >
+          </div>
         </div>
       </div>
 
       <!-- Form Actions -->
-      <div class="flex justify-end gap-4 pt-4 border-t">
-        <router-link :to="{ name: 'features' }" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+      <div class="flex gap-3 justify-end">
+        <router-link :to="{ name: 'features' }" class="btn-secondary">
           Cancel
         </router-link>
         <button
           type="submit"
-          class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md cursor-pointer"
+          class="btn-primary"
           :disabled="loading"
         >
           {{ loading ? 'Saving...' : (isEditing ? 'Update Feature' : 'Create Feature') }}

@@ -2,6 +2,20 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  before_action :set_error_context
+
+  # Attach request/user info to anything reported through Rails.error during
+  # this request (see LogErrorSubscriber). Cleared automatically per request.
+  def set_error_context
+    Rails.error.set_context(
+      request_id: request.request_id,
+      path: request.fullpath.to_s.first(255),
+      http_method: request.method,
+      ip: request.remote_ip,
+      user_id: (current_user&.id rescue nil)
+    )
+  end
+
   def ensure_admin
     return true if user_signed_in? && current_user.admin?
 

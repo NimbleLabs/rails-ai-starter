@@ -1,58 +1,71 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-6">{{ isEditing ? 'Edit Funnel' : 'New Funnel' }}</h1>
-
-    <form @submit.prevent="handleSubmit" class="space-y-6">
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-        <input
-          id="name"
-          v-model="funnel.name"
-          type="text"
-          class="input-form-field"
-          placeholder="e.g., Summer Sale 2025"
-          required
-        >
+        <h1 class="page-title">{{ isEditing ? 'Edit Funnel' : 'New Funnel' }}</h1>
+        <p class="page-subtitle">Name the funnel and toggle whether its pages are live.</p>
+      </div>
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'funnels' }" class="btn-secondary">
+          Back to Funnels
+        </router-link>
+      </div>
+    </div>
+
+    <form @submit.prevent="handleSubmit" class="max-w-4xl space-y-6">
+      <div class="card">
+        <div class="mb-4">
+          <label for="name" class="form-label">Name</label>
+          <input
+            id="name"
+            v-model="funnel.name"
+            type="text"
+            class="input-form-field"
+            placeholder="e.g., Summer Sale 2025"
+            required
+          >
+        </div>
+
+        <div class="mb-4">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            id="description"
+            v-model="funnel.description"
+            class="input-form-field"
+            rows="3"
+            placeholder="Optional description for internal reference"
+          ></textarea>
+        </div>
+
+        <label class="inline-flex items-center gap-2 text-sm text-ink">
+          <input
+            id="active"
+            v-model="funnel.active"
+            type="checkbox"
+            class="form-checkbox"
+          >
+          <span class="font-medium">Active</span>
+        </label>
+        <p class="form-hint">Inactive funnels return a not-found page for visitors.</p>
       </div>
 
-      <div>
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea
-          id="description"
-          v-model="funnel.description"
-          class="input-form-field"
-          rows="3"
-          placeholder="Optional description for internal reference"
-        ></textarea>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <input
-          id="active"
-          v-model="funnel.active"
-          type="checkbox"
-          class="rounded border-gray-300 text-purple-600"
-        >
-        <label for="active" class="text-sm font-medium text-gray-700">Active</label>
-      </div>
-
-      <div v-if="funnel.slug" class="bg-gray-50 p-4 rounded-lg">
-        <p class="text-sm text-gray-600 mb-2">Landing Page URLs:</p>
+      <div v-if="funnel.slug" class="panel-muted">
+        <p class="eyebrow mb-2">Landing page URLs</p>
         <ul class="text-sm font-mono space-y-1">
-          <li><a :href="`/f/${funnel.slug}/lead`" target="_blank" class="text-purple-600 hover:underline">/f/{{ funnel.slug }}/lead</a></li>
-          <li><a :href="`/f/${funnel.slug}/book-call`" target="_blank" class="text-purple-600 hover:underline">/f/{{ funnel.slug }}/book-call</a></li>
-          <li><a :href="`/f/${funnel.slug}/order`" target="_blank" class="text-purple-600 hover:underline">/f/{{ funnel.slug }}/order</a></li>
-          <li><a :href="`/f/${funnel.slug}/order-completed`" target="_blank" class="text-purple-600 hover:underline">/f/{{ funnel.slug }}/order-completed</a></li>
+          <li><a :href="`/f/${funnel.slug}/lead`" target="_blank" class="table-link">/f/{{ funnel.slug }}/lead</a></li>
+          <li><a :href="`/f/${funnel.slug}/book-call`" target="_blank" class="table-link">/f/{{ funnel.slug }}/book-call</a></li>
+          <li><a :href="`/f/${funnel.slug}/order`" target="_blank" class="table-link">/f/{{ funnel.slug }}/order</a></li>
+          <li><a :href="`/f/${funnel.slug}/order-completed`" target="_blank" class="table-link">/f/{{ funnel.slug }}/order-completed</a></li>
         </ul>
       </div>
 
-      <div class="flex justify-end gap-4">
-        <router-link :to="{ name: 'funnels' }" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+      <div class="flex gap-3 justify-end">
+        <router-link :to="{ name: 'funnels' }" class="btn-secondary">
           Cancel
         </router-link>
         <button
           type="submit"
-          class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md"
+          class="btn-primary"
           :disabled="loading"
         >
           {{ loading ? 'Saving...' : (isEditing ? 'Update Funnel' : 'Create Funnel') }}

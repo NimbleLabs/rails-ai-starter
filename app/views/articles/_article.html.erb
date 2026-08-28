@@ -1,42 +1,41 @@
-<div id="<%= dom_id article %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Title:</strong>
-    <%= article.title %>
-  </p>
+<div id="<%= dom_id article %>" class="card space-y-4">
+  <div>
+    <p class="stat-label">Title</p>
+    <p class="text-ink font-medium"><%= article.title %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Description:</strong>
-    <%= article.description %>
-  </p>
+  <div>
+    <p class="stat-label">Description</p>
+    <p class="text-ink"><%= article.description %></p>
+  </div>
 
-  <p>
-    <strong class="block font-medium mb-1">Content:</strong>
-    <%= article.content %>
-  </p>
+  <div>
+    <p class="stat-label">Content</p>
+    <div class="text-ink leading-relaxed"><%= article.content %></div>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Author:</strong>
-    <%= article.author %>
-  </p>
+  <div>
+    <p class="stat-label">Author</p>
+    <p class="text-ink"><%= article.author %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Category:</strong>
-    <%= article.category %>
-  </p>
+  <div>
+    <p class="stat-label">Category</p>
+    <p class="text-ink"><%= article.category %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Published:</strong>
-    <%= article.published %>
-  </p>
+  <div>
+    <p class="stat-label">Published</p>
+    <p class="text-ink"><%= article.published %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Featured:</strong>
-    <%= article.featured %>
-  </p>
+  <div>
+    <p class="stat-label">Featured</p>
+    <p class="text-ink"><%= article.featured %></p>
+  </div>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Published at:</strong>
-    <%= article.published_at %>
-  </p>
-
+  <div>
+    <p class="stat-label">Published at</p>
+    <p class="text-ink"><%= article.published_at %></p>
+  </div>
 </div>

@@ -22,54 +22,16 @@ class ContactsController < ApplicationController
   end
 
   # POST /contacts or /contacts.json
-  def create_action_plan
-    @contact = Contact.find_or_initialize_by(email: contact_params[:email])
-    @contact.assign_attributes(contact_params)
-
-    if @contact.save
-      prompt = "#{AppConstants::ACTION_PLAN_PROMPT} #{@contact.biggest_problem}"
-      prompt += AppConstants::ACTION_PLAN_PROMPT_END
-      @chat = Chat.new(ai_model_id: "o1-mini", user_prompt: prompt, is_public: true)
-      @chat.user = User.first
-      @chat.contact = @contact
-
-      begin
-        @chat_service = ChatService.new(@chat)
-        if @chat_service.save_chat
-          chat_message = @chat_service.start_chat
-          update_usage_session(chat_message)
-          @chat.reload
-          action_plan = @chat.first_ai_response.content
-          ContactMailer.with(contact: @contact, action_plan: action_plan).ai_action_plan.deliver_later
-          SlackService.system_alert_service.action_plan_event(@contact)
-          render json: { action_plan: action_plan }, status: :created
-          return
-        else
-          render json: @chat.errors, status: :unprocessable_entity
-        end
-      rescue => e
-        @chat.destroy
-        Rollbar.error(e)
-
-        render json: {
-          error: "API Error",
-          message: e.message
-        }, status: :service_unavailable
-      end
-    else
-      render json: { errors: @contact.errors }, status: :unprocessable_entity
-    end
-  end
   def create
     @contact = Contact.new(contact_params)
 
     respond_to do |format|
-      if verify_recaptcha(model: @contact) && @contact.save
+      if @contact.save
         SlackService.system_alert_service.contact_form_event(@contact)
-        format.html { redirect_to services_path, notice: 'Thank you for your message. We\'ll be in touch soon!' }
+        format.html { redirect_to root_path, notice: 'Thank you for your message. We\'ll be in touch soon!' }
         format.json { render json: { message: 'Thank you for your message. We\'ll be in touch soon!' }, status: :created }
       else
-        format.html { redirect_to services_path, alert: 'There was a problem sending your message.' }
+        format.html { redirect_to new_contact_path, alert: 'There was a problem sending your message.' }
         format.json { render json: @contact.errors, status: :unprocessable_entity }
       end
     end
@@ -106,6 +68,6 @@ class ContactsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def contact_params
-      params.require(:contact).permit(:name, :email, :phone, :company_name, :budget_range, :message, :biggest_problem)
+      params.require(:contact).permit(:name, :email, :phone, :company, :budget_range, :message)
     end
 end

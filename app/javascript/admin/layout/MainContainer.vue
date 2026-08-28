@@ -4,7 +4,7 @@
     <div class="fixed top-4 right-4 lg:hidden">
       <button
         type="button"
-        class="p-2 text-gray-600 hover:text-primary focus:outline-none"
+        class="p-2 rounded-xl bg-surface border border-line text-ink-muted hover:text-primary focus:outline-none shadow-pill"
         @click="viewModel.menuOpen = true"
       >
         <span class="sr-only">Open sidebar</span>
@@ -23,7 +23,7 @@
     >
       <!-- Backdrop -->
       <div
-        class="fixed inset-0 bg-gray-900/80"
+        class="fixed inset-0 bg-ink/50"
         @click="viewModel.menuOpen = false"
       ></div>
 
@@ -34,7 +34,7 @@
           <div class="absolute top-0 right-0 pt-2">
             <button
               type="button"
-              class="p-2 text-zinc-800 hover:text-primary-light"
+              class="p-2 text-ink hover:text-primary"
               @click="viewModel.menuOpen = false"
             >
               <span class="sr-only">Close sidebar</span>
@@ -45,7 +45,7 @@
           </div>
 
           <!-- Sidebar component -->
-          <Sidebar :view-model="viewModel" class="flex grow flex-col gap-y-5 overflow-y-auto bg-white" />
+          <Sidebar :view-model="viewModel" class="flex grow flex-col overflow-y-auto" />
         </div>
       </div>
     </div>
@@ -54,7 +54,7 @@
     <Sidebar class="hidden lg:fixed lg:inset-y-0 lg:flex lg:flex-col" />
 
     <!-- Main content -->
-    <main class="lg:pl-52">
+    <main class="lg:pl-56 min-h-screen bg-canvas">
       <router-view></router-view>
     </main>
   </div>

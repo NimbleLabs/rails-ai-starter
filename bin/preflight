@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# bin/preflight — fast, read-only state check for the Rails starter.
+# Prints simple key=value lines (one per check) so Claude (or a human) can
+# tell where this project is in the setup flow. Always exits 0.
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 0
+
+check() { printf '%s=%s\n' "$1" "$2"; }
+
+# --- Toolchain ---
+if command -v brew >/dev/null 2>&1; then
+  check homebrew installed
+else
+  check homebrew missing
+fi
+
+if command -v ruby >/dev/null 2>&1; then
+  check ruby "$(ruby -e 'print RUBY_VERSION' 2>/dev/null)"
+else
+  check ruby missing
+fi
+
+if [ -f .ruby-version ]; then
+  check ruby_required "$(sed 's/^ruby-//' .ruby-version | tr -d '[:space:]')"
+fi
+
+if command -v node >/dev/null 2>&1; then
+  check node "$(node -v 2>/dev/null | sed 's/^v//')"
+else
+  check node missing
+fi
+
+if command -v psql >/dev/null 2>&1; then
+  check postgres installed
+  if brew services list 2>/dev/null | grep -E '^postgresql@[0-9]+\s+started' >/dev/null; then
+    check postgres_running yes
+  else
+    check postgres_running no
+  fi
+else
+  check postgres missing
+fi
+
+# --- App state ---
+if [ -f Gemfile.lock ] && command -v bundle >/dev/null 2>&1 && bundle check >/dev/null 2>&1; then
+  check gems installed
+else
+  check gems missing
+fi
+
+if [ -f config/master.key ]; then
+  check master_key present
+else
+  check master_key missing
+fi
+
+if [ -f .env ]; then
+  check env_file present
+else
+  check env_file missing
+fi
+
+# Has bin/new-app been run? If the module is still RailsAiStarter, no.
+if grep -q '^module RailsAiStarter' config/application.rb 2>/dev/null; then
+  check renamed no
+else
+  module=$(grep -m1 '^module ' config/application.rb 2>/dev/null | awk '{print $2}')
+  check renamed "yes (module=${module:-unknown})"
+fi
+
+# Has the dev DB been created?
+db_name=$(grep -m1 -E '^\s+database:.*_dev' config/database.yml 2>/dev/null | awk '{print $2}')
+if [ -n "$db_name" ] && command -v psql >/dev/null 2>&1; then
+  if psql -lqt 2>/dev/null | cut -d \| -f 1 | tr -d ' ' | grep -qx "$db_name"; then
+    check dev_db "$db_name (exists)"
+  else
+    check dev_db "$db_name (missing)"
+  fi
+fi
+
+# Has a dokku git remote been added?
+if git remote 2>/dev/null | grep -qx dokku; then
+  check dokku_remote "$(git remote get-url dokku 2>/dev/null)"
+else
+  check dokku_remote none
+fi
+
+exit 0

@@ -1,74 +1,83 @@
-<header class="shadow-md">
-  <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 sm:py-2 lg:px-8" aria-label="Global">
-    <a href="/" class="-m-1.5 p-1.5">
-      <span class="text-primary font-medium text-xl">Starter</span>
+<%# Marketing nav — on-token port of the FitnessHQ bar. Alpine `open` drives the mobile drawer. %>
+<% nav_link = "text-sm font-medium text-ink-muted hover:text-primary transition-colors" %>
+<% drawer_link = "block rounded-xl px-3 py-2.5 text-base font-semibold text-ink hover:bg-primary/10 hover:text-primary transition-colors" %>
+
+<header class="border-b border-line bg-surface/80 backdrop-blur">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="Global">
+    <a href="/" class="flex items-center gap-2.5">
+      <span class="brand-mark w-8 h-8 text-xs">ST</span>
+      <span class="font-display font-bold text-xl text-ink">Starter</span>
     </a>
+
     <div x-show="!open" class="flex sm:hidden">
-      <button @click="open = true" type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 mobile-nav-button">
+      <button @click="open = true" type="button" class="-m-2.5 inline-flex items-center justify-center rounded-xl p-2.5 text-ink-muted hover:text-primary">
         <span class="sr-only">Open main menu</span>
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
         </svg>
       </button>
     </div>
-    <div class="hidden sm:flex md:items-center md:gap-x-8 text-sm/6">
+
+    <div class="hidden sm:flex items-center gap-x-6">
+      <%= link_to "Articles", articles_path, class: nav_link %>
       <% if user_signed_in? %>
-        <% if current_user.admin? %> <%= link_to "Admin", admin_path, class: "pointer" %> <% end %>
-        <%= link_to "App", app_path, class: "pointer" %>
-        <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: "mb-0 pointer" %>
+        <%= link_to "App", app_path, class: nav_link %>
+        <% if current_user.admin? %>
+          <%= link_to "Admin", admin_path, class: nav_link %>
+        <% end %>
+        <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: "btn-ghost btn-sm" %>
       <% else %>
-        <%= link_to "Sign In", new_session_path(resource_name) %>
-        <%= link_to "Sign up", new_user_registration_path, class: "px-3 py-1 btn-primary" %>
+        <%= link_to "Sign In", new_session_path(resource_name), class: nav_link %>
+        <%= link_to "Sign up", new_user_registration_path, class: "btn-primary btn-sm" %>
       <% end %>
 
       <%= render "shared/theme_toggle" %>
     </div>
   </nav>
+
   <!-- Mobile menu, show/hide based on menu open state. -->
   <div x-show="open" x-cloak class="sm:hidden" role="dialog" aria-modal="true">
     <!-- Background backdrop, show/hide based on slide-over state. -->
-    <div class="fixed inset-0 z-10"></div>
-    <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto slide-out-menu px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+    <div class="fixed inset-0 z-10 bg-ink/20" @click="open = false"></div>
+    <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-surface border-l border-line px-6 py-6 sm:max-w-sm">
       <div class="flex items-center justify-between">
-        <a href="/" class="-m-1.5 p-1.5">
-          <span class="sr-only">Starter</span>
+        <a href="/" class="flex items-center gap-2.5">
+          <span class="brand-mark w-8 h-8 text-xs">ST</span>
+          <span class="font-display font-bold text-xl text-ink">Starter</span>
         </a>
-        <button @click="open = false" type="button" class="-m-2.5 rounded-md p-2.5 mobile-nav-button">
+        <button @click="open = false" type="button" class="-m-2.5 rounded-xl p-2.5 text-ink-muted hover:text-primary">
           <span class="sr-only">Close menu</span>
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
+
       <div class="mt-6 flow-root">
-        <div class="-my-6 divide-y divide-gray-500/10">
-
-          <% if user_signed_in? %>
-            <% if current_user.admin? %> 
-              <div class="py-2">
-                <%= link_to "Admin", admin_path, class: "pointer" %> 
-              </div>
+        <div class="-my-6 divide-y divide-line">
+          <div class="py-4 space-y-1">
+            <%= link_to "Articles", articles_path, class: drawer_link, "@click": "open = false" %>
+            <% if user_signed_in? %>
+              <%= link_to "App", app_path, class: drawer_link, "@click": "open = false" %>
+              <% if current_user.admin? %>
+                <%= link_to "Admin", admin_path, class: drawer_link, "@click": "open = false" %>
+              <% end %>
             <% end %>
-            <div class="py-2">
-              <%= link_to "App", app_path, class: "pointer", "@click": "open = false" %>
-            </div>
-
-            <div class="py-2">
-              <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: "cursor-pointer -mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-purple-500", "@click": "open = false" %>
-            </div>
-          <% else %>
-            <div class="py-2">
-              <%= link_to "Sign up", new_user_registration_path, class: "-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-purple-500", "@click": "open = false" %>
-            </div>
-            <div class="py-2">
-              <%= link_to "Sign In", new_user_session_path, class: "-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-purple-500", "@click": "open = false" %>
-            </div>
-          <% end %>
-
-          <div class="py-2">
-            <%= render "shared/theme_toggle" %>
           </div>
 
+          <div class="py-4 space-y-1">
+            <% if user_signed_in? %>
+              <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: "w-full text-left cursor-pointer #{drawer_link}", "@click": "open = false" %>
+            <% else %>
+              <%= link_to "Sign up", new_user_registration_path, class: drawer_link, "@click": "open = false" %>
+              <%= link_to "Sign In", new_user_session_path, class: drawer_link, "@click": "open = false" %>
+            <% end %>
+          </div>
+
+          <div class="py-4 flex items-center gap-2 text-sm text-ink-muted">
+            <%= render "shared/theme_toggle" %>
+            <span>Toggle dark mode</span>
+          </div>
         </div>
       </div>
     </div>

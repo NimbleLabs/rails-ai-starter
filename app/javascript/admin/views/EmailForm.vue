@@ -1,47 +1,54 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6">
-    <form @submit.prevent="handleSubmit" class="space-y-6">
-      <!-- Subject Field -->
+  <div class="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div class="page-header">
       <div>
-        <label for="subject" class="block text-sm font-medium text-gray-700">
-          Subject
-        </label>
-        <input
-          id="subject"
-          v-model="emailTemplate.subject"
-          type="text"
-          class="input-form-field"
-          placeholder="Enter email subject"
-          required
-        >
+        <h1 class="page-title">{{ isEditing ? 'Edit Email' : 'New Email' }}</h1>
+        <p class="page-subtitle">Write the message, then send it to a list from the Emails page.</p>
       </div>
-
-      <!-- Send Group Field -->
-      <div>
-        <label for="send_group" class="block text-sm font-medium text-gray-700">
-          Send To
-        </label>
-        <select
-          id="send_group"
-          v-model="emailTemplate.send_group"
-          class="input-form-field"
-          required
-        >
-          <option value="" disabled>Select recipient group</option>
-          <option value="Newsletter">Newsletter</option>
-        </select>
+      <div class="flex gap-2">
+        <router-link :to="{ name: 'email-templates' }" class="btn-secondary">
+          Back to Emails
+        </router-link>
       </div>
+    </div>
 
-      <!-- Body Field with Trix -->
-      <div>
-        <label for="body" class="block text-sm font-medium text-gray-700">
-          Body
-        </label>
-        <div class="mt-1">
+    <form @submit.prevent="handleSubmit" class="max-w-4xl space-y-6">
+      <div class="card">
+        <!-- Subject Field -->
+        <div class="mb-4">
+          <label for="subject" class="form-label">Subject</label>
+          <input
+            id="subject"
+            v-model="emailTemplate.subject"
+            type="text"
+            class="input-form-field"
+            placeholder="Enter email subject"
+            required
+          >
+        </div>
+
+        <!-- Send Group Field -->
+        <div class="mb-4">
+          <label for="send_group" class="form-label">Send To</label>
+          <select
+            id="send_group"
+            v-model="emailTemplate.send_group"
+            class="input-form-field"
+            required
+          >
+            <option value="" disabled>Select recipient group</option>
+            <option value="Newsletter">Newsletter</option>
+          </select>
+          <p class="form-hint">The subscriber list this email will go to.</p>
+        </div>
+
+        <!-- Body Field with Trix -->
+        <div>
+          <label for="body" class="form-label">Body</label>
           <trix-editor
             ref="trixEditor"
             :input="trixInputId"
-            class="trix-content min-h-[300px] prose max-w-none rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-0"
+            class="trix-content min-h-[300px] max-w-none rounded-xl border border-line bg-surface px-4 py-2.5 text-ink focus:border-primary focus:outline-none"
             @trix-change="handleTrixChange"
           ></trix-editor>
           <input
@@ -52,16 +59,19 @@
         </div>
       </div>
 
-      <!-- Submit Button -->
-      <div class="flex justify-end">
+      <!-- Actions -->
+      <div class="flex gap-3 justify-end">
+        <router-link :to="{ name: 'email-templates' }" class="btn-secondary">
+          Cancel
+        </router-link>
         <button
           type="submit"
-          class="inline-flex justify-center rounded-md border border-transparent bg-purple-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-0 disabled:opacity-50"
+          class="btn-primary"
           :disabled="loading"
         >
           <svg
             v-if="loading"
-            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+            class="animate-spin -ml-1 h-4 w-4 text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

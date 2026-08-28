@@ -2,95 +2,184 @@
 @import "../stylesheets/spinner.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Theme variable defaults (Nimble Labs light mode) — overridden at runtime by Alpine.js */
+/*
+ * Design tokens.
+ *
+ * Mirrors the FitnessHQ / mobile-app-starter design system: warm neutrals,
+ * soft rounded surfaces, low-opacity shadows, Outfit typeface, purple brand
+ * accent. The `--theme-*` variables are the runtime layer — the marketing
+ * layout's Alpine theme switcher (lib/themes/*.json) overrides them per theme;
+ * the Vue admin/app SPAs simply get these defaults (plus `.dark` below).
+ *
+ * Prefer the semantic classes (bg-primary, text-ink, bg-surface, border-line)
+ * over literal `purple-*` / `gray-*` utilities so a re-theme stays a one-file
+ * change. Use `bg-primary/10` for tints instead of `bg-brand-50`.
+ */
 :root {
-    --theme-primary: #0891b2;
+    --theme-primary: #7c3aed;
+    --theme-primary-hover: #6d28d9;
     --theme-secondary: #6366f1;
     --theme-accent: #f59e0b;
-    --theme-background: #ffffff;
-    --theme-surface: #f8fafc;
-    --theme-text: #0f172a;
-    --theme-text-muted: #64748b;
-    --theme-display-font: 'Space Grotesk', system-ui, sans-serif;
-    --theme-body-font: 'Inter', system-ui, sans-serif;
-    --theme-border-radius: 0.5rem;
-    --theme-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --theme-background: #fffaf0;   /* cream — page canvas */
+    --theme-surface: #ffffff;      /* cards */
+    --theme-surface-muted: #f5f3ff;/* tinted panels, table headers */
+    --theme-text: #1c1410;         /* warm near-black ink */
+    --theme-text-muted: #6b6560;
+    --theme-line: rgba(28, 20, 16, 0.10);
+    --theme-display-font: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+    --theme-body-font: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+    --theme-border-radius: 1rem;
+    --theme-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 }
 
-/* Bridge theme variables to Tailwind color tokens */
+.dark {
+    --theme-primary: #8b5cf6;
+    --theme-primary-hover: #7c3aed;
+    --theme-background: #141019;
+    --theme-surface: #1d1726;
+    --theme-surface-muted: #241d30;
+    --theme-text: #f3f0fb;
+    --theme-text-muted: rgba(243, 240, 251, 0.65);
+    --theme-line: rgba(243, 240, 251, 0.12);
+    --theme-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.35);
+}
+
 @theme {
+    --font-sans: var(--theme-body-font);
+    --font-display: var(--theme-display-font);
+
+    /* Semantic (runtime-themeable) colors */
     --color-primary: var(--theme-primary);
+    --color-primary-hover: var(--theme-primary-hover);
     --color-secondary: var(--theme-secondary);
     --color-accent: var(--theme-accent);
+    --color-canvas: var(--theme-background);
     --color-surface: var(--theme-surface);
+    --color-surface-muted: var(--theme-surface-muted);
+    --color-ink: var(--theme-text);
+    --color-ink-muted: var(--theme-text-muted);
+    --color-line: var(--theme-line);
+
+    /* Static brand ramp (Tailwind violet) — for gradients / splash / one-offs */
+    --color-brand-50: #f5f3ff;
+    --color-brand-100: #ede9fe;
+    --color-brand-200: #ddd6fe;
+    --color-brand-300: #c4b5fd;
+    --color-brand-400: #a78bfa;
+    --color-brand-500: #8b5cf6;
+    --color-brand-600: #7c3aed;
+    --color-brand-700: #6d28d9;
+    --color-brand-800: #5b21b6;
+    --color-brand-900: #4c1d95;
+    --color-cream: #fffaf0;
+
+    --radius-card: 1rem;
+    --shadow-card: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+    --shadow-pill: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
+}
+
+@layer base {
+    [x-cloak] { display: none !important; }
+
+    body {
+        background-color: var(--color-canvas);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+    }
+
+    h1, h2, h3 {
+        font-family: var(--font-display);
+        font-weight: 800;
+        letter-spacing: -0.025em;
+    }
+
+    input[type="text"], input[type="email"], input[type="password"],
+    input[type="number"], input[type="url"], input[type="search"], textarea, select {
+        appearance: none;
+        -webkit-appearance: none;
+    }
+}
+
+/* Composable bases — @utility so they can be @apply'd by the variants below */
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary/40;
+}
+@utility badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap;
+}
+@utility alert {
+    @apply rounded-xl px-4 py-3 text-sm;
 }
 
 @layer components {
+    /* Legacy alias kept for existing layouts */
+    .body-base { background-color: var(--color-canvas); color: var(--color-ink); font-family: var(--font-sans); }
+    .slide-out-menu { @apply bg-surface; }
+    .mobile-nav-button { @apply text-ink; }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="number"] {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background: #fff;
-    }
+    /* ---- Typography ---- */
+    .page-title { @apply font-display text-3xl md:text-4xl font-extrabold tracking-tight text-ink; }
+    .page-subtitle { @apply text-ink-muted mt-1; }
+    .page-header { @apply flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8; }
+    .eyebrow { @apply text-xs font-bold uppercase tracking-wide text-primary; }
+    .section-title { @apply font-display text-xl font-bold text-ink; }
 
-    .body-base {
-        background-color: var(--theme-background);
-        color: var(--theme-text);
-        font-family: var(--theme-body-font);
-    }
+    /* ---- Buttons ---- */
+    .btn-primary { @apply btn bg-primary text-white shadow-pill hover:bg-primary-hover; }
+    .btn-secondary { @apply btn bg-surface border border-line text-ink shadow-pill hover:bg-primary/10; }
+    .btn-outline { @apply btn bg-transparent border border-primary text-primary hover:bg-primary/10; }
+    .btn-danger { @apply btn bg-red-600 text-white shadow-pill hover:bg-red-700; }
+    .btn-ghost { @apply btn bg-transparent text-ink-muted hover:bg-primary/10 hover:text-primary shadow-none; }
+    .btn-sm { @apply px-3 py-1.5 text-xs rounded-xl; }
+    .btn-lg { @apply px-8 py-3 text-base; }
 
-    .slide-out-menu {
-        @apply bg-zinc-50 dark:bg-slate-900
-    }
+    /* ---- Surfaces ---- */
+    .card { @apply bg-surface rounded-card border border-line p-6 shadow-card; }
+    .card-flush { @apply bg-surface rounded-card border border-line shadow-card overflow-hidden; }
+    .card-border { @apply bg-surface rounded-card border border-line; }
+    .panel-muted { @apply bg-surface-muted rounded-card p-4; }
 
-    [x-cloak] {
-        display: none !important;
-    }
+    .stat-tile { @apply bg-surface rounded-card border border-line p-5 shadow-card; }
+    .stat-label { @apply text-sm text-ink-muted; }
+    .stat-value { @apply font-display text-3xl font-extrabold tracking-tight text-ink mt-1; }
 
-    .mobile-nav-button {
-        @apply text-slate-900 dark:text-slate-50;
-    }
-
-    .btn {
-        @apply cursor-pointer py-2 px-4;
-        border-radius: var(--theme-border-radius);
-    }
-
-    .btn-primary {
-        @apply cursor-pointer py-2 px-4 text-white;
-        background-color: var(--theme-primary);
-        border-radius: var(--theme-border-radius);
-    }
-
-    .btn-primary:hover {
-        filter: brightness(0.9);
-    }
-
-    .btn-primary:focus {
-        outline-color: var(--theme-primary);
-    }
-
-    .btn-secondary {
-        @apply cursor-pointer py-2 px-4 text-gray-700 bg-gray-200 border border-gray-300 hover:bg-gray-300 focus:ring-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-600;
-        border-radius: var(--theme-border-radius);
-    }
-
-    .card {
-        @apply p-6 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800;
-        border-radius: var(--theme-border-radius);
-        box-shadow: var(--theme-shadow);
-    }
-
-    .card-border {
-        @apply border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800;
-    }
-
+    /* ---- Forms ---- */
+    .form-label { @apply block text-sm font-medium text-ink mb-1; }
+    .form-hint { @apply text-xs text-ink-muted mt-1; }
     .input-form-field {
-        @apply relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-sm;
-        border-radius: var(--theme-border-radius);
+        @apply block w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-ink shadow-sm placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:text-sm;
     }
+    select.input-form-field { @apply pr-10 bg-no-repeat; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b6560' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.75rem center; background-size: 1.25rem; }
+    .form-checkbox { @apply h-4 w-4 rounded border-line text-primary focus:ring-primary/40; }
+
+    /* ---- Badges ---- */
+    .badge-brand { @apply badge bg-primary/10 text-primary; }
+    .badge-gray { @apply badge bg-ink/10 text-ink-muted; }
+    .badge-green { @apply badge bg-emerald-100 text-emerald-800; }
+    .badge-red { @apply badge bg-red-100 text-red-800; }
+    .badge-amber { @apply badge bg-amber-100 text-amber-800; }
+    .badge-blue { @apply badge bg-sky-100 text-sky-800; }
+
+    /* ---- Tables ---- */
+    .admin-table { @apply min-w-full text-sm; }
+    .admin-table thead { @apply bg-surface-muted; }
+    .admin-table th { @apply px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-muted; }
+    .admin-table tbody { @apply divide-y divide-line; }
+    .admin-table td { @apply px-6 py-4 align-middle text-ink; }
+    .admin-table tbody tr:hover { @apply bg-primary/5; }
+    .table-link { @apply font-medium text-primary hover:text-primary-hover; }
+    .empty-state { @apply px-6 py-12 text-center text-ink-muted; }
+
+    /* ---- Alerts / flash ---- */
+    .alert-info { @apply alert bg-primary/10 text-primary; }
+    .alert-success { @apply alert bg-emerald-50 text-emerald-800; }
+    .alert-warning { @apply alert bg-amber-50 text-amber-800; }
+    .alert-error { @apply alert bg-red-50 text-red-700; }
+
+    /* ---- Admin sidebar ---- */
+    .nav-link { @apply flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl text-ink-muted transition-colors hover:bg-primary/10 hover:text-primary; }
+    .nav-link-active { @apply bg-primary text-white hover:bg-primary-hover hover:text-white shadow-pill; }
+
+    /* ---- Brand mark (purple tile) ---- */
+    .brand-mark { @apply inline-flex items-center justify-center rounded-2xl bg-primary text-white font-extrabold tracking-tight shadow-pill; }
 }

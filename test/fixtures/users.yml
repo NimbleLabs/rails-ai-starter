@@ -34,8 +34,18 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #  index_users_on_slug                  (slug)
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  name: Admin User
+  email: admin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  role: 1
+  slug: admin-user
+  auth_token: test-admin-auth-token
+
+two:
+  name: Regular User
+  email: user@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  role: 0
+  slug: regular-user
+  auth_token: test-regular-auth-token

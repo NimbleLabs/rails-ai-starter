@@ -1,142 +1,37 @@
-<section class="bg-gray-950 text-gray-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        Powerful Features
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Gray 950 Background with Gray 50 Text
-      </p>
+<%# Alternate landing routed at /dark-theme. Same hero pattern as the homepage,
+    rendered on the runtime tokens so it follows the active theme / dark mode. %>
+<section class="py-24 md:py-32">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <p class="eyebrow mb-4">Dark theme</p>
+    <h1 class="text-ink text-4xl md:text-6xl leading-tight mb-6">
+      Powerful Features
+    </h1>
+    <p class="text-lg md:text-xl text-ink-muted mb-10">
+      Everything you need to build, scale, and grow your SaaS business with confidence
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+      <button type="button" @click="toggleDarkMode(!dark)" class="btn-primary btn-lg">
+        <span x-show="!dark">Switch to dark mode</span>
+        <span x-show="dark" x-cloak>Switch to light mode</span>
+      </button>
+      <%= link_to "Back home", root_path, class: "btn-secondary btn-lg" %>
     </div>
+  </div>
+</section>
 
-    <div class="flex items-center gap-4 rounded-lg p-6 shadow-md outline outline-black/5 bg-gray-800">
-      <div class="p-4 inline-flex shrink-0 rounded-full border border-pink-300/10 bg-pink-400/10">
-        <div class="size-4 rounded border border-pink-700"></div>
+<section class="py-20 bg-primary/10">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="card flex items-center gap-4">
+      <div class="p-4 inline-flex shrink-0 rounded-full bg-primary/10">
+        <div class="size-4 rounded bg-primary"></div>
       </div>
       <div>
-        <p class="text-gray-400">
-          <span class="font-medium text-white">Tom Watson</span> mentioned you in
-          <span class="font-medium text-white">Logo redesign</span>
+        <p class="text-ink-muted">
+          <span class="font-medium text-ink">Tom Watson</span> mentioned you in
+          <span class="font-medium text-ink">Logo redesign</span>
         </p>
-        <time class="mt-1 block text-gray-500" datetime="9:37">9:37am</time>
+        <time class="mt-1 block text-sm text-ink-muted" datetime="9:37">9:37am</time>
       </div>
-    </div>
-  </div>
-</section>
-
-<section class="bg-gray-900 text-gray-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Gray 900
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-slate-900 text-slate-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Slate 900
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-zinc-900 text-zinc-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Zinc 900
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-stone-900 text-stone-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Stone 900
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-neutral-900 text-neutral-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Neutral 900
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-gray-800 text-gray-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Gray 800
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-zinc-800 text-gray-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        New Worlds of Creativity
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Zinc 800 Background with Gray 50 Text
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-zinc-900 text-gray-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Zinc 900
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-zinc-950 text-gray-50 py-24">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center my-16">
-      <h2 class="font-bold text-4xl md:text-6xl mb-6">
-        This is Zinc 950
-      </h2>
-      <p class="text-xl max-w-3xl mx-auto">
-        Everything you need to build, scale, and grow your SaaS business with confidence
-      </p>
     </div>
   </div>
 </section>

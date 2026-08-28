@@ -29,6 +29,18 @@ Rails.application.routes.draw do
   resources :email_templates, path: 'email-templates'
   post "email-templates/:id/send", to: "email_templates#send_to_list"
 
+  # Internal error log (admin JSON; Vue admin at /admin/logs)
+  resources :logs, only: %i[index show update destroy] do
+    collection do
+      patch  :resolve_all
+      put    :resolve_all
+      delete :destroy_resolved
+    end
+  end
+  resources :log_subscriptions, path: "log-subscriptions", only: %i[index create update destroy] do
+    member { post :test }
+  end
+
   post "payments/create-subscription", to: "payments#create_subscription"
   post "payments/subscription-complete", to: "payments#payment_complete"
   post 'payments/purchase', to: 'payments#create_payment_intent'
@@ -45,6 +57,11 @@ Rails.application.routes.draw do
       get "users/current", to: "users#current"
       get "users", to: "users#index"
       get "users/:id", to: "users#show"
+
+      # Mobile error reporting → internal Log (see Api::V1::LogsController)
+      post "logs", to: "logs#create"
+      # Mobile analytics → Ahoy (see Api::V1::EventsController)
+      post "events", to: "events#create"
 
       resources :funnels do
         collection do
