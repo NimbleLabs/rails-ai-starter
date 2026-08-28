@@ -2,6 +2,8 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  helper_method :google_oauth_enabled?
+
   before_action :set_error_context
 
   # Attach request/user info to anything reported through Rails.error during
@@ -14,6 +16,13 @@ class ApplicationController < ActionController::Base
       ip: request.remote_ip,
       user_id: (current_user&.id rescue nil)
     )
+  end
+
+  # "Sign in with Google" is only offered when both credentials are configured
+  # (see config/initializers/devise.rb). Without them the OmniAuth strategy is
+  # never registered, so the button would lead to a 404.
+  def google_oauth_enabled?
+    ENV["GOOGLE_CLIENT_ID"].present? && ENV["GOOGLE_CLIENT_SECRET"].present?
   end
 
   def ensure_admin

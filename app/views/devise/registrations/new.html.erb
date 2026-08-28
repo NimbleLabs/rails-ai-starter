@@ -9,6 +9,8 @@
     </div>
 
     <div class="card space-y-4">
+      <%= render "devise/shared/google_button" %>
+
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4" }) do |f| %>
         <%= render "devise/shared/error_messages", resource: resource %>
 
@@ -26,6 +28,8 @@
           <%= f.label :password, class: "form-label" %>
           <%= f.password_field :password, autocomplete: "new-password", class: input_class %>
         </div>
+
+        <%= render "shared/recaptcha", action: "signup" %>
 
         <%= f.submit "Sign up", class: "btn-primary w-full text-base cursor-pointer" %>
       <% end %>

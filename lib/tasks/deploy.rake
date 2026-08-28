@@ -51,6 +51,22 @@ namespace :deploy do
         if sendgrid_api_key 
           ssh.exec!("dokku config:set --no-restart #{app_name} SENDGRID_API_KEY=#{sendgrid_api_key}")
         end
+
+        if ENV['RECAPTCHA_SITE_KEY']
+          ssh.exec!("dokku config:set --no-restart #{app_name} RECAPTCHA_SITE_KEY=#{ENV['RECAPTCHA_SITE_KEY']}")
+        end
+        if ENV['RECAPTCHA_ENTERPRISE_API_KEY']
+          ssh.exec!("dokku config:set --no-restart #{app_name} RECAPTCHA_ENTERPRISE_API_KEY=#{ENV['RECAPTCHA_ENTERPRISE_API_KEY']}")
+        end
+        if ENV['RECAPTCHA_ENTERPRISE_PROJECT_ID']
+          ssh.exec!("dokku config:set --no-restart #{app_name} RECAPTCHA_ENTERPRISE_PROJECT_ID=#{ENV['RECAPTCHA_ENTERPRISE_PROJECT_ID']}")
+        end
+        if ENV['GOOGLE_CLIENT_ID']
+          ssh.exec!("dokku config:set --no-restart #{app_name} GOOGLE_CLIENT_ID=#{ENV['GOOGLE_CLIENT_ID']}")
+        end
+        if ENV['GOOGLE_CLIENT_SECRET']
+          ssh.exec!("dokku config:set --no-restart #{app_name} GOOGLE_CLIENT_SECRET=#{ENV['GOOGLE_CLIENT_SECRET']}")
+        end
   
       end
 

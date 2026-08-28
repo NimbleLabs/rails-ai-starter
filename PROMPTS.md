@@ -115,3 +115,43 @@ Also found that `.prose` (used on the article body) was a no-op: there is no typ
 Verification: 103 unit/integration tests plus 10 new system tests. The system tests are the only ones that prove React actually mounts — everything else stops at the server-rendered shell — and they cover every admin route, client-side navigation, deep links, and a 390px viewport asserting the drawer behaviour, the table-to-cards switch, and that no page scrolls horizontally. One trap worth remembering: Rails reuses a single browser window across system-test classes, so `driven_by ... screen_size:` does not re-apply when another class ran first; the mobile test resizes explicitly in setup and restores in teardown, verified stable across three seeds.
 
 Still open: several admin endpoints (`/api/v1/users`, `/contacts`, `/email-templates`, `/api/v1/funnels`) use `authenticate_user!` while others use `authenticate_user_or_token`, so they work from the browser but not with an API token — pre-existing inconsistency, harmless to the SPA. `Funnel#calculate_rate` returns literal `0` when the denominator is zero, indistinguishable from a real 0%, so FunnelMetrics re-guards each rate client-side. `featured_image` is permitted by `article_params` but never serialized, so the form can upload one but cannot show the current attachment.
+
+## reCAPTCHA Enterprise and Sign in with Google
+
+**Date:** 2026-08-28
+
+**Prompt:**
+Question... is recaptcha enterprise and Google sign in implemented in the rails application? We generally standardize on this ENV variables for these features: RECAPTCHA_SITE_KEY, RECAPTCHA_ENTERPRISE_API_KEY, RECAPTCHA_ENTERPRISE_PROJECT_ID, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET → (after answering: neither was implemented) → Implement both, Rails only (don't worry about mobile for now)
+
+Neither existed. All that was there was a commented-out `check_captcha` block in `RegistrationsController` (a Devise+recaptcha README leftover that would have raised `NoMethodError`), and a live trap in `devise/shared/_links.html.erb`: the stock omniauth block, inert only because `:omniauthable` was absent, which would have started calling `OmniAuth::Utils` the moment anyone enabled it. Removed the block; the Google button is now rendered explicitly by the two auth pages.
+
+Both features are **off unless configured**, which is the main design constraint for a starter — a fresh clone must be able to sign up without anyone provisioning Google Cloud. `RecaptchaProtection#recaptcha_enabled?` and `ApplicationController#google_oauth_enabled?` are each a single source of truth exposed to views, so the form and the controller can never disagree about whether a token should be present or a button should exist. The env var names the team standardizes on turned out to be exactly what the `recaptcha` gem already reads, so the initializer is a straight pass-through.
+
+reCAPTCHA wires into sign-up and the contact form through a `RecaptchaProtection` concern; failures attach to the model's errors so they render with the rest of the form validation instead of as a bare flash. The verify/render `action` must match on both sides — that is what stops a token minted on a cheap form being replayed against an expensive one.
+
+The security decisions for Google all live in `User.from_omniauth`. Linking a Google identity to an existing local account happens **only when Google reports the email as verified**, because linking on an unverified address would let anyone who can put an email on a Google profile take over the matching local account; an account already linked to a different `uid` is never moved; and the email is never refreshed from Google on later sign-ins, since it is the account identity here and a Google-side change would otherwise reassign it. Rejections are deliberately vague to the user so the flow can't be used to probe whether an address has an account.
+
+Three traps worth recording. First, `omniauth-rails_csrf_protection` is mandatory, not optional — a GET request phase is cross-site forgeable (CVE-2015-9284) — so every Google control must be a `button_to`, never a `link_to`. Second, OmniAuth's `InfoHash#name` silently computes a fallback from the email when the provider sends no name, so a "present" name can just be the address; `User.omniauth_name` treats that as missing. Third, Google reports `email_verified` as a boolean *or* the string `"true"` depending on strategy version.
+
+Two bugs of my own, both caught by tests rather than review: the account-linking branch assigned `provider`/`uid` in memory and then called `update_omniauth_profile`, whose "has this changed?" guards were already satisfied — so nothing ever persisted; and `recaptcha_enabled?` originally checked the two Enterprise vars but not `config.enterprise`, so a half-configured setup would have rendered the **free** `api.js` while the server verified against the Enterprise endpoint. Also hit a self-inflicted ERB one: the usage example inside a `<%# … %>` comment in the shared partial contained a `%>`, which closed the comment early and leaked raw markup into the page.
+
+Test-environment notes: the gem deliberately omits Google's `<script>` and `data-sitekey` when the env is in `skip_verify_env`, so asserting the Enterprise script URL requires clearing that flag first; Ahoy discards requests with no User-Agent as bots, so the analytics assertion on the Google callback has to send a browser UA; and OmniAuth's failure phase is handled in middleware, not by a Rails route, so `/users/auth/failure` 404s and the controller action has to be exercised directly.
+
+27 new tests (130 unit/integration + 10 system, all green). Also swept the last stale "Vue admin" copy out of the marketing pages and footer, left over from the React port.
+
+## README setup guides for Google OAuth and reCAPTCHA Enterprise
+
+**Date:** 2026-08-28
+
+**Prompt:**
+Ok... can we update the readme with what we need to set up for this... like google oauth client and the recaptcha gear and include links to the google cloud console for where to do this if possible? Note... I am assuming a standard path likd /users/auth/google_oauth2/callback for the Google Signin feature
+
+Confirmed the assumed callback path is exactly right (`bin/rails routes | grep google`) and documented how to re-derive it, since it is fixed by Devise's OmniAuth routing as `/users/auth/<provider>/callback`.
+
+Added two numbered setup guides to README.md with deep links to the project-scoped Google Cloud Console pages: consent screen (Google Auth Platform → Branding), OAuth client credentials, the reCAPTCHA Enterprise API library page, the reCAPTCHA key manager, and API key creation. Included a caveat that Google reorganizes this area of the console — the consent screen moved from *APIs & Services → OAuth consent screen* to *Google Auth Platform* — with the page names spelled out so the reader can search if a link drifts.
+
+Called out the failure modes that actually bite: `redirect_uri_mismatch` from an inexact redirect URI, a consent screen left in *Testing* mode silently refusing anyone not on the tester list, `RECAPTCHA_ENTERPRISE_PROJECT_ID` being the project ID rather than its display name, needing to restart `bin/dev` because the OmniAuth strategy is registered at boot, and restricting the Enterprise API key to the reCAPTCHA Enterprise API so a leak is contained. Also noted that score-based (no interaction) is the correct key type for this app's invisible flow.
+
+Expanded the environment-variables section to list every variable with the optional ones marked, added a deployment section covering the production redirect URI and domain list, and refreshed "What's included" / "Tech stack" which still predated the analytics, error-logging, OAuth and bot-protection work.
+
+Verified every factual claim against the code before shipping the docs rather than after: the `--push-env` flag really exists in `bin/bootstrap-droplet`, `DEFAULT_MINIMUM_SCORE` really is 0.5, `recaptcha_enabled?` really requires all three variables plus enterprise mode, and both in-page anchors resolve to real headings.

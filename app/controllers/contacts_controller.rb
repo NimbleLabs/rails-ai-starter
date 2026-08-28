@@ -1,4 +1,6 @@
 class ContactsController < ApplicationController
+  include RecaptchaProtection
+
   before_action :authenticate_user!, except: %i[ new create ]
   before_action :ensure_admin, except: %i[ new create ]
   before_action :set_contact, only: %i[ show edit update destroy ]
@@ -25,13 +27,20 @@ class ContactsController < ApplicationController
   def create
     @contact = Contact.new(contact_params)
 
+    unless check_recaptcha(action: "contact", model: @contact)
+      return respond_to do |format|
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: { errors: @contact.errors }, status: :unprocessable_entity }
+      end
+    end
+
     respond_to do |format|
       if @contact.save
         SlackService.system_alert_service.contact_form_event(@contact)
-        format.html { redirect_to root_path, notice: 'Thank you for your message. We\'ll be in touch soon!' }
-        format.json { render json: { message: 'Thank you for your message. We\'ll be in touch soon!' }, status: :created }
+        format.html { redirect_to root_path, notice: "Thank you for your message. We'll be in touch soon!" }
+        format.json { render json: { message: "Thank you for your message. We'll be in touch soon!" }, status: :created }
       else
-        format.html { redirect_to new_contact_path, alert: 'There was a problem sending your message.' }
+        format.html { redirect_to new_contact_path, alert: "There was a problem sending your message." }
         format.json { render json: @contact.errors, status: :unprocessable_entity }
       end
     end

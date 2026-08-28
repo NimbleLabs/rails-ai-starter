@@ -9,7 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   every SPA in this app — do not add Vue, Svelte or another framework.**
 - **Styling**: Tailwind CSS 4.x, CSS-first config. Design tokens and the shared
   component classes live in `app/assets/tailwind/application.css` — see "Design system".
-- **Authentication**: Devise
+- **Authentication**: Devise, plus "Sign in with Google" (omniauth-google-oauth2)
+- **Bot protection**: reCAPTCHA Enterprise (`recaptcha` gem)
 - **LLM Integration**: ruby_llm gem (~> 1.9.1) for OpenAI/Anthropic APIs
 - **Email**: bootstrap-email, ahoy_email (tracking), mailkick (unsubscribe management)
 - **Analytics/Metrics**: Ahoy (`ahoy_matey`) — the one and only analytics tool here. See "Analytics (Ahoy)".
@@ -130,7 +131,7 @@ that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
 ### Key Models
 
 **User**
-- Uses Devise for authentication
+- Uses Devise for authentication, optionally via Google (`provider`, `uid`, `avatar_url`)
 - FriendlyId slugs based on name
 - Has `role` enum (user: 0, admin: 1)
 - Mailkick subscriptions (`has_subscriptions`)
@@ -189,6 +190,9 @@ Required environment variables (use .env in development via dotenv-rails):
 - `MAIL_FROM` - from address for outgoing mail, including log alerts
 - `APP_NAME` - shown in log notification subjects and Slack messages
 - `CORS_ORIGINS` - comma-separated allowed origins for `/api/v1/*` and `/ahoy/*`
+- `RECAPTCHA_SITE_KEY`, `RECAPTCHA_ENTERPRISE_API_KEY`, `RECAPTCHA_ENTERPRISE_PROJECT_ID` -
+  bot protection; all three unset disables it (see "Bot protection")
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` - "Sign in with Google"; unset disables it
 
 ### Deployment
 
@@ -386,6 +390,93 @@ Set `SLACK_WEBHOOK_URL` (system alerts via `SlackService`), `MAIL_FROM` and
 app, authenticated or not (a crash before sign-in still matters). The client
 (`mobile-app-starter/src/lib/logger.ts`) applies the same policy on its side and
 dedupes locally. A client cannot forge a server-side `source`.
+
+## Bot protection (reCAPTCHA Enterprise)
+
+Public forms — sign-up and the contact form — are protected with **reCAPTCHA
+Enterprise** via the `recaptcha` gem.
+
+```
+RECAPTCHA_SITE_KEY               public key rendered into the page
+RECAPTCHA_ENTERPRISE_API_KEY     Google Cloud API key used to create assessments
+RECAPTCHA_ENTERPRISE_PROJECT_ID  Google Cloud project the key belongs to
+```
+
+**It is off unless all three are set.** With no keys the widget is not rendered
+and verification is skipped, so a fresh clone can sign up without anyone
+provisioning Google Cloud first. `RecaptchaProtection#recaptcha_enabled?` is the
+single source of truth and is exposed to views, so the form and the controller
+can never disagree about whether a token should be present.
+
+### Protecting another form
+
+```ruby
+class ThingsController < ApplicationController
+  include RecaptchaProtection
+
+  def create
+    @thing = Thing.new(thing_params)
+    return render :new, status: :unprocessable_entity unless
+      check_recaptcha(action: "thing", model: @thing)
+    # ...
+  end
+end
+```
+
+```erb
+<%= render "shared/recaptcha", action: "thing" %>
+```
+
+The `action` in the view and the controller **must match** — Enterprise treats a
+mismatched assessment as invalid, and that is what stops a token minted on a
+cheap form being replayed against an expensive one. Failures are added to the
+model's errors, so they render with the rest of the form's validation messages.
+
+Notes: the default minimum score is `RecaptchaProtection::DEFAULT_MINIMUM_SCORE`
+(0.5, Google's suggested starting point — tune per action with real traffic).
+`handle_timeouts_gracefully` is on, so an outage at Google lets requests through
+rather than blocking sign-ups; a genuine low score still rejects. Google requires
+the badge or a text disclosure, which the shared partial renders. The gem omits
+its `<script>` entirely in the test environment (`skip_verify_env`), so tests
+never load Google's JS.
+
+## Sign in with Google
+
+Devise `:omniauthable` with `omniauth-google-oauth2`.
+
+```
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+```
+
+**Off unless both are set** — the strategy is not registered and
+`google_oauth_enabled?` keeps the button off the sign-in and sign-up pages.
+Authorized redirect URI: `https://<host>/users/auth/google_oauth2/callback`.
+
+`omniauth-rails_csrf_protection` is a hard requirement, not a nicety: a GET
+request phase is cross-site forgeable (CVE-2015-9284). **Every "Sign in with
+Google" control must be a `button_to` (POST), never a `link_to`.**
+
+### The trust rules, in `User.from_omniauth`
+
+1. Known `provider` + `uid` → sign in.
+2. A local account already uses this email → link them, **but only if Google
+   says it verified the address**. Linking on an unverified email would let
+   anyone who can put an address on a Google profile take over the matching
+   local account. An account already linked to a different Google `uid` is never
+   moved.
+3. Otherwise create the account — again only when the email is verified.
+
+New records get a random password because `:validatable` requires one; the user
+can set a real one later through password reset. The email is never updated from
+Google on later sign-ins: it is the account's identity here, and letting a
+Google-side change reassign it would be a takeover vector. Two gotchas worth
+knowing: OmniAuth's `InfoHash#name` silently falls back to the email when the
+provider sends no name (hence `User.omniauth_name`), and Google reports
+verification as either a boolean or the string `"true"`.
+
+Rejections are deliberately vague to the user — spelling out whether an email is
+unverified or already linked would tell an attacker whether an account exists.
 
 ## Important Patterns
 

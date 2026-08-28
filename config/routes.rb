@@ -12,7 +12,10 @@ Rails.application.routes.draw do
   get "dark-theme", to: "static#dark", as: "dark_theme"
 
   devise_for :users, path_names: { sign_in: "sign-in", sign_up: "register", sign_out: "logout" },
-             controllers: { registrations: "registrations" }
+             controllers: {
+               registrations: "registrations",
+               omniauth_callbacks: "users/omniauth_callbacks"
+             }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

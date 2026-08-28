@@ -1,0 +1,19 @@
+<%#
+  Renders the reCAPTCHA Enterprise token field for the given `action`, or
+  nothing at all when reCAPTCHA is not configured.
+
+  Usage: render "shared/recaptcha", action: "signup"
+
+  The action must match the value the controller verifies with, otherwise
+  Enterprise treats the assessment as invalid.
+-%>
+<% if recaptcha_enabled? %>
+  <%= recaptcha_v3(action: action, site_key: Recaptcha.configuration.site_key) %>
+  <p class="text-xs text-ink-muted">
+    Protected by reCAPTCHA — Google's
+    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-primary hover:text-primary-hover">Privacy Policy</a>
+    and
+    <a href="https://policies.google.com/terms" target="_blank" rel="noopener" class="text-primary hover:text-primary-hover">Terms of Service</a>
+    apply.
+  </p>
+<% end %>

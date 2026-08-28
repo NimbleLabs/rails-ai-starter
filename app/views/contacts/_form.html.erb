@@ -41,6 +41,8 @@
     <%= form.text_area :message, rows: 4, class: "input-form-field" %>
   </div>
 
+  <%= render "shared/recaptcha", action: "contact" %>
+
   <div class="pt-2">
     <%= form.submit 'Send', class: "btn-primary" %>
   </div>
