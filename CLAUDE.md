@@ -22,6 +22,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **File Storage**: Active Storage
 - **URL Slugs**: FriendlyId
 
+## Production: one database and a real health check
+
+- Production uses **one database** (`DATABASE_URL`). Solid Queue, Solid Cache and Solid Cable tables are ordinary
+  migrations in `db/schema.rb`, so `bin/rails db:migrate` alone sets up a new server; a Dokku-linked Postgres is
+  enough. `app.json` runs that migration on every Dokku deploy.
+- `/up` (`HealthController`) checks the database, pending migrations, required tables and a cache round-trip,
+  and returns 503 naming what's broken. Add a product's own core tables to `REQUIRED_TABLES` as it grows.
+- Production mail goes through SendGrid when `SENDGRID_API_KEY` is set; `APP_HOST` sets the domain in email links.
+
 ## Development Commands
 
 ### Setup
@@ -188,6 +197,8 @@ Required environment variables (use .env in development via dotenv-rails):
 - `DATABASE_URL` - PostgreSQL connection (auto-configured in database.yml)
 - `SLACK_WEBHOOK_URL` - incoming webhook for `SlackService` system alerts (optional)
 - `MAIL_FROM` - from address for outgoing mail, including log alerts
+- `SENDGRID_API_KEY` - production mail goes through SendGrid when set; without it, production mail isn't delivered
+- `APP_HOST` - the app's domain, used for links in emails (production)
 - `APP_NAME` - shown in log notification subjects and Slack messages
 - `CORS_ORIGINS` - comma-separated allowed origins for `/api/v1/*` and `/ahoy/*`
 - `RECAPTCHA_SITE_KEY`, `RECAPTCHA_ENTERPRISE_API_KEY`, `RECAPTCHA_ENTERPRISE_PROJECT_ID` -
@@ -381,8 +392,8 @@ notifies. A failing channel is logged to `Rails.logger` and never re-reported,
 so a broken webhook cannot cause a notification loop.
 
 Set `SLACK_WEBHOOK_URL` (system alerts via `SlackService`), `MAIL_FROM` and
-`APP_NAME` in `.env`. **Email notifications need outgoing mail configured** —
-`config/environments/production.rb` still has SMTP commented out.
+`APP_NAME` in `.env`. **Email notifications need outgoing mail configured**: in
+production, set `SENDGRID_API_KEY` (and `APP_HOST`); see `config/environments/production.rb`.
 
 ### Mobile
 
