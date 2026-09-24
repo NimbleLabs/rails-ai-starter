@@ -155,3 +155,12 @@ Called out the failure modes that actually bite: `redirect_uri_mismatch` from an
 Expanded the environment-variables section to list every variable with the optional ones marked, added a deployment section covering the production redirect URI and domain list, and refreshed "What's included" / "Tech stack" which still predated the analytics, error-logging, OAuth and bot-protection work.
 
 Verified every factual claim against the code before shipping the docs rather than after: the `--push-env` flag really exists in `bin/bootstrap-droplet`, `DEFAULT_MINIMUM_SCORE` really is 0.5, `recaptcha_enabled?` really requires all three variables plus enterprise mode, and both in-page anchors resolve to real headings.
+
+## Ready the starter for unattended launches (NimbleHQ)
+
+**Date:** 2026-09-24
+
+**Prompt:**
+One thing we may need to think through is any ENV vars a new application will need. We may need to have a way to configure those through an ADMIN UI built into the Rails AI Starter. Note we should also update the start app to use the latest ruby_llm which itself is a task that requires some upgrade work. I love this and want to move forward ASAP but lets get a couple more of our ducks in a row first so when I add the project it literally automates the whole thing from the get go.
+
+(Done by Claude Code: one production database with Solid Cache/Cable migrations and a `/up` that can fail, production email through SendGrid, ruby_llm 2.0 with Anthropic as the default. The admin Settings UI is deferred until a product needs its own keys.)
