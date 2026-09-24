@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   component classes live in `app/assets/tailwind/application.css` — see "Design system".
 - **Authentication**: Devise, plus "Sign in with Google" (omniauth-google-oauth2)
 - **Bot protection**: reCAPTCHA Enterprise (`recaptcha` gem)
-- **LLM Integration**: ruby_llm gem (~> 1.9.1) for OpenAI/Anthropic APIs
+- **LLM Integration**: ruby_llm gem (~> 2.0), Claude (Anthropic) by default, OpenAI available
 - **Email**: bootstrap-email, ahoy_email (tracking), mailkick (unsubscribe management)
 - **Analytics/Metrics**: Ahoy (`ahoy_matey`) — the one and only analytics tool here. See "Analytics (Ahoy)".
 - **Error tracking**: our own `Log` model. No Rollbar, no Sentry. See "Error logging (internal Logs)".
@@ -170,10 +170,12 @@ that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
 - A notification rule: channel (email/slack), destination, `min_level`, `throttle_minutes`
 - Managed in the admin at `/admin/log-notifications`
 
-**Chat/Message System**
-- Uses ruby_llm gem: `acts_as_chat` and `acts_as_message`
-- Messages track tokens (input/output), role, model_id
-- ToolCall model for function calling support
+**Chat/Message System** (ruby_llm 2.0)
+- `Chat` (`acts_as_chat`, belongs to a user, optional title) and `Message` (`acts_as_message`, with attachments)
+- Models, tool calls, usage (tokens and cost) and batches live in RubyLLM's own `ruby_llm_*` tables; there are
+  no app `Model`/`ToolCall` classes anymore
+- A chat needs its model in `ruby_llm_models`: `bin/rails ruby_llm:load_models` fills it from the gem (offline,
+  repeatable) and runs on every Dokku deploy via `app.json`
 
 ### Email Architecture
 
@@ -498,7 +500,10 @@ Most models use FriendlyId with `use: [:slugged, :finders]`. This means:
 - Models need a `slug` column (string, indexed)
 
 ### Ruby LLM Integration
-Configure in `config/initializers/ruby_llm.rb`. Models using `acts_as_chat` and `acts_as_message` automatically get chat functionality with token tracking and tool calling support.
+ruby_llm 2.0, configured in `config/initializers/ruby_llm.rb`: Anthropic and OpenAI keys from `ANTHROPIC_API_KEY`
+/ `OPENAI_API_KEY` (or credentials), default model `claude-sonnet-5`. Start a chat with
+`current_user.chats.create!(model: "claude-sonnet-5").ask("Hello")`. Upgrade guide for apps forked from a 1.x
+starter that have real chats: https://rubyllm.com/next/upgrading/ (don't use this starter's drop migration).
 
 ### Vite + Rails Integration
 - Vite config base path: `/app/` (see vite.config.js); the only plugins are

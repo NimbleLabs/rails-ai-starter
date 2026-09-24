@@ -36,7 +36,7 @@ gem "image_processing", "~> 1.2"
 
 gem "devise"
 gem "friendly_id"
-gem "ruby_llm", "~> 1.14.1"
+gem "ruby_llm", "~> 2.0"
 gem "vite_rails"
 gem 'bootstrap-email'
 gem 'ahoy_email'
