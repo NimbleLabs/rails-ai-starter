@@ -104,6 +104,7 @@ STARTER_API_TOKEN=...                # optional, feature workflow
 SLACK_WEBHOOK_URL=                   # optional, error-log notifications
 MAIL_FROM=                           # from address for outgoing mail
 APP_NAME=Starter                     # shown in log alerts
+SOLID_QUEUE_IN_PUMA=true             # production: run jobs inside the web process
 WHATS_NEW_FEED_URL=                  # optional, NimbleHQ feed for /whats-new
 
 RECAPTCHA_SITE_KEY=                  # optional, bot protection

@@ -210,6 +210,7 @@ Required environment variables (use .env in development via dotenv-rails):
 - `SENDGRID_API_KEY` - production mail goes through SendGrid when set; without it, production mail isn't delivered
 - `APP_HOST` - the app's domain, used for links in emails (production)
 - `APP_NAME` - shown in log notification subjects and Slack messages
+- `SOLID_QUEUE_IN_PUMA` - `true` runs background jobs (welcome emails, log alerts) inside the web process; set it on a single-process Dokku app, or jobs never run
 - `WHATS_NEW_FEED_URL` - NimbleHQ's public feed for this product; shows `/whats-new` and its footer link (unset hides both)
 - `CORS_ORIGINS` - comma-separated allowed origins for `/api/v1/*` and `/ahoy/*`
 - `RECAPTCHA_SITE_KEY`, `RECAPTCHA_ENTERPRISE_API_KEY`, `RECAPTCHA_ENTERPRISE_PROJECT_ID` -
