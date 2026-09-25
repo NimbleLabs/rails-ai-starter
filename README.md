@@ -85,7 +85,7 @@ mobile app, with a shared `CLAUDE.md` so Claude Code can work across both.
 - macOS (or Linux — adapt `bin/install-mac-deps` accordingly)
 - Ruby 3.4.7 (see `.ruby-version`)
 - PostgreSQL 17
-- Node 20+ and Yarn 1.x
+- Node 20+ with npm (the lockfile is `package-lock.json`; keep only that one: two lockfiles break the Dokku Node buildpack)
 - An [Anthropic API key](https://console.anthropic.com) and/or
   [OpenAI API key](https://platform.openai.com) for AI features
 
