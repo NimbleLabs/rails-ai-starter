@@ -572,6 +572,7 @@ DEPENDENCIES
   debug
   devise
   dotenv-rails
+  faraday
   friendly_id
   image_processing (~> 1.2)
   importmap-rails

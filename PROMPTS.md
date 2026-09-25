@@ -164,3 +164,12 @@ Verified every factual claim against the code before shipping the docs rather th
 One thing we may need to think through is any ENV vars a new application will need. We may need to have a way to configure those through an ADMIN UI built into the Rails AI Starter. Note we should also update the start app to use the latest ruby_llm which itself is a task that requires some upgrade work. I love this and want to move forward ASAP but lets get a couple more of our ducks in a row first so when I add the project it literally automates the whole thing from the get go.
 
 (Done by Claude Code: one production database with Solid Cache/Cable migrations and a `/up` that can fail, production email through SendGrid, ruby_llm 2.0 with Anthropic as the default. The admin Settings UI is deferred until a product needs its own keys.)
+
+## What's new page and admin invite for every launched app (NimbleHQ)
+
+**Date:** 2026-09-25
+
+**Prompt:**
+How do we ensure that the whats new/change log gets added and updated consistently in every application? I do not see it in Chartly. Should that be a task we create when the project is created? Also... I am thinking that when a project is created we need a way to automatically create an admin user with the same email address of the person creating the application. (I am thinking that it would be nice for the Admin application to automatically be available to them.)
+
+(Done by Claude Code: `/whats-new` reads NimbleHQ's feed from `WHATS_NEW_FEED_URL`, cached with a last-good fallback, linked from the footer; `bin/rails admin:invite EMAIL=...` makes an admin and emails a set-password link. Also fixed `config/vite.json`, whose dev and test builds emptied `public/` (error pages, favicons), and started tracking `.env.example`, which `.gitignore` had been hiding from fresh clones.)

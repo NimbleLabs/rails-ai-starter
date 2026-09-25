@@ -44,6 +44,8 @@ gem "mailkick"
 gem 'stripe'
 gem "ahoy_matey"
 gem "rack-cors"
+# HTTP client for outside feeds and APIs (e.g. WhatsNewFeed)
+gem "faraday"
 
 # Bot protection on public forms (reCAPTCHA Enterprise — see config/initializers/recaptcha.rb)
 gem "recaptcha"

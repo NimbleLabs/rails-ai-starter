@@ -25,6 +25,7 @@
         <nav class="space-y-2 flex flex-col">
           <%= link_to "App", app_path, class: footer_link %>
           <%= link_to "Articles", articles_path, class: footer_link %>
+          <%= link_to "What's new", whats_new_path, class: footer_link if WhatsNewFeed.enabled? %>
           <% unless user_signed_in? %>
             <%= link_to "Sign up", new_user_registration_path, class: footer_link %>
             <%= link_to "Sign in", new_user_session_path, class: footer_link %>

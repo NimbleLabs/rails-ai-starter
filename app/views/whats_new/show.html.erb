@@ -1,0 +1,26 @@
+<% content_for(:title, "What's new · #{@app_name}") %>
+<div class="max-w-3xl mx-auto px-6 py-12">
+  <h1 class="font-display text-3xl md:text-4xl font-bold text-ink">What's new</h1>
+  <p class="mt-2 text-ink-muted">What you can do with <%= @app_name %>, newest first.</p>
+
+  <% if @entries.empty? %>
+    <p class="mt-10 text-ink-muted">Nothing to show yet. Check back soon.</p>
+  <% else %>
+    <div class="mt-8 space-y-10">
+      <% @entries.group_by { |e| e.shipped_on.beginning_of_month }.each do |month, entries| %>
+        <section>
+          <h2 class="font-display font-bold text-lg text-ink border-b border-line pb-2"><%= month.strftime("%B %Y") %></h2>
+          <ul class="mt-4 space-y-5">
+            <% entries.each do |entry| %>
+              <li>
+                <p class="text-sm text-ink-muted"><%= entry.shipped_on.strftime("%b %-d, %Y") %></p>
+                <h3 class="font-semibold text-ink mt-0.5"><%= entry.title %></h3>
+                <% if entry.summary.present? %><p class="text-ink-muted leading-relaxed mt-1"><%= entry.summary %></p><% end %>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+    </div>
+  <% end %>
+</div>

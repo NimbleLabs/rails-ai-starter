@@ -30,6 +30,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/up` (`HealthController`) checks the database, pending migrations, required tables and a cache round-trip,
   and returns 503 naming what's broken. Add a product's own core tables to `REQUIRED_TABLES` as it grows.
 - Production mail goes through SendGrid when `SENDGRID_API_KEY` is set; `APP_HOST` sets the domain in email links.
+- **What's new** (`/whats-new`, `WhatsNewFeed`) lists what users can do, newest first, from NimbleHQ's feed
+  (`WHATS_NEW_FEED_URL`). NimbleHQ's builder adds an entry whenever it ships something users will notice, so don't
+  edit the list here. The page is cached and keeps its last good copy, so it never depends on NimbleHQ being up.
+- **Admins:** `bin/rails admin:invite EMAIL=...` makes that person an admin (creating the account if needed) and
+  emails them a link to set their password. NimbleHQ runs it for the project's creator on launch. Safe to rerun.
+- `config/vite.json` builds dev and test assets into `public/vite-dev` and `public/vite-test`. Never point
+  `publicOutputDir` at `public/` itself: Vite empties its output folder first, which deletes the error pages and
+  favicons.
 
 ## Development Commands
 
@@ -202,6 +210,7 @@ Required environment variables (use .env in development via dotenv-rails):
 - `SENDGRID_API_KEY` - production mail goes through SendGrid when set; without it, production mail isn't delivered
 - `APP_HOST` - the app's domain, used for links in emails (production)
 - `APP_NAME` - shown in log notification subjects and Slack messages
+- `WHATS_NEW_FEED_URL` - NimbleHQ's public feed for this product; shows `/whats-new` and its footer link (unset hides both)
 - `CORS_ORIGINS` - comma-separated allowed origins for `/api/v1/*` and `/ahoy/*`
 - `RECAPTCHA_SITE_KEY`, `RECAPTCHA_ENTERPRISE_API_KEY`, `RECAPTCHA_ENTERPRISE_PROJECT_ID` -
   bot protection; all three unset disables it (see "Bot protection")

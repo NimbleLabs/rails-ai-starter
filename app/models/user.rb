@@ -42,11 +42,30 @@ class User < ApplicationRecord
 
   enum :role, { user: 0, admin: 1 }
 
-  after_create :on_after_create
+  # An invited admin gets the invite instead of the sign-up welcome.
+  attr_accessor :invited
+
+  after_create :on_after_create, unless: :invited
 
   def on_after_create
     UserMailer.with(user: self).welcome_email.deliver_later(wait: 2.seconds)
     subscribe("Newsletter")
+  end
+
+  # Makes this email an admin, creating the account if needed, and emails a link
+  # to set the password. `bin/rails admin:invite EMAIL=...` calls it when
+  # NimbleHQ launches the app. Safe to run again: it just sends a fresh link.
+  def self.invite_admin!(email)
+    user = find_or_initialize_by(email: email.to_s.strip.downcase)
+    if user.new_record?
+      user.name = user.email.split("@").first
+      user.password = SecureRandom.base58(24)
+      user.invited = true
+    end
+    user.admin!
+    token = user.send(:set_reset_password_token)
+    UserMailer.with(user:, token:).admin_invite.deliver_now
+    user
   end
 
   # Find user by auth token for API authentication
