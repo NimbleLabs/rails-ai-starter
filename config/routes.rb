@@ -56,6 +56,9 @@ Rails.application.routes.draw do
   post 'payments/purchase-complete', to: 'payments#one_time_payment_complete'
   get 'payments/price', to: 'payments#price'
 
+  # NimbleHQ reads one day of traffic a night (see Api::MetricsController)
+  get "api/metrics/daily", to: "api/metrics#daily"
+
   namespace :api do
     namespace :v1, format: :json do
       # JSON auth for mobile / API clients

@@ -106,6 +106,7 @@ MAIL_FROM=                           # from address for outgoing mail
 APP_NAME=Starter                     # shown in log alerts
 SOLID_QUEUE_IN_PUMA=true             # production: run jobs inside the web process
 WHATS_NEW_FEED_URL=                  # optional, NimbleHQ feed for /whats-new
+NIMBLEHQ_METRICS_TOKEN=              # optional, lets NimbleHQ read daily traffic
 
 RECAPTCHA_SITE_KEY=                  # optional, bot protection
 RECAPTCHA_ENTERPRISE_API_KEY=

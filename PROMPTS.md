@@ -173,3 +173,12 @@ One thing we may need to think through is any ENV vars a new application will ne
 How do we ensure that the whats new/change log gets added and updated consistently in every application? I do not see it in Chartly. Should that be a task we create when the project is created? Also... I am thinking that when a project is created we need a way to automatically create an admin user with the same email address of the person creating the application. (I am thinking that it would be nice for the Admin application to automatically be available to them.)
 
 (Done by Claude Code: `/whats-new` reads NimbleHQ's feed from `WHATS_NEW_FEED_URL`, cached with a last-good fallback, linked from the footer; `bin/rails admin:invite EMAIL=...` makes an admin and emails a set-password link. Also fixed `config/vite.json`, whose dev and test builds emptied `public/` (error pages, favicons), and started tracking `.env.example`, which `.gitignore` had been hiding from fresh clones.)
+
+## Traffic NimbleHQ can trust
+
+**Date:** 2026-09-28
+
+**Prompt:**
+We need to start thinking through how we measure traffic for applications like Chartly so we can know how well the project is going. (Then: "Yes... this sounds good... go for it")
+
+(Done by Claude Code: `TrafficReport` + `GET /api/metrics/daily`, behind `NIMBLEHQ_METRICS_TOKEN`. Visitors are people whose browser sent a page view; admins never count; outside visitors came from another site.)

@@ -211,6 +211,7 @@ Required environment variables (use .env in development via dotenv-rails):
 - `APP_HOST` - the app's domain, used for links in emails (production)
 - `APP_NAME` - shown in log notification subjects and Slack messages
 - `SOLID_QUEUE_IN_PUMA` - `true` runs background jobs (welcome emails, log alerts) inside the web process; set it on a single-process Dokku app, or jobs never run
+- `NIMBLEHQ_METRICS_TOKEN` - shared with NimbleHQ, which reads one day of traffic a night from `GET /api/metrics/daily`; unset hides the endpoint
 - `WHATS_NEW_FEED_URL` - NimbleHQ's public feed for this product; shows `/whats-new` and its footer link (unset hides both)
 - `CORS_ORIGINS` - comma-separated allowed origins for `/api/v1/*` and `/ahoy/*`
 - `RECAPTCHA_SITE_KEY`, `RECAPTCHA_ENTERPRISE_API_KEY`, `RECAPTCHA_ENTERPRISE_PROJECT_ID` -
@@ -287,6 +288,13 @@ Everything is already wired:
 - `app/services/analytics.rb` — the helper you should actually call.
 - Web pages load ahoy.js from the marketing layout and call `ahoy.trackView()`.
 - Mobile posts to `POST /api/v1/events` (`Api::V1::EventsController`).
+
+### What NimbleHQ reads
+
+`TrafficReport` (served by `GET /api/metrics/daily?date=`, bearer `NIMBLEHQ_METRICS_TOKEN`) is the one definition of
+"how is this product doing": visitors are people whose browser sent a page view (crawlers and scripts don't),
+admins never count, and outside visitors arrived from another site. Keep ahoy.js `trackView()` on every public
+page, or those pages stop counting.
 
 ### Tracking an event
 
