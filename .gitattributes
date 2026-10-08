@@ -7,3 +7,6 @@ db/schema.rb linguist-generated
 vendor/* linguist-vendored
 config/credentials/*.yml.enc diff=rails_credentials
 config/credentials.yml.enc diff=rails_credentials
+
+# Written by `bin/rails quality`; collapsed in GitHub diffs. Rerun it rather than merging by hand.
+quality/report.json linguist-generated

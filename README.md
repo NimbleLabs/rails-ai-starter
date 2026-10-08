@@ -139,10 +139,17 @@ Visit <http://localhost:3000>.
 ## Testing
 
 ```bash
-bin/rails test                 # all tests
+bin/rails quality              # every test + coverage + RuboCop + Brakeman; writes quality/report.json
+bin/rails test                 # all tests except system tests
 bin/rails test:system          # system (browser) tests only
 bin/rails test test/models/user_test.rb
 ```
+
+`bin/rails quality` is the gate for every change: it fails on a failing or skipped test, coverage below the
+minimum or dropping since the last committed report, a RuboCop offense or a Brakeman warning. Commit the
+`quality/report.json` it writes along with your change. It deploys with the code, and the admin's **Quality**
+page (`/admin/quality`) shows it in production, including whether the running code has changed since the
+suite last ran. Line-by-line coverage is in `coverage/index.html`.
 
 ## Code quality
 

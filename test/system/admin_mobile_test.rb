@@ -1,4 +1,5 @@
 require "application_system_test_case"
+require_relative "../support/quality_report_fixture"
 
 # Mobile-viewport behaviour for the admin SPA.
 #
@@ -10,6 +11,7 @@ class AdminMobileTest < ApplicationSystemTestCase
   DESKTOP = [ 1400, 1400 ].freeze
 
   include Warden::Test::Helpers
+  include QualityReportFixture
 
   # Rails reuses one browser window across system-test classes, so `driven_by`'s
   # screen_size does not re-apply when another class ran first. Resize
@@ -68,6 +70,14 @@ class AdminMobileTest < ApplicationSystemTestCase
       visit path
       assert_selector "h1", wait: 5
       assert_not page_overflows?, "#{path} scrolls horizontally at #{IPHONE.first}px wide"
+    end
+  end
+
+  test "the quality page fits a phone, long file paths and failures included" do
+    QualityReport.stub(:current, quality_report(failing: true, stale: true)) do
+      visit "/admin/quality"
+      assert_text "Least-covered files"
+      assert_not page_overflows?, "/admin/quality scrolls horizontally at #{IPHONE.first}px wide"
     end
   end
 

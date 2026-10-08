@@ -1,4 +1,5 @@
 require "application_system_test_case"
+require_relative "../support/quality_report_fixture"
 
 # Smoke tests for the React admin SPA.
 #
@@ -6,6 +7,8 @@ require "application_system_test_case"
 # stops at the server-rendered shell. They drive the real bundle, so a runtime
 # error in a page component fails here rather than in front of an admin.
 class AdminSpaTest < ApplicationSystemTestCase
+  include QualityReportFixture
+
   setup do
     @admin = users(:one)
     login_as @admin, scope: :user
@@ -45,7 +48,8 @@ class AdminSpaTest < ApplicationSystemTestCase
       "/admin/funnel-metrics" => "Funnel",
       "/admin/features" => "Features",
       "/admin/logs" => "Logs",
-      "/admin/log-notifications" => "notifications"
+      "/admin/log-notifications" => "notifications",
+      "/admin/quality" => "Quality"
     }
 
     pages.each do |path, heading|
@@ -59,6 +63,39 @@ class AdminSpaTest < ApplicationSystemTestCase
   test "a deep link into the SPA is served by the Rails catch-all" do
     visit "/admin/logs"
     assert_selector "h1", text: "Logs"
+  end
+
+  test "the quality page shows the committed report" do
+    QualityReport.stub(:current, quality_report) do
+      visit "/admin/quality"
+
+      assert_selector "h1", text: "Quality"
+      assert_text "All green"
+      assert_text "158 tests pass with 83.0% line coverage"
+      assert_selector "[role=meter][aria-label='Line coverage'][aria-valuenow='83']"
+      assert_text QualityReportFixture::LONG_PATH
+      assert_text "Line coverage across the last 4 reports: 78.0% → 83.0%"
+    end
+  end
+
+  test "the quality page leads with what's wrong" do
+    QualityReport.stub(:current, quality_report(failing: true, stale: true)) do
+      visit "/admin/quality"
+
+      assert_text "Failing."
+      assert_text "Tests pass needs attention"
+      assert_text "Failing and skipped tests"
+      assert_text "Changed since this run"
+    end
+  end
+
+  test "the quality page explains how to make a report when there isn't one" do
+    QualityReport.stub(:current, nil) do
+      visit "/admin/quality"
+
+      assert_text "No report yet"
+      assert_text "bin/rails quality"
+    end
   end
 
   test "unknown admin routes render the in-app not-found page" do

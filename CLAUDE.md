@@ -21,6 +21,68 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Rich Text**: Action Text with Trix editor
 - **File Storage**: Active Storage
 - **URL Slugs**: FriendlyId
+- **Testing**: Minitest, Capybara system tests (headless Chrome), SimpleCov coverage. `bin/rails quality` is
+  the gate for every change. See "Testing and quality".
+
+## Testing and quality
+
+Apps built on this starter are written mostly by AI agents, so the test suite is how anyone, human or agent,
+knows the app works. **Great test coverage is a requirement here, not a follow-up.** Tests are part of every
+change: write them as you build, not after.
+
+> **The rule: a change is not finished until `bin/rails quality` passes and the `quality/report.json` it
+> writes is committed with that change.**
+
+`bin/rails quality` runs every test, system tests included, with coverage, then RuboCop and Brakeman, and
+writes `quality/report.json`. It exits non-zero, and you must fix the cause, when:
+
+- any test fails or errors, **or is skipped**;
+- line coverage is below `QualityReport::MINIMUM_LINE_COVERAGE`;
+- line coverage falls more than `QualityReport::MAX_COVERAGE_DROP` points below the last committed report;
+- RuboCop finds an offense, or Brakeman finds a warning or is out of date (`bundle update brakeman`).
+
+**How production knows.** Tests never run in production. The report is committed with the code it tested and
+deploys with it, and the admin's **Quality** page (`/admin/quality`, `QualityReport`) shows it: the checks,
+coverage by area and by file, failing tests, and a history built from earlier committed reports. The report
+also records a fingerprint of every source file. If the running code differs from what the suite tested, the
+page says **Out of date** and lists the files. So run `bin/rails quality` **after your last code edit**, and
+again after a merge or rebase.
+
+### What every change needs
+
+- **A model, service or job**: unit tests for its behavior, including the unhappy paths: invalid input, nil
+  and empty values, the boundary of every limit, and a third-party call failing.
+- **An endpoint**: integration tests for success, signed out (401), wrong role (403), invalid input (422), and
+  the JSON shape the React apps and the mobile app depend on. The API is the contract; test it like one.
+- **A React page or flow**: a system test that it mounts and does its main job. Add it to the every-page lists
+  in `test/system/admin_spa_test.rb` and `test/system/admin_mobile_test.rb`, which also check it fits a phone.
+- **A bug fix**: a test that fails without the fix and passes with it.
+- Test behavior through public interfaces, one behavior per test, named for that behavior
+  (`"a skipped test fails the report"`, not `"test_skips"`).
+
+### Never
+
+- **Never skip, delete or loosen a test to get to green.** A skipped test counts as a failure. Fix the code. If
+  the test itself is wrong, fix it and say why in the commit message.
+- **Never lower a threshold** in `QualityReport`, and never exclude files from coverage, to make a run pass.
+  When coverage climbs, raise `MINIMUM_LINE_COVERAGE` to just below it.
+- **Never write a test that runs code without checking what it did.** Coverage measures what ran, not what
+  was verified. A test without meaningful assertions games the number and protects nothing.
+- **Never let a test touch the network.** Stub the outside world (Faraday's test adapter as in
+  `test/controllers/whats_new_test.rb`, `Object#stub`, `Minitest::Mock`). A test that needs a real API key
+  will end up skipped.
+- **Never hand-edit `quality/report.json`.** On a merge conflict in it, take either side and rerun
+  `bin/rails quality`.
+
+### Finding what to test
+
+```bash
+bin/rails quality                             # the whole gate; prints each check
+open coverage/index.html                      # line-by-line coverage from the last run
+bundle exec simplecov uncovered --missing     # least-covered files, with the exact uncovered lines
+```
+
+The Quality page's "Least-covered files" table shows the same thing in production. Start with the 0% files.
 
 ## Production: one database and a real health check
 
@@ -63,7 +125,8 @@ bin/rails db:test:prepare # Prepare test database
 
 ### Testing
 ```bash
-bin/rails test                    # Run all tests
+bin/rails quality                 # The gate: every test + coverage + RuboCop + Brakeman → quality/report.json
+bin/rails test                    # Run all tests except system tests
 bin/rails test:system             # Run system tests only
 bin/rails test test/models/user_test.rb  # Run single test file
 bin/rails test test/models/log_test.rb   # Internal logging system
@@ -99,7 +162,7 @@ view and both sharing one component kit:
    - Layout: `app/javascript/admin/layout/` — permanent sidebar at `lg+`, off-canvas
      drawer below it. Nav items are data in `layout/navItems.js`.
    - Pages: `app/javascript/admin/pages/` — dashboard, users, contacts, email
-     templates, articles, funnels, metrics, features, logs.
+     templates, articles, funnels, metrics, features, logs, quality.
 
 Both host pages serialize the signed-in user into `window.__currentUser`, so the SPAs
 boot without a round trip. Rails catch-all routes (`get "admin/*other"`) make deep
@@ -143,6 +206,7 @@ that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
 - Mobile ingestion: `POST /api/v1/logs` (errors), `POST /api/v1/events` (Ahoy analytics)
 - Ahoy JS/native endpoints: `/ahoy/visits`, `/ahoy/events`
 - Admin dashboard metrics: `GET /dashboard/metrics.json?days=N`
+- Test suite report card: `GET /quality.json` (reads the committed `quality/report.json`)
 - React SPAs: `/app/*` and `/admin/*` (catch-all routes to the respective apps)
 
 ### Key Models

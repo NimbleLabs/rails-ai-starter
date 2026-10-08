@@ -182,3 +182,12 @@ How do we ensure that the whats new/change log gets added and updated consistent
 We need to start thinking through how we measure traffic for applications like Chartly so we can know how well the project is going. (Then: "Yes... this sounds good... go for it")
 
 (Done by Claude Code: `TrafficReport` + `GET /api/metrics/daily`, behind `NIMBLEHQ_METRICS_TOKEN`. Visitors are people whose browser sent a page view; admins never count; outside visitors came from another site.)
+
+## A quality dashboard for the test suite
+
+**Date:** 2026-10-08
+
+**Prompt:**
+I want some tooling in this starter app to track testing and quality for applications that are built on this starter.  I am thinking about a view in the Admin for Testing or Quality that is a like a dashboard for the test suite for the application.  It should show metrics like the number of tests and everything being green and well tested and maybe even a test coverage percentage.  And we also want to include in our CLAUDE.md file some language about how this app should have great test coverage. Not sure the best way to store and display this in production even though the tests will likely run in local development but I am open to ideas.  But software built on this starter application will generally always be done by AI agents and I want to make sure the applications are built well and well tested via unit tests etc.
+
+(Done by Claude Code: `bin/rails quality` runs every test with SimpleCov coverage, plus RuboCop and Brakeman, and writes `quality/report.json`, which is committed with the change and deploys with it. The admin's Quality page (`/admin/quality`) shows the checks, coverage by area and file, failures and git-derived history, and compares per-file fingerprints with the running code to flag a stale report. The gate fails on failing or skipped tests, coverage under 70% or falling more than half a point, and lint or security findings. CLAUDE.md now makes it the rule for every change. Along the way: autocorrected 123 RuboCop offenses and upgraded Brakeman to 8.1, both of which were failing CI.)

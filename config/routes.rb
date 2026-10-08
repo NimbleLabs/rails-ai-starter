@@ -38,6 +38,9 @@ Rails.application.routes.draw do
   # Admin dashboard metrics (Ahoy) — consumed by the React admin
   get "dashboard/metrics", to: "dashboard#metrics"
 
+  # Test suite report card (QualityReport) — consumed by the React admin at /admin/quality
+  get "quality", to: "quality#show"
+
   # Internal error log (admin JSON; React admin at /admin/logs)
   resources :logs, only: %i[index show update destroy] do
     collection do

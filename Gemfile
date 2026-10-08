@@ -78,6 +78,9 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  # Coverage for `bin/rails quality` (only loaded when COVERAGE is set; see test/test_helper.rb)
+  gem "simplecov", "~> 1.3", require: false
 end
 
 gem "tailwindcss-ruby", "~> 4.1"

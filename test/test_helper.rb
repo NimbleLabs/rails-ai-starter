@@ -1,4 +1,21 @@
 ENV["RAILS_ENV"] ||= "test"
+
+# `bin/rails quality` sets these (see lib/tasks/quality.rake). Coverage has to
+# start before any application code loads, so this stays at the very top.
+if ENV["COVERAGE"]
+  require "simplecov"
+  SimpleCov.start "rails" do
+    enable_coverage :branch
+    group "Services", "app/services"
+    formats :html, :json
+    source_in_json false
+  end
+end
+if ENV["QUALITY_TEST_RESULTS"]
+  require_relative "support/quality_test_reporter"
+  QualityTestReporter.install(ENV["QUALITY_TEST_RESULTS"])
+end
+
 require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"

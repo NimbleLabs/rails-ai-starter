@@ -20,6 +20,7 @@ import { FeatureDetails } from './pages/features/FeatureDetails'
 import { LogsList } from './pages/logs/LogsList'
 import { LogDetails } from './pages/logs/LogDetails'
 import { LogSubscriptions } from './pages/logs/LogSubscriptions'
+import { Quality } from './pages/Quality'
 import { NotFound } from './pages/NotFound'
 
 /**
@@ -62,6 +63,8 @@ export default function AdminApp() {
           <Route path="logs" element={<LogsList />} />
           <Route path="logs/:id" element={<LogDetails />} />
           <Route path="log-notifications" element={<LogSubscriptions />} />
+
+          <Route path="quality" element={<Quality />} />
 
           {/* Old Vue-era URLs */}
           <Route path="home" element={<Navigate to="/" replace />} />
