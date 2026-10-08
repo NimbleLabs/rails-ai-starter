@@ -1,5 +1,5 @@
 class FeaturesController < ApplicationController
-  skip_before_action :verify_authenticity_token, if: -> { request.headers['x-api-token'].present? }
+  skip_before_action :verify_authenticity_token, if: -> { request.headers["x-api-token"].present? }
   before_action :authenticate_user_or_token
   before_action :ensure_admin
   before_action :set_feature, only: %i[ show update destroy ]

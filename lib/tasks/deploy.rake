@@ -1,13 +1,13 @@
-require 'net/ssh'
+require "net/ssh"
 
 namespace :deploy do
   task :create_dokku_application do
     puts "Creating Dokku application..."
-    app_name = 'rails-ai-starter'
-    host = ENV['DOKKU_HOST']
-    user = ENV['DOKKU_USER']
-    password = ENV['DOKKU_PASSWORD']
-    
+    app_name = "rails-ai-starter"
+    host = ENV["DOKKU_HOST"]
+    user = ENV["DOKKU_USER"]
+    password = ENV["DOKKU_PASSWORD"]
+
     puts "App name: #{app_name}"
 
     Net::SSH.start(host, user, password: password) do |ssh|
@@ -20,19 +20,18 @@ namespace :deploy do
   end
 
   task :finish_dokku_setup do
-
     puts "Finishing Dokku setup..."
-    app_name = 'rails-ai-starter'
-    host = ENV['DOKKU_HOST']
-    user = ENV['DOKKU_USER']
-    password = ENV['DOKKU_PASSWORD']
-    
-    aws_access_key_id = ENV['AWS_ACCESS_KEY_ID']
-    aws_secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
-    aws_region = ENV['AWS_REGION'] || 'us-east-1'
-    aws_bucket = ENV['AWS_BUCKET']
-    email = 'your@email.tld'
-    sendgrid_api_key = ENV['SENDGRID_API_KEY']
+    app_name = "rails-ai-starter"
+    host = ENV["DOKKU_HOST"]
+    user = ENV["DOKKU_USER"]
+    password = ENV["DOKKU_PASSWORD"]
+
+    aws_access_key_id = ENV["AWS_ACCESS_KEY_ID"]
+    aws_secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
+    aws_region = ENV["AWS_REGION"] || "us-east-1"
+    aws_bucket = ENV["AWS_BUCKET"]
+    email = "your@email.tld"
+    sendgrid_api_key = ENV["SENDGRID_API_KEY"]
 
 
     Net::SSH.start(host, user, password: password) do |ssh|
@@ -41,35 +40,32 @@ namespace :deploy do
         ssh.exec!("dokku letsencrypt:enable #{app_name}")
         ssh.exec!("dokku buildpacks:add #{app_name} https://github.com/heroku/heroku-buildpack-nodejs.git")
         ssh.exec!("dokku buildpacks:add #{app_name} https://github.com/heroku/heroku-buildpack-ruby.git")
-  
+
         if aws_access_key_id && aws_secret_access_key && aws_bucket
           ssh.exec!("dokku postgres:backup-auth #{app_name}-database #{aws_access_key_id} #{aws_secret_access_key} #{aws_region}")
           ssh.exec!("dokku postgres:backup #{app_name}-database #{aws_bucket}")
           ssh.exec!("dokku postgres:backup-schedule #{app_name}-database \"0 4 * * *\" #{aws_bucket}")
         end
 
-        if sendgrid_api_key 
+        if sendgrid_api_key
           ssh.exec!("dokku config:set --no-restart #{app_name} SENDGRID_API_KEY=#{sendgrid_api_key}")
         end
 
-        if ENV['RECAPTCHA_SITE_KEY']
+        if ENV["RECAPTCHA_SITE_KEY"]
           ssh.exec!("dokku config:set --no-restart #{app_name} RECAPTCHA_SITE_KEY=#{ENV['RECAPTCHA_SITE_KEY']}")
         end
-        if ENV['RECAPTCHA_ENTERPRISE_API_KEY']
+        if ENV["RECAPTCHA_ENTERPRISE_API_KEY"]
           ssh.exec!("dokku config:set --no-restart #{app_name} RECAPTCHA_ENTERPRISE_API_KEY=#{ENV['RECAPTCHA_ENTERPRISE_API_KEY']}")
         end
-        if ENV['RECAPTCHA_ENTERPRISE_PROJECT_ID']
+        if ENV["RECAPTCHA_ENTERPRISE_PROJECT_ID"]
           ssh.exec!("dokku config:set --no-restart #{app_name} RECAPTCHA_ENTERPRISE_PROJECT_ID=#{ENV['RECAPTCHA_ENTERPRISE_PROJECT_ID']}")
         end
-        if ENV['GOOGLE_CLIENT_ID']
+        if ENV["GOOGLE_CLIENT_ID"]
           ssh.exec!("dokku config:set --no-restart #{app_name} GOOGLE_CLIENT_ID=#{ENV['GOOGLE_CLIENT_ID']}")
         end
-        if ENV['GOOGLE_CLIENT_SECRET']
+        if ENV["GOOGLE_CLIENT_SECRET"]
           ssh.exec!("dokku config:set --no-restart #{app_name} GOOGLE_CLIENT_SECRET=#{ENV['GOOGLE_CLIENT_SECRET']}")
         end
-  
       end
-
   end
-
 end

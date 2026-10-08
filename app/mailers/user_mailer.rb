@@ -1,8 +1,7 @@
 class UserMailer < ApplicationMailer
-
   def welcome_email
     @user = params[:user]
-    bootstrap_mail(to: @user.email, subject: 'Welcome!')
+    bootstrap_mail(to: @user.email, subject: "Welcome!")
   end
 
   # From User.invite_admin!: a link to set the password, then the admin.
@@ -14,5 +13,4 @@ class UserMailer < ApplicationMailer
     @hours = (Devise.reset_password_within / 1.hour).round
     mail(to: @user.email, subject: "Your #{@app_name} admin account is ready")
   end
-
 end

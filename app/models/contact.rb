@@ -19,7 +19,7 @@
 #
 class Contact < ApplicationRecord
   extend FriendlyId
-  friendly_id :name, use: [:slugged, :finders]
+  friendly_id :name, use: [ :slugged, :finders ]
   has_subscriptions
 
   validates :name, presence: true
@@ -35,11 +35,11 @@ class Contact < ApplicationRecord
   end
 
   def received_first_outreach_email?
-    messages.exists?(['subject ILIKE ?', '%Are You Using AI%'])
+    messages.exists?([ "subject ILIKE ?", "%Are You Using AI%" ])
   end
 
   def on_after_create
-    #UserMailer.with(user: self).welcome_email.deliver_later(wait: 2.seconds)
+    # UserMailer.with(user: self).welcome_email.deliver_later(wait: 2.seconds)
     subscribe("Newsletter")
   end
 end

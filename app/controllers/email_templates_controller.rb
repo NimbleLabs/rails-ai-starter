@@ -11,7 +11,7 @@ class EmailTemplatesController < ApplicationController
   def send_to_list
     @email_template = EmailTemplate.find(params[:id])
     SendEmailTemplateJob.perform_later(@email_template.id)
-    
+
     render json: { message: "Email template will be sent to the list." }
   end
 

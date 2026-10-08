@@ -28,7 +28,7 @@ class StaticController < ApplicationController
   end
 
   def get_layout
-    return 'empty' if action_name == 'app' || action_name == 'admin'
-    'application'
+    return "empty" if action_name == "app" || action_name == "admin"
+    "application"
   end
 end

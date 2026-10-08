@@ -1,7 +1,7 @@
 class Api::V1::FunnelsController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_admin
-  before_action :set_funnel, only: [:show, :update, :destroy]
+  before_action :set_funnel, only: [ :show, :update, :destroy ]
 
   def index
     @funnels = Funnel.order(created_at: :desc)

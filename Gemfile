@@ -38,10 +38,10 @@ gem "devise"
 gem "friendly_id"
 gem "ruby_llm", "~> 2.0"
 gem "vite_rails"
-gem 'bootstrap-email'
-gem 'ahoy_email'
+gem "bootstrap-email"
+gem "ahoy_email"
 gem "mailkick"
-gem 'stripe'
+gem "stripe"
 gem "ahoy_matey"
 gem "rack-cors"
 # HTTP client for outside feeds and APIs (e.g. WhatsNewFeed)
@@ -66,7 +66,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem "annotaterb"
-  gem 'dotenv-rails'
+  gem "dotenv-rails"
 end
 
 group :development do

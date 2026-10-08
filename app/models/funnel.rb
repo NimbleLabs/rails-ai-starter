@@ -16,7 +16,7 @@
 #
 class Funnel < ApplicationRecord
   extend FriendlyId
-  friendly_id :name, use: [:slugged, :finders]
+  friendly_id :name, use: [ :slugged, :finders ]
 
   validates :name, presence: true, uniqueness: true
 

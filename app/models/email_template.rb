@@ -16,7 +16,7 @@
 #
 class EmailTemplate < ApplicationRecord
   extend FriendlyId
-  friendly_id :subject, use: [:slugged, :finders]
+  friendly_id :subject, use: [ :slugged, :finders ]
 
   def already_sent?(user_or_contact)
     Ahoy::Message.where(user_type: user_or_contact.class.name, user_id: user_or_contact.id, subject: subject).first.present?

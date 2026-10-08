@@ -20,7 +20,7 @@
 #
 class Article < ApplicationRecord
   extend FriendlyId
-  friendly_id :title, use: [:slugged, :finders]
+  friendly_id :title, use: [ :slugged, :finders ]
   has_rich_text :content
   has_one_attached :featured_image
 end
