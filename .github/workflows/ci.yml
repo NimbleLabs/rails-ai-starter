@@ -85,6 +85,17 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      # Vite builds the React apps on the first request that needs them; without
+      # node_modules every page that loads a bundle errors.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install JavaScript packages
+        run: npm ci
+
       - name: Run tests
         env:
           RAILS_ENV: test
