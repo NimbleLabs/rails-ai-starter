@@ -1,0 +1,26 @@
+# This app's product settings: its name and its look. Committed and deployed
+# with the code, and read by AppConfig. Secrets and server settings stay in ENV.
+#
+# The admin's Theme page (/admin/theme) previews changes and, in development,
+# saves them here. bin/new-app writes this file for a new project.
+
+# Shown in the nav, footer, sign-in pages, emails and the browser tab.
+name: "Starter"
+# One to three letters for the brand mark.
+short_name: "ST"
+# One line about the product, used as the default page description.
+tagline: "Your app, ready to build on."
+# Where people can reach a human. Shown in the footer when set.
+support_email: ""
+
+theme:
+  # Headings: any font in AppConfig::FONTS.
+  display_font: "Outfit"
+  # Body text: any font in AppConfig::FONTS that isn't display-only.
+  body_font: "Outfit"
+  # Buttons, links and highlights. Must read on white (at least 3:1).
+  primary: "#7c3aed"
+  # Accents and gradients.
+  secondary: "#6366f1"
+  # sharp, soft or round.
+  corners: "soft"

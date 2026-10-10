@@ -1,0 +1,5 @@
+<%# The app's fonts and colors from config/app.yml. Render after application.css so these win. %>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="<%= app_config.theme.google_fonts_url %>">
+<style><%= app_config.theme.css.html_safe %></style>

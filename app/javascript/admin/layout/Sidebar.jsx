@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from './navItems'
+import { app } from '~/lib/app'
 
 function isActive(item, pathname) {
   if (item.exact) return pathname === item.to
@@ -15,8 +16,8 @@ export function Sidebar({ onNavigate, currentUser }) {
     <div className="w-64 h-full bg-surface border-r border-line flex flex-col">
       <div className="px-4 pt-5 pb-4">
         <a href="/" className="flex items-center gap-2">
-          <span className="brand-mark w-8 h-8 text-xs">ST</span>
-          <span className="font-display text-lg font-extrabold tracking-tight text-ink">Starter</span>
+          <span className="brand-mark w-8 h-8 text-xs" aria-hidden="true">{app.shortName}</span>
+          <span className="font-display text-lg font-extrabold tracking-tight text-ink">{app.name}</span>
         </a>
       </div>
 

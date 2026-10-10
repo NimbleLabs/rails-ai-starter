@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" x-data="initAlpineState()" x-bind:class="dark ? 'dark' : ''">
   <head>
-    <title><%= content_for(:title) || "Rails Ai Starter" %></title>
+    <title><%= content_for(:title) || app_config.name %></title>
+    <meta name="description" content="<%= content_for(:description) || app_config.tagline %>">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -10,11 +11,8 @@
     <%= yield :head %>
     <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="/favicon.png">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap"></noscript>
-
     <%= stylesheet_link_tag :app %>
+    <%= render "shared/theme_head" %>
 
     <% if action_name == 'new' || action_name == 'edit' %>
       <style>
@@ -35,69 +33,14 @@
       <script>ahoy.configure({ visitsUrl: "/ahoy/visits", eventsUrl: "/ahoy/events", platform: "Web", useBeacon: true, startOnReady: true, trackVisits: true, cookies: true, visitDuration: 30, visitorDuration: 2 * 365 * 24 * 60 }); ahoy.trackView(); window.ahoy = ahoy;</script>
     <% end %>
 
-    <script>window.__themes = <%= raw themes_json %>;</script>
     <script>
-        var radiusMap = { none: '0', sm: '0.25rem', md: '0.375rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' };
-        var shadowMap = {
-            none: 'none',
-            sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-            md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-            lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-            xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)'
-        };
-
         function initAlpineState() {
             return {
                 open: false,
                 dark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-                theme: localStorage.colorTheme || '<%= default_theme_slug %>',
-                themes: window.__themes || [],
-                init() {
-                    this.applyTheme();
-                },
                 toggleDarkMode(isDark) {
                     this.dark = isDark;
                     localStorage.theme = isDark ? 'dark' : 'light';
-                    this.applyTheme();
-                },
-                setTheme(slug) {
-                    this.theme = slug;
-                    localStorage.colorTheme = slug;
-                    this.applyTheme();
-                },
-                applyTheme() {
-                    var themes = window.__themes || [];
-                    var t = themes.find(function(th) { return th.slug === this.theme; }.bind(this)) || themes[0];
-                    if (!t) return;
-                    var colors = this.dark ? t.darkMode : t.lightMode;
-                    var s = document.documentElement.style;
-                    s.setProperty('--theme-primary', colors.primary);
-                    s.setProperty('--theme-secondary', colors.secondary);
-                    s.setProperty('--theme-accent', colors.accent);
-                    s.setProperty('--theme-background', colors.background);
-                    s.setProperty('--theme-surface', colors.surface);
-                    s.setProperty('--theme-text', colors.text);
-                    s.setProperty('--theme-text-muted', colors.textMuted);
-                    s.setProperty('--theme-display-font', "'" + t.displayFont + "', system-ui, sans-serif");
-                    s.setProperty('--theme-body-font', "'" + t.bodyFont + "', system-ui, sans-serif");
-                    s.setProperty('--theme-border-radius', radiusMap[t.borderRadius] || '0.5rem');
-                    s.setProperty('--theme-shadow', shadowMap[t.shadow] || shadowMap.md);
-                    this.loadThemeFonts(t);
-                },
-                loadThemeFonts(t) {
-                    var id = 'theme-fonts-' + t.slug;
-                    if (!document.getElementById(id)) {
-                        var link = document.createElement('link');
-                        link.id = id;
-                        link.rel = 'stylesheet';
-                        var displayWeight = t.displayWeight === 'bold' ? '700' : '400';
-                        var bodyWeight = t.bodyWeight === 'bold' ? '700' : '400';
-                        link.href = 'https://fonts.googleapis.com/css2?family=' +
-                            encodeURIComponent(t.displayFont) + ':wght@' + displayWeight +
-                            '&family=' + encodeURIComponent(t.bodyFont) + ':wght@' + bodyWeight +
-                            '&display=swap';
-                        document.head.appendChild(link);
-                    }
                 }
             };
         }

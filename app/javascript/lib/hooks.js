@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { app } from './app'
 
 /**
  * Load data on mount (and whenever `deps` change) with loading/error state.
@@ -77,7 +78,7 @@ export function useTitle(title) {
   useEffect(() => {
     if (!title) return
     const previous = document.title
-    document.title = `${title} · Admin`
+    document.title = `${title} · ${app.name}`
     return () => { document.title = previous }
   }, [title])
 }

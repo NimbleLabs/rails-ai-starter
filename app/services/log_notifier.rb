@@ -1,15 +1,13 @@
 # Formats and delivers a Log to one LogSubscription. Used by LogNotificationJob
 # and by the admin "Send test" button.
 class LogNotifier
-  APP_NAME = ENV.fetch("APP_NAME", "Starter")
-
   def self.deliver(log, subscription)
     new(log, subscription).deliver
   end
 
   def self.deliver_test(subscription)
     log = Log.new(
-      level: :error, source: "console", message: "Test notification from #{APP_NAME} — if you can read this, the channel works.",
+      level: :error, source: "console", message: "Test notification from #{AppConfig.current.name} — if you can read this, the channel works.",
       error_class: "LogNotifier::Test", context: { "test" => true }, occurrences: 1, last_seen_at: Time.current, fingerprint: "test", created_at: Time.current
     )
     new(log, subscription).deliver
@@ -35,7 +33,7 @@ class LogNotifier
 
   def slack_text
     lines = [
-      "#{emoji} *[#{APP_NAME}] #{@log.level.upcase} in #{@log.source}*",
+      "#{emoji} *[#{AppConfig.current.name}] #{@log.level.upcase} in #{@log.source}*",
       "*#{@log.title.truncate(300)}*"
     ]
     lines << "Path: `#{@log.path}`" if @log.path.present?

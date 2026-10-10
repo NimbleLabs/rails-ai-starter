@@ -162,7 +162,7 @@ view and both sharing one component kit:
    - Layout: `app/javascript/admin/layout/` — permanent sidebar at `lg+`, off-canvas
      drawer below it. Nav items are data in `layout/navItems.js`.
    - Pages: `app/javascript/admin/pages/` — dashboard, users, contacts, email
-     templates, articles, funnels, metrics, features, logs, quality.
+     templates, articles, funnels, metrics, features, logs, quality, theme.
 
 Both host pages serialize the signed-in user into `window.__currentUser`, so the SPAs
 boot without a round trip. Rails catch-all routes (`get "admin/*other"`) make deep
@@ -207,6 +207,7 @@ that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
 - Ahoy JS/native endpoints: `/ahoy/visits`, `/ahoy/events`
 - Admin dashboard metrics: `GET /dashboard/metrics.json?days=N`
 - Test suite report card: `GET /quality.json` (reads the committed `quality/report.json`)
+- Theme: `GET /theme.json`, `POST /theme/preview.json`, `PUT /theme.json` (development only; writes `config/app.yml`)
 - React SPAs: `/app/*` and `/admin/*` (catch-all routes to the respective apps)
 
 ### Key Models
@@ -273,7 +274,6 @@ Required environment variables (use .env in development via dotenv-rails):
 - `MAIL_FROM` - from address for outgoing mail, including log alerts
 - `SENDGRID_API_KEY` - production mail goes through SendGrid when set; without it, production mail isn't delivered
 - `APP_HOST` - the app's domain, used for links in emails (production)
-- `APP_NAME` - shown in log notification subjects and Slack messages
 - `SOLID_QUEUE_IN_PUMA` - `true` runs background jobs (welcome emails, log alerts) inside the web process; set it on a single-process Dokku app, or jobs never run
 - `NIMBLEHQ_METRICS_TOKEN` - shared with NimbleHQ, which reads one day of traffic a night from `GET /api/metrics/daily`; unset hides the endpoint
 - `WHATS_NEW_FEED_URL` - NimbleHQ's public feed for this product; shows `/whats-new` and its footer link (unset hides both)
@@ -294,14 +294,51 @@ Required environment variables (use .env in development via dotenv-rails):
 
 The look is shared deliberately with `mobile-app-starter` (and with FitnessHQ,
 which it was ported from) so both halves of a project read as one product: warm
-neutrals, soft rounded surfaces, low-opacity shadows, Outfit as the typeface, and
-a purple brand accent (`#7c3aed`).
+neutrals, soft surfaces, low-opacity shadows, and a brand that each app sets in
+one place.
+
+### The app's name and look: `config/app.yml`
+
+**`config/app.yml` (read by `AppConfig`) is the one place an app's name, tagline,
+initials and look are set.** The look is five choices: a heading font and a body
+font from the approved list (`AppConfig::FONTS`, Google Fonts that also ship as
+Expo packages), a primary and a secondary color, and a corner style (sharp,
+soft, round). Everything else is derived in `AppConfig::Theme`: hover and
+dark-mode shades, white or dark text on the primary, a tinted panel color, the
+radii. The primary must read on white at 3:1; the file is checked at boot and by
+`test/models/app_config_test.rb`, so a bad one never ships.
+
+- **Every page shell renders `shared/_theme_head`** after application.css: the
+  Google Fonts link and a `<style>` overriding the brand `--theme-*` variables.
+  Server-side, so there's no flash of the default look.
+- **Never hard-code the name or initials.** In views use `app_config.name` and
+  `brand_mark(size_classes)`; in React, `app` from `~/lib/app` (the host pages
+  put it on `window.__app`); in mailers, `app_config` (and
+  `app_config.theme.primary` for inline email styles).
+- **Change the look on the admin's Theme page (`/admin/theme`):** presets from
+  `lib/themes/*-theme.json` (Nimble Labs Theme Builder exports, via
+  `ThemePreset`), fonts, colors, corners and identity, with a live light and dark
+  preview. Saving works in development and writes `config/app.yml` for you to
+  commit; production previews only (and offers the YAML to copy).
+- **The mobile app gets the same look from `bin/sync-mobile-theme`**, which writes
+  `mobile-app-starter/src/constants/branding.ts` (`MobileBranding`) and installs
+  the right `@expo-google-fonts` packages. `bin/new-app` runs it with the
+  `--display-font`, `--body-font`, `--primary`, `--secondary`, `--corners`,
+  `--short-name` and `--tagline` options; rerun it after changing the theme.
+- **Adding a font:** add it to `AppConfig::FONTS` with the weights (400–800) that
+  both Google Fonts and its `@expo-google-fonts` package have.
+
+### Tokens and classes
 
 **All tokens live in `app/assets/tailwind/application.css`** (Tailwind 4 is
 CSS-first — there is no `tailwind.config.js`). The `--theme-*` custom properties
-are the runtime layer: the marketing layout's Alpine theme switcher overrides
-them per theme from `lib/themes/*-theme.json`, and `.dark` redefines them for
-dark mode. `@theme` bridges them to Tailwind color utilities.
+are the runtime layer: the values there are the starter's defaults, overridden
+from `config/app.yml` as above, and `.dark` redefines them for dark mode.
+`@theme` bridges them to Tailwind utilities (`bg-primary`, `text-on-primary`,
+`font-display`, `rounded-card`, `rounded-control` for buttons, `rounded-field`
+for inputs and alerts). Tailwind resolves those aliases once at the page root, so
+overriding a `--theme-*` variable on an inner element changes nothing beneath it;
+the Theme page's preview re-declares the aliases to work around that.
 
 Use the semantic classes, never literal palette utilities:
 
@@ -311,6 +348,8 @@ Use the semantic classes, never literal palette utilities:
 | `text-gray-900`, `text-gray-500` | `text-ink`, `text-ink-muted` |
 | `border-gray-200` | `border-line` |
 | `bg-purple-600` | `bg-primary` (hover `bg-primary-hover`), tints `bg-primary/10` |
+| `text-white` on a primary fill | `text-on-primary` (dark text when the primary is too light for white) |
+| `rounded-xl`, `rounded-2xl` on cards, buttons, inputs | `rounded-card`, `rounded-control`, `rounded-field` |
 
 Component classes: `.btn-primary` `.btn-secondary` `.btn-outline` `.btn-danger`
 `.btn-ghost` (+ `.btn-sm` `.btn-lg`), `.card` `.card-flush` `.panel-muted`,
@@ -475,8 +514,8 @@ via `LogMailer`, or Slack via an incoming webhook), a `min_level`, and a
 notifies. A failing channel is logged to `Rails.logger` and never re-reported,
 so a broken webhook cannot cause a notification loop.
 
-Set `SLACK_WEBHOOK_URL` (system alerts via `SlackService`), `MAIL_FROM` and
-`APP_NAME` in `.env`. **Email notifications need outgoing mail configured**: in
+Set `SLACK_WEBHOOK_URL` (system alerts via `SlackService`) and `MAIL_FROM` in
+`.env`; the app name in subjects comes from `config/app.yml`. **Email notifications need outgoing mail configured**: in
 production, set `SENDGRID_API_KEY` (and `APP_HOST`); see `config/environments/production.rb`.
 
 ### Mobile

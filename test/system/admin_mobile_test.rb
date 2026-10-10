@@ -66,6 +66,7 @@ class AdminMobileTest < ApplicationSystemTestCase
       /admin/logs
       /admin/log-notifications
       /admin/funnel-metrics
+      /admin/theme
     ].each do |path|
       visit path
       assert_selector "h1", wait: 5

@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/sync-mobile-theme — give the Expo app this app's name and look from
+# config/app.yml: writes its src/constants/branding.ts (see MobileBranding) and
+# installs the @expo-google-fonts packages for the chosen fonts, removing ones
+# no longer used. bin/new-app runs it; rerun it after changing the theme on the
+# admin Theme page.
+#
+#   bin/sync-mobile-theme                    # ../mobile-app-starter
+#   bin/sync-mobile-theme ../acme-mobile     # a renamed mobile repo
+#   bin/sync-mobile-theme --no-install       # write the file; print the npm commands
+
+require "json"
+require "optparse"
+require_relative "../app/models/app_config"
+require_relative "../lib/mobile_branding"
+
+RAILS_ROOT = File.expand_path("..", __dir__)
+
+install = true
+OptionParser.new do |opts|
+  opts.banner = "Usage: bin/sync-mobile-theme [MOBILE_DIR] [--no-install]"
+  opts.on("--[no-]install", "Install and remove font packages with npm (default: yes)") { |value| install = value }
+end.parse!
+
+mobile_dir = File.expand_path(ARGV.first || "../mobile-app-starter", RAILS_ROOT)
+package_json = File.join(mobile_dir, "package.json")
+abort "No Expo app at #{mobile_dir} (no package.json). Pass its directory." unless File.exist?(package_json)
+
+config = AppConfig.load(File.join(RAILS_ROOT, AppConfig::PATH))
+abort "config/app.yml is invalid: #{config.errors.join(' ')}" unless config.valid?
+
+branding = MobileBranding.new(config)
+File.write(File.join(mobile_dir, MobileBranding::PATH), branding.to_ts)
+puts "  wrote #{MobileBranding::PATH} (#{config.theme.display_font} / #{config.theme.body_font}, #{config.theme.primary}, #{config.theme.corners})"
+
+dependencies = JSON.parse(File.read(package_json)).fetch("dependencies", {}).keys.grep(%r{\A@expo-google-fonts/})
+missing = branding.packages - dependencies
+unused = dependencies - branding.packages
+commands = []
+commands << [ "npm", "install", *missing ] if missing.any?
+commands << [ "npm", "uninstall", *unused ] if unused.any?
+
+commands.each do |command|
+  if install
+    puts "  #{command.join(' ')}"
+    system(*command, chdir: mobile_dir) || abort("  `#{command.join(' ')}` failed in #{mobile_dir}")
+  else
+    puts "  run in #{mobile_dir}: #{command.join(' ')}"
+  end
+end
+puts "  fonts already installed" if commands.empty?

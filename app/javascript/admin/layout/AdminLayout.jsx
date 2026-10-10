@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
+import { app } from '~/lib/app'
 
 /**
  * Admin shell. The sidebar is permanent from `lg` up and an off-canvas drawer
@@ -30,8 +31,8 @@ export function AdminLayout({ currentUser }) {
       {/* Mobile top bar */}
       <header className="lg:hidden sticky top-0 z-30 flex items-center justify-between gap-3 px-4 h-14 bg-surface/90 backdrop-blur border-b border-line">
         <a href="/" className="flex items-center gap-2 min-w-0">
-          <span className="brand-mark w-7 h-7 text-[10px]">ST</span>
-          <span className="font-display font-extrabold tracking-tight text-ink truncate">Starter</span>
+          <span className="brand-mark w-7 h-7 text-[10px]" aria-hidden="true">{app.shortName}</span>
+          <span className="font-display font-extrabold tracking-tight text-ink truncate">{app.name}</span>
         </a>
         <button
           type="button"

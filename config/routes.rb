@@ -41,6 +41,12 @@ Rails.application.routes.draw do
   # Test suite report card (QualityReport) — consumed by the React admin at /admin/quality
   get "quality", to: "quality#show"
 
+  # config/app.yml's name and look (AppConfig) — the React admin at /admin/theme
+  # previews changes and, in development, saves them
+  get "theme", to: "theme#show"
+  match "theme", to: "theme#update", via: %i[put patch]
+  post "theme/preview", to: "theme#preview"
+
   # Internal error log (admin JSON; React admin at /admin/logs)
   resources :logs, only: %i[index show update destroy] do
     collection do

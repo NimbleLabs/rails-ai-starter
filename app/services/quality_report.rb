@@ -16,7 +16,7 @@ class QualityReport
   COMMAND = "bin/rails quality"
 
   # Raise these as the suite improves. Never lower one to turn a red report green.
-  MINIMUM_LINE_COVERAGE = 70.0
+  MINIMUM_LINE_COVERAGE = 78.0
   TARGET_LINE_COVERAGE = 90.0
   # How many points line coverage may fall below the last committed report.
   MAX_COVERAGE_DROP = 0.5

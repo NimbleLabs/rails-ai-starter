@@ -21,6 +21,7 @@ import { LogsList } from './pages/logs/LogsList'
 import { LogDetails } from './pages/logs/LogDetails'
 import { LogSubscriptions } from './pages/logs/LogSubscriptions'
 import { Quality } from './pages/Quality'
+import { Theme } from './pages/Theme'
 import { NotFound } from './pages/NotFound'
 
 /**
@@ -65,6 +66,7 @@ export default function AdminApp() {
           <Route path="log-notifications" element={<LogSubscriptions />} />
 
           <Route path="quality" element={<Quality />} />
+          <Route path="theme" element={<Theme />} />
 
           {/* Old Vue-era URLs */}
           <Route path="home" element={<Navigate to="/" replace />} />

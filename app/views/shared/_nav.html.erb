@@ -5,8 +5,8 @@
 <header class="border-b border-line bg-surface/80 backdrop-blur">
   <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="Global">
     <a href="/" class="flex items-center gap-2.5">
-      <span class="brand-mark w-8 h-8 text-xs">ST</span>
-      <span class="font-display font-bold text-xl text-ink">Starter</span>
+      <%= brand_mark "w-8 h-8 text-xs" %>
+      <span class="font-display font-bold text-xl text-ink"><%= app_config.name %></span>
     </a>
 
     <div x-show="!open" class="flex sm:hidden">
@@ -42,8 +42,8 @@
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-surface border-l border-line px-6 py-6 sm:max-w-sm">
       <div class="flex items-center justify-between">
         <a href="/" class="flex items-center gap-2.5">
-          <span class="brand-mark w-8 h-8 text-xs">ST</span>
-          <span class="font-display font-bold text-xl text-ink">Starter</span>
+          <%= brand_mark "w-8 h-8 text-xs" %>
+          <span class="font-display font-bold text-xl text-ink"><%= app_config.name %></span>
         </a>
         <button @click="open = false" type="button" class="-m-2.5 rounded-xl p-2.5 text-ink-muted hover:text-primary">
           <span class="sr-only">Close menu</span>

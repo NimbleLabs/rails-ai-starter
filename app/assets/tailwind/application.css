@@ -6,18 +6,21 @@
  * Design tokens.
  *
  * Mirrors the FitnessHQ / mobile-app-starter design system: warm neutrals,
- * soft rounded surfaces, low-opacity shadows, Outfit typeface, purple brand
- * accent. The `--theme-*` variables are the runtime layer — the marketing
- * layout's Alpine theme switcher (lib/themes/*.json) overrides them per theme;
- * the Vue admin/app SPAs simply get these defaults (plus `.dark` below).
+ * soft rounded surfaces, low-opacity shadows. The `--theme-*` variables are the
+ * runtime layer. The values below are the starter's defaults; every layout then
+ * renders shared/_theme_head after this file, which overrides the brand ones
+ * (fonts, primary, secondary, corners and what's derived from them) from
+ * config/app.yml. See AppConfig, and the admin's Theme page.
  *
- * Prefer the semantic classes (bg-primary, text-ink, bg-surface, border-line)
- * over literal `purple-*` / `gray-*` utilities so a re-theme stays a one-file
- * change. Use `bg-primary/10` for tints instead of `bg-brand-50`.
+ * Prefer the semantic classes (bg-primary, text-on-primary, text-ink,
+ * bg-surface, border-line, rounded-card) over literal `purple-*` / `gray-*` /
+ * `rounded-xl` utilities so the config can restyle them. Use `bg-primary/10`
+ * for tints.
  */
 :root {
     --theme-primary: #7c3aed;
     --theme-primary-hover: #6d28d9;
+    --theme-on-primary: #ffffff;   /* text on primary fills */
     --theme-secondary: #6366f1;
     --theme-accent: #f59e0b;
     --theme-background: #fffaf0;   /* cream — page canvas */
@@ -28,7 +31,10 @@
     --theme-line: rgba(28, 20, 16, 0.10);
     --theme-display-font: 'Outfit', ui-sans-serif, system-ui, sans-serif;
     --theme-body-font: 'Outfit', ui-sans-serif, system-ui, sans-serif;
-    --theme-border-radius: 1rem;
+    --theme-display-weight: 800;
+    --theme-border-radius: 1rem;    /* cards, panels */
+    --theme-control-radius: 1rem;   /* buttons, brand mark */
+    --theme-field-radius: 0.75rem;  /* inputs, alerts, nav links */
     --theme-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 }
 
@@ -51,6 +57,7 @@
     /* Semantic (runtime-themeable) colors */
     --color-primary: var(--theme-primary);
     --color-primary-hover: var(--theme-primary-hover);
+    --color-on-primary: var(--theme-on-primary);
     --color-secondary: var(--theme-secondary);
     --color-accent: var(--theme-accent);
     --color-canvas: var(--theme-background);
@@ -60,20 +67,23 @@
     --color-ink-muted: var(--theme-text-muted);
     --color-line: var(--theme-line);
 
-    /* Static brand ramp (Tailwind violet) — for gradients / splash / one-offs */
-    --color-brand-50: #f5f3ff;
-    --color-brand-100: #ede9fe;
-    --color-brand-200: #ddd6fe;
-    --color-brand-300: #c4b5fd;
-    --color-brand-400: #a78bfa;
-    --color-brand-500: #8b5cf6;
-    --color-brand-600: #7c3aed;
-    --color-brand-700: #6d28d9;
-    --color-brand-800: #5b21b6;
-    --color-brand-900: #4c1d95;
+    /* Brand ramp derived from the primary (600 is the primary itself) — for
+       gradients and one-offs. */
+    --color-brand-50: color-mix(in oklab, var(--theme-primary) 6%, white);
+    --color-brand-100: color-mix(in oklab, var(--theme-primary) 12%, white);
+    --color-brand-200: color-mix(in oklab, var(--theme-primary) 25%, white);
+    --color-brand-300: color-mix(in oklab, var(--theme-primary) 45%, white);
+    --color-brand-400: color-mix(in oklab, var(--theme-primary) 65%, white);
+    --color-brand-500: color-mix(in oklab, var(--theme-primary) 85%, white);
+    --color-brand-600: var(--theme-primary);
+    --color-brand-700: color-mix(in oklab, var(--theme-primary) 85%, black);
+    --color-brand-800: color-mix(in oklab, var(--theme-primary) 70%, black);
+    --color-brand-900: color-mix(in oklab, var(--theme-primary) 55%, black);
     --color-cream: #fffaf0;
 
-    --radius-card: 1rem;
+    --radius-card: var(--theme-border-radius);
+    --radius-control: var(--theme-control-radius);
+    --radius-field: var(--theme-field-radius);
     --shadow-card: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
     --shadow-pill: 0 2px 6px 0 rgba(0, 0, 0, 0.08);
 }
@@ -89,9 +99,13 @@
 
     h1, h2, h3 {
         font-family: var(--font-display);
-        font-weight: 800;
+        font-weight: var(--theme-display-weight);
         letter-spacing: -0.025em;
     }
+
+    /* Single-weight display faces (DM Serif Display, Archivo Black...) render
+       as drawn instead of the browser faking a bold. */
+    h1, h2, h3, .font-display { font-synthesis-weight: none; }
 
     input[type="text"], input[type="email"], input[type="password"],
     input[type="number"], input[type="url"], input[type="search"], textarea, select {
@@ -102,13 +116,13 @@
 
 /* Composable bases — @utility so they can be @apply'd by the variants below */
 @utility btn {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary/40;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-control font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary/40;
 }
 @utility badge {
     @apply inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap;
 }
 @utility alert {
-    @apply rounded-xl px-4 py-3 text-sm;
+    @apply rounded-field px-4 py-3 text-sm;
 }
 
 @layer components {
@@ -125,12 +139,12 @@
     .section-title { @apply font-display text-xl font-bold text-ink; }
 
     /* ---- Buttons ---- */
-    .btn-primary { @apply btn bg-primary text-white shadow-pill hover:bg-primary-hover; }
+    .btn-primary { @apply btn bg-primary text-on-primary shadow-pill hover:bg-primary-hover; }
     .btn-secondary { @apply btn bg-surface border border-line text-ink shadow-pill hover:bg-primary/10; }
     .btn-outline { @apply btn bg-transparent border border-primary text-primary hover:bg-primary/10; }
     .btn-danger { @apply btn bg-red-600 text-white shadow-pill hover:bg-red-700; }
     .btn-ghost { @apply btn bg-transparent text-ink-muted hover:bg-primary/10 hover:text-primary shadow-none; }
-    .btn-sm { @apply px-3 py-1.5 text-xs rounded-xl; }
+    .btn-sm { @apply px-3 py-1.5 text-xs; }
     .btn-lg { @apply px-8 py-3 text-base; }
 
     /* ---- Surfaces ---- */
@@ -147,7 +161,7 @@
     .form-label { @apply block text-sm font-medium text-ink mb-1; }
     .form-hint { @apply text-xs text-ink-muted mt-1; }
     .input-form-field {
-        @apply block w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-ink shadow-sm placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:text-sm;
+        @apply block w-full rounded-field border border-line bg-surface px-4 py-2.5 text-ink shadow-sm placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:text-sm;
     }
     select.input-form-field { @apply pr-10 bg-no-repeat; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b6560' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.75rem center; background-size: 1.25rem; }
     .form-checkbox { @apply h-4 w-4 rounded border-line text-primary focus:ring-primary/40; }
@@ -177,8 +191,8 @@
     .alert-error { @apply alert bg-red-50 text-red-700; }
 
     /* ---- Admin sidebar ---- */
-    .nav-link { @apply flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl text-ink-muted transition-colors hover:bg-primary/10 hover:text-primary; }
-    .nav-link-active { @apply bg-primary text-white hover:bg-primary-hover hover:text-white shadow-pill; }
+    .nav-link { @apply flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-field text-ink-muted transition-colors hover:bg-primary/10 hover:text-primary; }
+    .nav-link-active { @apply bg-primary text-on-primary hover:bg-primary-hover hover:text-on-primary shadow-pill; }
 
 
     /* ---- Rendered rich text (Action Text / Trix output) ---- */
@@ -204,5 +218,5 @@
     .rich-text table { @apply w-full text-sm; }
 
     /* ---- Brand mark (purple tile) ---- */
-    .brand-mark { @apply inline-flex items-center justify-center rounded-2xl bg-primary text-white font-extrabold tracking-tight shadow-pill; }
+    .brand-mark { @apply inline-flex items-center justify-center rounded-control bg-primary text-on-primary font-display font-extrabold tracking-tight shadow-pill; }
 }

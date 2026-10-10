@@ -5,8 +5,10 @@
 #
 # Rewrites the Rails repo (and the sibling mobile-app-starter repo, if present)
 # from the "RailsAiStarter / rails-ai-starter / mobile-app-starter" placeholders
-# to the names you provide, generates fresh secrets, and (optionally) resets git
-# history + creates GitHub repos via `gh`.
+# to the names you provide, writes config/app.yml (the app's name and look, see
+# AppConfig) and gives the mobile app the same look (bin/sync-mobile-theme),
+# generates fresh secrets, and (optionally) resets git history + creates GitHub
+# repos via `gh`.
 #
 # Run from the Rails repo root:
 #   bin/new-app                           # interactive
@@ -16,8 +18,14 @@
 #               --module AcmeRecipes \
 #               --bundle-id com.acme.recipes \
 #               --github-org acmecorp \
+#               --display-font Fraunces --body-font Inter \
+#               --primary "#0f766e" --secondary "#f59e0b" --corners round \
+#               --tagline "Cook what you have." \
 #               --fresh-git \
 #               --non-interactive
+#
+# The look (fonts, colors, corners) defaults to the starter's; pick it later on
+# the admin's Theme page (/admin/theme) if you'd rather see it first.
 #
 # What it does NOT do: rename the directories themselves, create the database,
 # or push deploys. It prints the next steps for those.
@@ -26,6 +34,7 @@ require "fileutils"
 require "json"
 require "optparse"
 require "securerandom"
+require_relative "../app/models/app_config"
 
 RAILS_DIR   = Dir.pwd
 MOBILE_DIR  = File.expand_path("../mobile-app-starter", RAILS_DIR)
@@ -42,7 +51,8 @@ SKIP_DIRS = %w[node_modules .git vendor tmp log storage public/assets public/vit
 options = {
   name: nil, slug: nil, module_name: nil, bundle_id: nil,
   github_org: nil, fresh_git: false, skip_mobile: false,
-  non_interactive: false
+  non_interactive: false,
+  short_name: nil, tagline: nil, support_email: nil, theme: {}
 }
 
 OptionParser.new do |opts|
@@ -55,6 +65,16 @@ OptionParser.new do |opts|
   opts.on("--fresh-git",         "Delete .git and start a new history (initial commit)") { options[:fresh_git] = true }
   opts.on("--skip-mobile",       "Don't touch the mobile-app-starter sibling")       { options[:skip_mobile] = true }
   opts.on("--non-interactive",   "Don't prompt; fail if required fields missing")    { options[:non_interactive] = true }
+  opts.separator ""
+  opts.separator "Identity and look (config/app.yml; any left out keep the starter's defaults):"
+  opts.on("--short-name INITIALS", "1-3 letters for the brand mark (default: the name's initials)") { |v| options[:short_name] = v }
+  opts.on("--tagline TEXT",        "One line about the product")                                 { |v| options[:tagline] = v }
+  opts.on("--support-email EMAIL", "Where people can reach a human")                             { |v| options[:support_email] = v }
+  opts.on("--display-font FONT",   "Headings font from AppConfig::FONTS")                       { |v| options[:theme]["display_font"] = v }
+  opts.on("--body-font FONT",      "Body font from AppConfig::FONTS (not display-only)")        { |v| options[:theme]["body_font"] = v }
+  opts.on("--primary HEX",         "Primary color, e.g. '#0f766e' (must read on white)")        { |v| options[:theme]["primary"] = v }
+  opts.on("--secondary HEX",       "Secondary color, e.g. '#f59e0b'")                           { |v| options[:theme]["secondary"] = v }
+  opts.on("--corners STYLE",       "sharp, soft or round")                                      { |v| options[:theme]["corners"] = v }
 end.parse!
 
 # --- helpers ------------------------------------------------------------------
@@ -78,6 +98,12 @@ end
 
 def slugify(name)
   name.downcase.gsub(/[^a-z0-9]+/, "-").gsub(/^-|-$/, "")
+end
+
+# "Acme Recipes" -> "AR", "Chartly" -> "CH"
+def initials(name)
+  words = name.scan(/[A-Za-z0-9]+/)
+  (words.length > 1 ? words.first(2).map { |word| word[0] }.join : words.first.to_s[0, 2]).upcase
 end
 
 def confirm(question, non_interactive:)
@@ -141,6 +167,11 @@ mod_default = pascalize(name)
 module_name = options[:module_name] || prompt("Ruby module / PascalCase", default: mod_default, non_interactive: ni)
 bundle_default = "com.example.#{slug.tr('-', '')}"
 bundle_id   = options[:bundle_id]   || prompt("iOS bundle id", default: bundle_default, non_interactive: ni)
+short_name  = options[:short_name] || prompt("Brand mark initials", default: initials(name), non_interactive: ni)
+tagline     = options[:tagline]    || prompt("Tagline (one line)", default: AppConfig::DEFAULTS["tagline"], non_interactive: ni)
+app_config  = AppConfig.new("name" => name, "short_name" => short_name, "tagline" => tagline,
+                            "support_email" => options[:support_email].to_s, "theme" => options[:theme])
+abort "config/app.yml would be invalid: #{app_config.errors.join(' ')}" unless app_config.valid?
 github_org  = options[:github_org]
 fresh_git   = options[:fresh_git]
 skip_mobile = options[:skip_mobile] || !File.directory?(MOBILE_DIR)
@@ -154,6 +185,8 @@ puts "\nAbout to fork the starter into:"
 puts "  App name:      #{name}"
 puts "  Slug:          #{slug}"
 puts "  Module:        #{module_name}"
+puts "  Brand mark:    #{app_config.short_name}"
+puts "  Look:          #{app_config.theme.display_font} / #{app_config.theme.body_font}, #{app_config.theme.primary}, #{app_config.theme.corners} corners"
 puts "  iOS bundle id: #{bundle_id}"
 puts "  Mobile repo:   #{skip_mobile ? '(skipped)' : MOBILE_DIR}"
 puts "  Fresh git:     #{fresh_git ? 'yes (will delete .git)' : 'no'}"
@@ -173,6 +206,9 @@ rails_replacements = {
 }
 
 apply_replacements("rails", RAILS_DIR, RAILS_WALK, rails_replacements)
+
+app_config.write(File.join(RAILS_DIR, AppConfig::PATH))
+puts "  wrote #{AppConfig::PATH}"
 
 # --- regenerate Rails secrets -------------------------------------------------
 
@@ -222,6 +258,10 @@ unless skip_mobile
     File.write(app_json_path, JSON.pretty_generate(app_json) + "\n")
     puts "  patched app.json (name/slug/scheme/bundle id)"
   end
+
+  # Same name, colors, corners and fonts as the web (src/constants/branding.ts).
+  system(File.join(RAILS_DIR, "bin/sync-mobile-theme"), MOBILE_DIR) ||
+    warn("  bin/sync-mobile-theme failed; rerun it from the Rails repo once the mobile app's npm install works")
 end
 
 # --- fresh git ----------------------------------------------------------------
@@ -277,4 +317,8 @@ puts <<~STEPS
 
   If you skipped --bundle-id, the default is com.example.* — change it in
   mobile-app-starter/app.json before submitting to TestFlight.
+
+  To change the look, open /admin/theme (fonts, colors, corners, with a live
+  preview); saving it in development rewrites config/app.yml. Then run
+  bin/sync-mobile-theme to give the mobile app the same look.
 STEPS

@@ -1,5 +1,6 @@
 {
-  "name": "RailsAiStarter",
+  "name": <%== app_config.name.to_json %>,
+  "short_name": <%== app_config.short_name.to_json %>,
   "icons": [
     {
       "src": "/icon.png",
@@ -16,7 +17,7 @@
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
-  "description": "RailsAiStarter.",
-  "theme_color": "red",
-  "background_color": "red"
+  "description": <%== app_config.tagline.to_json %>,
+  "theme_color": <%== app_config.theme.primary.to_json %>,
+  "background_color": <%== AppConfig::CANVAS.to_json %>
 }

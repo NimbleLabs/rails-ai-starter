@@ -49,7 +49,8 @@ class AdminSpaTest < ApplicationSystemTestCase
       "/admin/features" => "Features",
       "/admin/logs" => "Logs",
       "/admin/log-notifications" => "notifications",
-      "/admin/quality" => "Quality"
+      "/admin/quality" => "Quality",
+      "/admin/theme" => "Theme"
     }
 
     pages.each do |path, heading|

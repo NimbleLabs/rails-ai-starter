@@ -11,6 +11,12 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 
 ## What's included
 
+- **Your name and look in one file** — `config/app.yml` sets the app's name,
+  tagline, fonts, colors and corner style for the site, the admin, email and the
+  mobile app. Preview and change it on the admin's Theme page. See
+  [Your app's name and look](#your-apps-name-and-look).
+- **Quality gate** — `bin/rails quality` runs every test with coverage plus
+  RuboCop and Brakeman, and the admin's Quality page shows the result.
 - **Auth** — Devise with sign-in / register / logout, optional
   [Sign in with Google](#setting-up-sign-in-with-google), FriendlyId slugs, role
   enum (user / admin), API-token authentication for mobile clients.
@@ -103,7 +109,6 @@ STARTER_API_TOKEN=...                # optional, feature workflow
 
 SLACK_WEBHOOK_URL=                   # optional, error-log notifications
 MAIL_FROM=                           # from address for outgoing mail
-APP_NAME=Starter                     # shown in log alerts
 SOLID_QUEUE_IN_PUMA=true             # production: run jobs inside the web process
 WHATS_NEW_FEED_URL=                  # optional, NimbleHQ feed for /whats-new
 NIMBLEHQ_METRICS_TOKEN=              # optional, lets NimbleHQ read daily traffic
@@ -125,6 +130,23 @@ appear. A fresh clone signs up and runs its test suite without a Google Cloud
 account. Set them when you want them; see the two sections below.
 
 ---
+
+## Your app's name and look
+
+`config/app.yml` holds the app's name, initials, tagline and look: a heading
+font and a body font from an approved list of Google Fonts, a primary and a
+secondary color, and a corner style (sharp, soft or round). Everything else
+(hover shades, dark mode, text on buttons) is derived from those.
+
+- **Starting a project:** `bin/new-app --name "Acme Recipes" --display-font Fraunces
+  --body-font Inter --primary "#0f766e" --corners round` writes the file and gives
+  the mobile app the same look. Leave the look options out to keep the starter's.
+- **Changing it:** open `/admin/theme`, start from a preset or pick fonts and
+  colors, and watch the light and dark preview. In development **Save** writes
+  `config/app.yml`; commit it. In production the page previews and lets you copy
+  the YAML.
+- **Mobile:** after changing it, run `bin/sync-mobile-theme` to regenerate the
+  Expo app's `src/constants/branding.ts` and install its fonts.
 
 ## Running locally
 

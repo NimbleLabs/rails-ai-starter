@@ -1,7 +1,7 @@
-<% content_for(:title, "What's new · #{@app_name}") %>
+<% content_for(:title, "What's new · #{app_config.name}") %>
 <div class="max-w-3xl mx-auto px-6 py-12">
   <h1 class="font-display text-3xl md:text-4xl font-bold text-ink">What's new</h1>
-  <p class="mt-2 text-ink-muted">What you can do with <%= @app_name %>, newest first.</p>
+  <p class="mt-2 text-ink-muted">What you can do with <%= app_config.name %>, newest first.</p>
 
   <% if @entries.empty? %>
     <p class="mt-10 text-ink-muted">Nothing to show yet. Check back soon.</p>

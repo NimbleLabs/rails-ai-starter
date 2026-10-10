@@ -10,13 +10,13 @@
       <%# Brand %>
       <div class="col-span-2 md:col-span-1 space-y-4">
         <a href="/" class="inline-flex items-center gap-2.5">
-          <span class="brand-mark w-9 h-9 text-sm">ST</span>
-          <span class="font-display font-bold text-2xl text-ink">Starter</span>
+          <%= brand_mark "w-9 h-9 text-sm" %>
+          <span class="font-display font-bold text-2xl text-ink"><%= app_config.name %></span>
         </a>
-        <p class="text-sm text-ink-muted leading-relaxed max-w-xs">
-          A Rails 8 API, a React admin, and an Expo mobile app &mdash; wired together so
-          you can ship your next product in days, not months.
-        </p>
+        <p class="text-sm text-ink-muted leading-relaxed max-w-xs"><%= app_config.tagline %></p>
+        <% if app_config.support_email.present? %>
+          <%= mail_to app_config.support_email, class: "inline-block text-sm text-ink-muted hover:text-primary transition-colors" %>
+        <% end %>
       </div>
 
       <%# Product %>
@@ -54,22 +54,9 @@
 
     <div class="mt-12 pt-6 border-t border-line flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-ink-muted">
-        &copy; <%= Date.current.year %> Your Company. All rights reserved.
+        &copy; <%= Date.current.year %> <%= app_config.name %>. All rights reserved.
       </p>
 
-      <%# Theme selector — drives the Alpine runtime theme switcher in the layout. %>
-      <div class="flex items-center gap-2">
-        <label for="theme-select" class="text-sm text-ink-muted">Theme</label>
-        <select
-          id="theme-select"
-          @change="setTheme($event.target.value)"
-          x-model="theme"
-          class="input-form-field w-auto py-1.5 text-sm">
-          <template x-for="t in themes" :key="t.slug">
-            <option :value="t.slug" x-text="t.slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')"></option>
-          </template>
-        </select>
-      </div>
     </div>
   </div>
 </footer>
