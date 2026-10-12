@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# This Dockerfile is designed for production, not development. bin/bootstrap-droplet's Dokku server builds
+# from it on `git push dokku main` (NimbleHQ's launches use buildpacks instead). To build and run it by hand:
 # docker build -t rails_ai_starter .
 # docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name rails_ai_starter rails_ai_starter
 

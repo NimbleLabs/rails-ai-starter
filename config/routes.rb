@@ -1,10 +1,4 @@
 Rails.application.routes.draw do
-  resources :features do
-    collection do
-      put :reorder
-      patch :reorder
-    end
-  end
   get "about", to: "static#about", as: "about"
   get "simple", to: "static#simple", as: "simple"
   get "privacy", to: "static#privacy", as: "privacy"

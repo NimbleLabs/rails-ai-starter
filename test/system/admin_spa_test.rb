@@ -46,7 +46,6 @@ class AdminSpaTest < ApplicationSystemTestCase
       "/admin/articles" => "Articles",
       "/admin/funnels" => "Funnels",
       "/admin/funnel-metrics" => "Funnel",
-      "/admin/features" => "Features",
       "/admin/logs" => "Logs",
       "/admin/log-notifications" => "notifications",
       "/admin/quality" => "Quality",

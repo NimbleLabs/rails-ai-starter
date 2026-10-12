@@ -62,7 +62,6 @@ class AdminMobileTest < ApplicationSystemTestCase
       /admin/users
       /admin/contacts
       /admin/articles
-      /admin/features
       /admin/logs
       /admin/log-notifications
       /admin/funnel-metrics

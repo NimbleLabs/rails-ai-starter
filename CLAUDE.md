@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## How work happens here: NimbleHQ
+
+Apps made from this starter are run with NimbleHQ (https://pilot.nimblehq.com). Harris approves tasks there, and
+NimbleHQ's builder agent builds each one unattended, start to finish. Harris also works in these repos directly
+with Claude Code. The same rules apply to both.
+
+- **One task, one small change.** Build what the task asks and nothing more.
+- **main is production.** Every change goes: a branch, `bin/rails quality` passes, merge to main,
+  `git push origin main`, `git push dokku main`, then check that `https://<APP_HOST>/up` answers 200.
+- **Deploying is part of finishing,** not a separate step to ask about. Never leave merged work undeployed. No
+  pull requests, staging servers or long-lived branches. With no `dokku` git remote (the starter itself, or an
+  app that hasn't launched yet) there is nothing to deploy: stop after pushing to origin.
+- **Migrations run on every deploy** (`app.json`), against live data. Make them safe for it: add columns and
+  tables rather than renaming or dropping them in the same deploy, and never lose data.
+- **If a deploy fails,** try one fix. If it still fails, revert the merge, push and deploy the revert, then say
+  what went wrong.
+- **Server settings are Harris's.** NimbleHQ sets up the server once, at launch. After that the only server
+  command to run is the deploy: no `dokku config:set`, and never touch production data. If a change needs a new
+  environment variable, API key or domain, stop and say exactly what to set.
+- **What's new** comes from NimbleHQ, so don't edit it here (see "Production").
+- Write everything users read in plain language: short sentences, no jargon.
+
 ## Tech Stack
 
 - **Backend**: Rails 8.1.1 with PostgreSQL
@@ -162,7 +184,7 @@ view and both sharing one component kit:
    - Layout: `app/javascript/admin/layout/` — permanent sidebar at `lg+`, off-canvas
      drawer below it. Nav items are data in `layout/navItems.js`.
    - Pages: `app/javascript/admin/pages/` — dashboard, users, contacts, email
-     templates, articles, funnels, metrics, features, logs, quality, theme.
+     templates, articles, funnels, metrics, logs, quality, theme.
 
 Both host pages serialize the signed-in user into `window.__currentUser`, so the SPAs
 boot without a round trip. Rails catch-all routes (`get "admin/*other"`) make deep
@@ -200,8 +222,8 @@ that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
 
 - Static pages: Root `/`, About, Privacy, Terms
 - Devise auth: `/sign-in`, `/register`, `/logout`
-- Resources: `/articles`, `/contacts`, `/email-templates`, `/features`, `/logs`, `/log-subscriptions`
-  (the last three are JSON-only, consumed by the React admin)
+- Resources: `/articles`, `/contacts`, `/email-templates`, `/logs`, `/log-subscriptions`
+  (the last two are JSON-only, consumed by the React admin)
 - API: `/api/v1/users/*`, `/api/v1/sessions`, `/api/v1/registrations` (JSON format)
 - Mobile ingestion: `POST /api/v1/logs` (errors), `POST /api/v1/events` (Ahoy analytics)
 - Ahoy JS/native endpoints: `/ahoy/visits`, `/ahoy/events`
@@ -284,8 +306,10 @@ Required environment variables (use .env in development via dotenv-rails):
 
 ### Deployment
 
-- Docker support via Dockerfile
-- Kamal deploy configuration in .kamal/ and config/deploy.yml
+- Dokku: `git push dokku main` builds and deploys, and `app.json` runs the migrations first. That is the whole
+  release; see "How work happens here".
+- NimbleHQ's launcher sets up each app's server with buildpacks; `bin/bootstrap-droplet` sets up a fresh Dokku
+  droplet that builds from the `Dockerfile`.
 - Thruster for HTTP caching/compression
 - CI via GitHub Actions: brakeman, importmap audit, rubocop, tests
 
@@ -637,36 +661,6 @@ starter that have real chats: https://rubyllm.com/next/upgrading/ (don't use thi
 Models are annotated with schema info via annotaterb. Run `bin/rails annotaterb:annotate` after migrations to keep comments up to date.
 
 
-## Feature Workflow
-
-Pull features from the production yourdomainhere.com Features API to manage development workflow.
-
-**Setup:**
-1. Get your API token from: Production Admin → Users → Your User → Copy API Token
-2. Add to `.env`: `STARTER_API_TOKEN=<your-token>`
-
-**Commands:**
-```bash
-# Rake tasks
-rake feature:list                    # List planned features from production
-rake feature:show[slug]              # Show details for a specific feature
-rake feature:start[slug]             # Create branch, update status to in_progress
-rake feature:complete                # Complete current feature (detects from branch)
-rake feature:current                 # Show current feature being worked on
-
-# Shell wrappers (quick access)
-bin/feature list                     # Alias for rake feature:list
-bin/feature start <slug>             # Alias for rake feature:start
-bin/feature complete                 # Alias for rake feature:complete
-bin/feature current                  # Alias for rake feature:current
-```
-
-**Workflow:**
-1. `rake feature:list` - See available features
-2. `rake feature:start[slug]` - Creates `feature/<slug>` branch, marks as in_progress
-3. Work on the feature, commit changes
-4. `rake feature:complete` - Marks as completed, optionally creates PR
-
 ## API Token Authentication
 
 Users have an `auth_token` column for stateless API authentication.
@@ -688,7 +682,3 @@ user.auth_token                  # Get token
 user.regenerate_auth_token       # Generate new token
 User.find_by_auth_token(token)   # Find by token
 ```
-
-### Final Points
-- Write every prompt that you are given to a PROMPTS.md file so we can keep track of them over time.
-

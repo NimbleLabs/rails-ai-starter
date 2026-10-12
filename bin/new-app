@@ -41,7 +41,7 @@ MOBILE_DIR  = File.expand_path("../mobile-app-starter", RAILS_DIR)
 
 # Directories inside each repo that the rewriter will walk. Anything outside
 # these (node_modules, vendor, tmp, log, storage, .git) is left alone.
-RAILS_WALK  = %w[app bin config db lib test .kamal Dockerfile Gemfile Gemfile.lock Procfile.dev README.md].freeze
+RAILS_WALK  = %w[app bin config db lib test Dockerfile Gemfile Gemfile.lock Procfile.dev README.md].freeze
 MOBILE_WALK = %w[app.json package.json package-lock.json README.md src].freeze
 
 SKIP_DIRS = %w[node_modules .git vendor tmp log storage public/assets public/vite].freeze
@@ -223,14 +223,6 @@ key_file  = File.join(RAILS_DIR, "config/master.key")
   end
 end
 puts "  run `EDITOR=vim bin/rails credentials:edit` after setup to create a fresh master.key"
-
-# --- reset PROMPTS.md ---------------------------------------------------------
-
-prompts_file = File.join(RAILS_DIR, "PROMPTS.md")
-if File.exist?(prompts_file)
-  File.write(prompts_file, "# Prompts Log\n\nA running log of the prompts given to Claude Code in this repo.\n")
-  puts "  reset PROMPTS.md"
-end
 
 # --- rewrite Mobile ----------------------------------------------------------
 

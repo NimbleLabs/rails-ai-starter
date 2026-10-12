@@ -14,9 +14,6 @@ import { PostDetails } from './pages/articles/PostDetails'
 import { FunnelsList } from './pages/funnels/FunnelsList'
 import { FunnelForm } from './pages/funnels/FunnelForm'
 import { FunnelMetrics } from './pages/funnels/FunnelMetrics'
-import { FeaturesList } from './pages/features/FeaturesList'
-import { FeatureForm } from './pages/features/FeatureForm'
-import { FeatureDetails } from './pages/features/FeatureDetails'
 import { LogsList } from './pages/logs/LogsList'
 import { LogDetails } from './pages/logs/LogDetails'
 import { LogSubscriptions } from './pages/logs/LogSubscriptions'
@@ -55,11 +52,6 @@ export default function AdminApp() {
           <Route path="funnels/new" element={<FunnelForm />} />
           <Route path="funnels/:id/edit" element={<FunnelForm />} />
           <Route path="funnel-metrics" element={<FunnelMetrics />} />
-
-          <Route path="features" element={<FeaturesList />} />
-          <Route path="features/new" element={<FeatureForm />} />
-          <Route path="features/:id/edit" element={<FeatureForm />} />
-          <Route path="features/:id" element={<FeatureDetails />} />
 
           <Route path="logs" element={<LogsList />} />
           <Route path="logs/:id" element={<LogDetails />} />

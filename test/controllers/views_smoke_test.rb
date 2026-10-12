@@ -38,10 +38,4 @@ class ViewsSmokeTest < ActionDispatch::IntegrationTest
       assert_response :success, "#{url} did not render"
     end
   end
-
-  test "features is a json-only resource for the vue admin" do
-    sign_in users(:one)
-    get features_url(format: :json)
-    assert_response :success
-  end
 end

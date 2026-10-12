@@ -2,8 +2,8 @@
 
 An opinionated Rails 8 starter optimized for building AI-accelerated products with
 [Claude Code](https://github.com/anthropics/claude-code). Ships with auth, an admin
-SPA, LLM integration, transactional email, payments, and a feature-tracking workflow
-so you can get from `clone` to shipping in an afternoon.
+SPA, LLM integration, transactional email and payments, and it is built to be run
+with NimbleHQ, so you can get from `clone` to shipping in an afternoon.
 
 Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 
@@ -39,11 +39,9 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
   `payments_controller`.
 - **Marketing funnels** — `/f/:slug` landing pages (lead → book-call → order →
   thank-you) backed by a `Funnel` model with a metrics endpoint.
-- **Feature workflow** — `bin/feature` (rake task wrapper) creates branches,
-  tracks status, and creates PRs against your features API.
 - **Background jobs / cache / Action Cable** — Solid Queue, Solid Cache, Solid
   Cable. No Redis required.
-- **Deployment** — Kamal config + Dockerfile + Thruster, GitHub Actions for
+- **Deployment** — Dokku (`git push dokku main`) + Thruster, GitHub Actions for
   Brakeman, RuboCop, and tests.
 - **Rich text + uploads** — Action Text with Trix, Active Storage with
   `image_processing` variants.
@@ -63,7 +61,7 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 | Error tracking | Internal `Log` model (no third-party service) |
 | LLM | ruby_llm (OpenAI + Anthropic) |
 | Jobs / cache / cable | Solid Queue / Cache / Cable |
-| Deployment | Kamal + Docker + Thruster |
+| Deployment | Dokku + Thruster |
 | Email | Action Mailer + Ahoy + Mailkick + Bootstrap Email |
 
 ---
@@ -105,7 +103,6 @@ OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 STRIPE_SECRET_KEY=sk_test_...        # optional, payments
 STRIPE_PUBLISHABLE_KEY=pk_test_...
-STARTER_API_TOKEN=...                # optional, feature workflow
 
 SLACK_WEBHOOK_URL=                   # optional, error-log notifications
 MAIL_FROM=                           # from address for outgoing mail
@@ -206,13 +203,10 @@ app/
     chat.rb / message.rb  # ruby_llm acts_as_chat
 config/
   routes.rb               # Devise + REST + namespaced API + funnel paths
-  deploy.yml              # Kamal
-.kamal/                   # secrets + deploy hooks
 bin/
   setup                   # idempotent app setup
   install-mac-deps        # idempotent toolchain installer
   dev                     # foreman-style dev server
-  feature                 # feature-workflow CLI
 ```
 
 ## Authentication for mobile clients
@@ -387,15 +381,20 @@ or set them later with `dokku config:set`.
 
 ## Deployment
 
-The app deploys via [Kamal 2](https://kamal-deploy.org/):
+Apps deploy to [Dokku](https://dokku.com/) with a git push. `app.json` runs the
+migrations before each release:
 
 ```bash
-bin/kamal setup                # first time only
-bin/kamal deploy
+git push dokku main
 ```
 
-Secrets live in `.kamal/secrets`. The `Dockerfile` is production-ready;
-Thruster handles HTTP caching + compression in front of Puma.
+NimbleHQ's launcher sets up the server for each app it launches. For a server of
+your own, `bin/bootstrap-droplet` creates a DigitalOcean droplet with Dokku and
+Postgres, and that server builds from the `Dockerfile`. Thruster handles HTTP
+caching + compression in front of Puma.
+
+Apps run with NimbleHQ deploy after every change: `main` is production. See
+"How work happens here: NimbleHQ" in [`CLAUDE.md`](./CLAUDE.md).
 
 ---
 
@@ -410,8 +409,6 @@ A few prompts to try after `claude` starts:
 - "Explain how the two React SPAs share state with Rails."
 - "Add a new model `Project` with FriendlyId slugs and a `/projects` REST resource."
 - "Wire up a new `/api/v1/projects` endpoint that authenticates by token."
-
-See [`PROMPTS.md`](./PROMPTS.md) for a longer set of starter prompts.
 
 ## License
 

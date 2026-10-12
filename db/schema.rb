@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_24_230003) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -166,26 +166,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_24_230003) do
     t.string "subject"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_email_templates_on_slug"
-  end
-
-  create_table "features", force: :cascade do |t|
-    t.text "acceptance_criteria"
-    t.string "area"
-    t.datetime "completed_at"
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.text "implementation_notes"
-    t.text "plan"
-    t.integer "position"
-    t.integer "priority"
-    t.string "slug"
-    t.datetime "started_at"
-    t.integer "status"
-    t.string "title"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["slug"], name: "index_features_on_slug"
-    t.index ["user_id"], name: "index_features_on_user_id"
   end
 
   create_table "funnels", force: :cascade do |t|
@@ -345,8 +325,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_24_230003) do
     t.index ["chat_type", "chat_id"], name: "index_ruby_llm_usages_on_chat_type_and_chat_id"
     t.index ["message_type", "message_id"], name: "index_ruby_llm_usages_on_message_type_and_message_id"
     t.index ["status"], name: "index_ruby_llm_usages_on_status"
-    t.check_constraint "operation::text = ANY (ARRAY['chat'::character varying, 'embedding'::character varying, 'moderation'::character varying, 'image'::character varying, 'speech'::character varying, 'transcription'::character varying, 'ocr'::character varying, 'rerank'::character varying]::text[])"
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'succeeded'::character varying, 'failed'::character varying, 'cancelled'::character varying]::text[])"
+    t.check_constraint "operation::text = ANY (ARRAY['chat'::character varying::text, 'embedding'::character varying::text, 'moderation'::character varying::text, 'image'::character varying::text, 'speech'::character varying::text, 'transcription'::character varying::text, 'ocr'::character varying::text, 'rerank'::character varying::text])"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'succeeded'::character varying::text, 'failed'::character varying::text, 'cancelled'::character varying::text])"
   end
 
   create_table "solid_cable_messages", force: :cascade do |t|
@@ -526,7 +506,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_24_230003) do
   add_foreign_key "chats", "ruby_llm_models"
   add_foreign_key "chats", "users"
   add_foreign_key "credit_cards", "users"
-  add_foreign_key "features", "users"
   add_foreign_key "logs", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
