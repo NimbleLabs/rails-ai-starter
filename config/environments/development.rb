@@ -71,4 +71,7 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+
+  # A tunnel to this machine, so Claude.ai can reach /mcp. See "MCP server" in CLAUDE.md.
+  config.hosts << ENV["APP_HOST"] if ENV["APP_HOST"].present?
 end

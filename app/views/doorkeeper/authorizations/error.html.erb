@@ -1,0 +1,21 @@
+<%# Shown when an authorization request can't be trusted: an unknown client, a redirect it never registered. %>
+<% error_response = local_assigns[:error_response] || @pre_auth.error_response %>
+<% content_for(:title) { "Couldn't connect · #{app_config.name}" } %>
+
+<section class="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-primary/5">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-6">
+      <%= brand_mark "w-14 h-14 text-xl" %>
+      <h1 class="mt-4 text-2xl sm:text-3xl text-ink">We couldn't connect that app</h1>
+      <p class="mt-2 text-ink-muted">Go back to the app you came from and try connecting again.</p>
+    </div>
+
+    <div class="card space-y-4">
+      <div class="alert-error break-words" role="alert"><%= oauth_error_message(error_response.body[:error]) %></div>
+      <p class="text-xs text-ink-muted break-words">
+        For the app's developer: <%= error_response.body[:error_description] %>
+      </p>
+      <%= link_to "Go to #{app_config.name}", root_path, class: "btn-secondary w-full" %>
+    </div>
+  </div>
+</section>

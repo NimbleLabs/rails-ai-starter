@@ -12,6 +12,17 @@ Rails.application.routes.draw do
                omniauth_callbacks: "users/omniauth_callbacks"
              }
 
+  # MCP server (see McpServer) and the OAuth 2.1 endpoints its clients use:
+  # /oauth/authorize (the consent page), /oauth/token and /oauth/revoke from
+  # Doorkeeper, plus client registration and the discovery documents.
+  use_doorkeeper do
+    skip_controllers :applications, :authorized_applications, :token_info
+  end
+  post "oauth/register", to: "oauth_client_registrations#create"
+  get ".well-known/oauth-protected-resource(/mcp)", to: "well_known#oauth_protected_resource", format: false
+  get ".well-known/oauth-authorization-server", to: "well_known#oauth_authorization_server", format: false
+  match "mcp", to: "mcp#handle", via: %i[get post delete], format: false
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

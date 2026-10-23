@@ -6,6 +6,7 @@
 SimpleCov.start "rails" do
   enable_coverage :branch
   group "Services", "app/services"
+  group "MCP", "app/mcp"
   # Starting at boot also catches the Rakefile and lib/tasks loading; they've
   # never been part of the measured code.
   skip %r{\A(Rakefile|lib/tasks/)}

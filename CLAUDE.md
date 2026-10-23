@@ -32,6 +32,8 @@ with Claude Code. The same rules apply to both.
 - **Styling**: Tailwind CSS 4.x, CSS-first config. Design tokens and the shared
   component classes live in `app/assets/tailwind/application.css` — see "Design system".
 - **Authentication**: Devise, plus "Sign in with Google" (omniauth-google-oauth2)
+- **MCP server**: `/mcp`, built on the official `mcp` gem, with Doorkeeper as its OAuth 2.1 server.
+  See "MCP server".
 - **Bot protection**: reCAPTCHA Enterprise (`recaptcha` gem)
 - **LLM Integration**: ruby_llm gem (~> 2.0), Claude (Anthropic) by default, OpenAI available
 - **Email**: bootstrap-email, ahoy_email (tracking), mailkick (unsubscribe management)
@@ -226,6 +228,8 @@ that stack (`flex-col-reverse sm:flex-row`), and long values that `truncate` or
   (the last two are JSON-only, consumed by the React admin)
 - API: `/api/v1/users/*`, `/api/v1/sessions`, `/api/v1/registrations` (JSON format)
 - Mobile ingestion: `POST /api/v1/logs` (errors), `POST /api/v1/events` (Ahoy analytics)
+- MCP: `/mcp`, `/oauth/authorize` (consent page), `/oauth/token`, `/oauth/revoke`, `/oauth/register`,
+  `/.well-known/oauth-protected-resource(/mcp)`, `/.well-known/oauth-authorization-server`
 - Ahoy JS/native endpoints: `/ahoy/visits`, `/ahoy/events`
 - Admin dashboard metrics: `GET /dashboard/metrics.json?days=N`
 - Test suite report card: `GET /quality.json` (reads the committed `quality/report.json`)
@@ -295,7 +299,8 @@ Required environment variables (use .env in development via dotenv-rails):
 - `SLACK_WEBHOOK_URL` - incoming webhook for `SlackService` system alerts (optional)
 - `MAIL_FROM` - from address for outgoing mail, including log alerts
 - `SENDGRID_API_KEY` - production mail goes through SendGrid when set; without it, production mail isn't delivered
-- `APP_HOST` - the app's domain, used for links in emails (production)
+- `APP_HOST` - the app's domain, used for links in emails and as the MCP server's URL (production; in
+  development only for a tunnel, see "MCP server")
 - `SOLID_QUEUE_IN_PUMA` - `true` runs background jobs (welcome emails, log alerts) inside the web process; set it on a single-process Dokku app, or jobs never run
 - `NIMBLEHQ_METRICS_TOKEN` - shared with NimbleHQ, which reads one day of traffic a night from `GET /api/metrics/daily`; unset hides the endpoint
 - `WHATS_NEW_FEED_URL` - NimbleHQ's public feed for this product; shows `/whats-new` and its footer link (unset hides both)
@@ -548,6 +553,58 @@ production, set `SENDGRID_API_KEY` (and `APP_HOST`); see `config/environments/pr
 app, authenticated or not (a crash before sign-in still matters). The client
 (`mobile-app-starter/src/lib/logger.ts`) applies the same policy on its side and
 dedupes locally. A client cannot forge a server-side `source`.
+
+## MCP server
+
+The app is an MCP server at `/mcp`, so Claude, ChatGPT, Cursor and other AI apps can use its tools as a
+signed-in user. It ships with one tool, `hello`, which greets you and names the connected account.
+
+**Adding a tool** is the usual job here:
+
+1. Copy `app/mcp/hello_tool.rb` to `app/mcp/<name>_tool.rb`. Subclass `ApplicationTool`, set `tool_name`,
+   `description` (written for the AI: say what it does and when to use it), `input_schema` and
+   `annotations`, and implement `self.call(server_context:, **arguments)`.
+2. Add the class to `McpServer::TOOLS`.
+3. Act as `current_user(server_context)`, the user who approved the connection, and scope every query to
+   what that user may see. A tool is an API endpoint: never trust its arguments to name whose data to touch.
+4. Return `MCP::Tool::Response.new([{ type: "text", text: "..." }])`. For a problem the user can fix
+   (bad input, not found), return `MCP::Tool::Response.new([...], error: true)` with a plain sentence.
+5. Test it like `test/mcp/hello_tool_test.rb` (the tool alone) and `test/controllers/mcp_controller_test.rb`
+   (through `/mcp`, with a token from `McpHelpers#mcp_token_for`).
+
+**How it fits together:**
+
+- `McpServer` (`app/mcp/mcp_server.rb`) names the server, lists the tools, and builds a stateless
+  Streamable HTTP transport per request (the SDK's Rails controller pattern). `McpController` just runs it.
+  Stateless means any web process answers any request, and there is no server-sent event stream.
+- The transport checks the bearer token before reading the request. `McpTokenVerifier` looks it up in
+  Doorkeeper. No token gets a 401 whose `WWW-Authenticate` header points the client at
+  `/.well-known/oauth-protected-resource/mcp`; a token without the `mcp` scope gets a 403.
+- Doorkeeper (`config/initializers/doorkeeper.rb`) is the authorization server: authorization code with
+  PKCE (S256) only, 1-hour access tokens with refresh tokens, secrets stored as digests, tokens accepted
+  only in the `Authorization` header. Clients register themselves at `POST /oauth/register`
+  (`OauthClientRegistrationsController`, RFC 7591). Deleting a user deletes their grants and tokens.
+- The consent page is `app/views/doorkeeper/authorizations/new.html.erb`, in the app's own layout and
+  design system. It names where the user will be sent afterwards (`OauthHelper`), because any client can
+  register under any name: that host is how a person tells Claude from an impostor. Signed-out users sign
+  in (or sign up, or use Google) and come straight back to it. Its forms skip Turbo, and if you turn on a
+  Content-Security-Policy, leave `form-action` open: Allow answers with a redirect to the client's site,
+  which the browser blocks under `form-action 'self'`.
+- The discovery documents (`WellKnownController`) and every URL in them come from `McpServer.origin`:
+  `https://APP_HOST`, or `http://localhost:3000` without it. Never build them from the request's `Host`
+  header; they tell clients which issuer and resource to trust.
+- `/mcp`, the discovery documents and the token, revoke and register endpoints allow any CORS origin, for
+  browser-based clients like the MCP Inspector. That is safe because they use tokens, never cookies.
+
+**Errors.** The SDK answers a tool that raises with a JSON-RPC error instead of a 500, so
+`McpServer.report_exception` (wired in `config/initializers/mcp.rb`) reports it to Logs. A client's own
+mistakes (an unknown tool, bad arguments, a missing scope) are not reported. Don't add `Log` calls to tools.
+
+**Trying it.** In development, `npx @modelcontextprotocol/inspector` and connect to
+`http://localhost:3000/mcp`. Claude.ai can't reach localhost: run a tunnel
+(`cloudflared tunnel --url http://localhost:3000`) and set `APP_HOST` in `.env` to its hostname
+(`config/environments/development.rb` allows that host). In production, add a custom connector in Claude
+with `https://<APP_HOST>/mcp`. Nothing to configure.
 
 ## Bot protection (reCAPTCHA Enterprise)
 

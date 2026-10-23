@@ -52,6 +52,11 @@ gem "recaptcha"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 
+# MCP server at /mcp (see app/mcp), with Doorkeeper as the OAuth 2.1 server that
+# lets MCP clients like Claude connect on a user's behalf.
+gem "mcp", "~> 1.8"
+gem "doorkeeper", "~> 5.9"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

@@ -29,6 +29,10 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
   and email/Slack notification rules. No Rollbar or Sentry.
 - **Two React 19 SPAs** — a customer-facing app at `/app/*` and an admin app at
   `/admin/*`, both served via `vite_rails`.
+- **MCP server** — `/mcp` lets Claude, ChatGPT, Cursor and other AI apps use
+  your app's tools as a signed-in user, with OAuth 2.1 (Doorkeeper) and a
+  consent page in your app's look. Ships with one `hello` tool. See
+  [Connecting Claude (MCP)](#connecting-claude-mcp).
 - **AI** — [`ruby_llm`](https://github.com/crmne/ruby_llm) wired up for OpenAI +
   Anthropic, with `acts_as_chat` / `acts_as_message` models that track tokens
   and tool calls.
@@ -60,6 +64,7 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 | Analytics | Ahoy (self-hosted, in Postgres) |
 | Error tracking | Internal `Log` model (no third-party service) |
 | LLM | ruby_llm (OpenAI + Anthropic) |
+| MCP server | `mcp` (official Ruby SDK) + Doorkeeper (OAuth 2.1) |
 | Jobs / cache / cable | Solid Queue / Cache / Cable |
 | Deployment | Dokku + Thruster |
 | Email | Action Mailer + Ahoy + Mailkick + Bootstrap Email |
@@ -223,6 +228,24 @@ x-api-token: <user.auth_token>
 - `authenticate_user_or_token` — token OR Devise session (for hybrid endpoints)
 
 Both populate `current_user` the same way Devise does.
+
+## Connecting Claude (MCP)
+
+The app is an [MCP](https://modelcontextprotocol.io) server at `/mcp`. Anyone
+with an account can connect an AI app to it and use its tools as themselves.
+In Claude, open **Settings → Connectors → Add custom connector** and enter
+`https://<APP_HOST>/mcp`. Claude registers itself, sends you to sign in and
+approve on the consent page, and can then call the `hello` tool. Nothing to
+configure: it uses `APP_HOST`, which every deployed app already has.
+
+To try it from your laptop, run the MCP Inspector
+(`npx @modelcontextprotocol/inspector`) and connect to
+`http://localhost:3000/mcp`. Claude.ai can't reach `localhost`, so for that run
+a tunnel (`cloudflared tunnel --url http://localhost:3000`) and set `APP_HOST`
+in `.env` to the tunnel's hostname.
+
+Add a tool: copy `app/mcp/hello_tool.rb`, then add the class to
+`McpServer::TOOLS`. See "MCP server" in `CLAUDE.md`.
 
 ## Setting up Sign in with Google
 

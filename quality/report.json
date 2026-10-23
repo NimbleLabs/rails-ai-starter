@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generated_at": "2026-10-12T15:45:21Z",
+  "generated_at": "2026-10-23T21:26:01Z",
   "status": "passing",
   "checks": [
     {
       "key": "tests",
       "label": "Tests pass",
       "status": "pass",
-      "detail": "230 tests, 755 assertions."
+      "detail": "290 tests, 1065 assertions."
     },
     {
       "key": "skips",
@@ -19,19 +19,19 @@
       "key": "coverage",
       "label": "Coverage",
       "status": "pass",
-      "detail": "80.0% of lines (minimum 78.0%, target 90.0%)."
+      "detail": "81.9% of lines (minimum 80.0%, target 90.0%)."
     },
     {
       "key": "trend",
       "label": "Coverage held",
       "status": "pass",
-      "detail": "Up 0.9 points since ea3b904 (79.1% → 80.0%)."
+      "detail": "Up 1.9 points since e616758 (80.0% → 81.9%)."
     },
     {
       "key": "lint",
       "label": "RuboCop",
       "status": "pass",
-      "detail": "No offenses in 177 files."
+      "detail": "No offenses in 198 files."
     },
     {
       "key": "security",
@@ -41,76 +41,79 @@
     }
   ],
   "thresholds": {
-    "minimum_line_coverage": 78.0,
+    "minimum_line_coverage": 80.0,
     "target_line_coverage": 90.0,
     "max_coverage_drop": 0.5
   },
   "tests": {
-    "count": 230,
-    "assertions": 755,
+    "count": 290,
+    "assertions": 1065,
     "failures": 0,
     "errors": 0,
     "skips": 0,
-    "duration": 11.3,
-    "seed": 43903,
+    "duration": 8.3,
+    "seed": 18819,
     "by_type": {
-      "controllers": 103,
+      "controllers": 135,
+      "helpers": 5,
+      "integration": 8,
       "jobs": 6,
       "lib": 6,
+      "mcp": 13,
       "models": 61,
       "services": 38,
-      "system": 16
+      "system": 18
     },
     "slowest": [
       {
-        "name": "AdminMobileTest#test_no_page_scrolls_horizontally_on_a_phone",
-        "location": "test/system/admin_mobile_test.rb:59",
-        "time": 10.01
-      },
-      {
-        "name": "AdminMobileTest#test_the_sidebar_is_a_drawer,_not_a_permanent_column",
-        "location": "test/system/admin_mobile_test.rb:34",
-        "time": 9.45
-      },
-      {
-        "name": "AdminMobileTest#test_the_user_app_fits_a_phone_too",
-        "location": "test/system/admin_mobile_test.rb:84",
-        "time": 8.61
-      },
-      {
         "name": "AdminSpaTest#test_every_admin_page_mounts_without_a_runtime_error",
         "location": "test/system/admin_spa_test.rb:40",
-        "time": 6.89
+        "time": 5.91
       },
       {
-        "name": "AdminMobileTest#test_lists_render_as_cards_instead_of_a_table",
-        "location": "test/system/admin_mobile_test.rb:50",
-        "time": 6.84
+        "name": "AdminSpaTest#test_dashboard_mounts_and_renders_Ahoy_metrics",
+        "location": "test/system/admin_spa_test.rb:17",
+        "time": 5.6
+      },
+      {
+        "name": "AdminSpaTest#test_a_deep_link_into_the_SPA_is_served_by_the_Rails_catch-all",
+        "location": "test/system/admin_spa_test.rb:63",
+        "time": 5.0
+      },
+      {
+        "name": "AdminSpaTest#test_the_user_app_mounts_too",
+        "location": "test/system/admin_spa_test.rb:106",
+        "time": 4.46
+      },
+      {
+        "name": "AdminSpaTest#test_the_quality_page_explains_how_to_make_a_report_when_there_isn't_one",
+        "location": "test/system/admin_spa_test.rb:92",
+        "time": 4.25
       }
     ],
     "problems": []
   },
   "coverage": {
-    "line": 80.0,
-    "branch": 69.8,
+    "line": 81.9,
+    "branch": 72.5,
     "lines": {
-      "covered": 1189,
-      "total": 1487
+      "covered": 1308,
+      "total": 1597
     },
     "branches": {
-      "covered": 354,
-      "total": 507
+      "covered": 401,
+      "total": 553
     },
     "groups": [
       {
         "name": "Controllers",
-        "line": 66.4,
-        "files": 24
+        "line": 69.1,
+        "files": 27
       },
       {
         "name": "Helpers",
         "line": 100.0,
-        "files": 2
+        "files": 3
       },
       {
         "name": "Jobs",
@@ -121,6 +124,11 @@
         "name": "Libraries",
         "line": 100.0,
         "files": 1
+      },
+      {
+        "name": "MCP",
+        "line": 100.0,
+        "files": 4
       },
       {
         "name": "Mailers",
@@ -134,7 +142,7 @@
       },
       {
         "name": "Services",
-        "line": 87.2,
+        "line": 89.4,
         "files": 11
       }
     ],
@@ -259,6 +267,20 @@
         "lines": 42
       },
       {
+        "path": "app/controllers/mcp_controller.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 6
+      },
+      {
+        "path": "app/controllers/oauth_client_registrations_controller.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 35
+      },
+      {
         "path": "app/controllers/payments_controller.rb",
         "line": 0.0,
         "branch": 0.0,
@@ -301,6 +323,13 @@
         "lines": 13
       },
       {
+        "path": "app/controllers/well_known_controller.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 7
+      },
+      {
         "path": "app/controllers/whats_new_controller.rb",
         "line": 100.0,
         "branch": 100.0,
@@ -313,6 +342,13 @@
         "branch": 100.0,
         "missed": 0,
         "lines": 7
+      },
+      {
+        "path": "app/helpers/oauth_helper.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 14
       },
       {
         "path": "app/helpers/static_helper.rb",
@@ -369,6 +405,34 @@
         "branch": 100.0,
         "missed": 2,
         "lines": 10
+      },
+      {
+        "path": "app/mcp/application_tool.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 3
+      },
+      {
+        "path": "app/mcp/hello_tool.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 11
+      },
+      {
+        "path": "app/mcp/mcp_server.rb",
+        "line": 100.0,
+        "branch": 100.0,
+        "missed": 0,
+        "lines": 28
+      },
+      {
+        "path": "app/mcp/mcp_token_verifier.rb",
+        "line": 100.0,
+        "branch": 75.0,
+        "missed": 0,
+        "lines": 6
       },
       {
         "path": "app/models/ahoy/event.rb",
@@ -484,9 +548,9 @@
       },
       {
         "path": "app/services/log_error_subscriber.rb",
-        "line": 33.3,
-        "branch": 0.0,
-        "missed": 14,
+        "line": 76.2,
+        "branch": 27.3,
+        "missed": 5,
         "lines": 21
       },
       {
@@ -556,7 +620,7 @@
   },
   "lint": {
     "offenses": 0,
-    "files": 177,
+    "files": 198,
     "listed": []
   },
   "security": {
@@ -565,6 +629,15 @@
     "listed": []
   },
   "history": [
+    {
+      "commit": "e616758",
+      "committed_at": "2026-10-12T10:45:27-05:00",
+      "status": "passing",
+      "tests": 230,
+      "failing": 0,
+      "line": 80.0,
+      "branch": 69.8
+    },
     {
       "commit": "ea3b904",
       "committed_at": "2026-10-10T11:04:58-05:00",
@@ -586,7 +659,7 @@
   ],
   "source": {
     "files": {
-      "Gemfile.lock": "499e7e3f1ed7",
+      "Gemfile.lock": "c827009678f6",
       "app/assets/stylesheets/actiontext.css": "b062c6ac8520",
       "app/assets/stylesheets/application.css": "478b66b3effc",
       "app/assets/stylesheets/spinner.css": "ede227c58366",
@@ -608,14 +681,18 @@
       "app/controllers/landing_pages_controller.rb": "11e4fab33734",
       "app/controllers/log_subscriptions_controller.rb": "33dc8adcd189",
       "app/controllers/logs_controller.rb": "9ef3f7c1dbad",
+      "app/controllers/mcp_controller.rb": "9b7766e815d7",
+      "app/controllers/oauth_client_registrations_controller.rb": "4af263eb055f",
       "app/controllers/payments_controller.rb": "9c40c5927e18",
       "app/controllers/quality_controller.rb": "05d20b1fa0ff",
       "app/controllers/registrations_controller.rb": "0193c188604e",
       "app/controllers/static_controller.rb": "83c2020b0d65",
       "app/controllers/theme_controller.rb": "8de435e78c60",
       "app/controllers/users/omniauth_callbacks_controller.rb": "612d826ac4d2",
+      "app/controllers/well_known_controller.rb": "8fd0504b63bc",
       "app/controllers/whats_new_controller.rb": "2a0c063b7583",
       "app/helpers/application_helper.rb": "9c4972b83186",
+      "app/helpers/oauth_helper.rb": "575e804f9ead",
       "app/helpers/static_helper.rb": "bdac6a035210",
       "app/javascript/admin/AdminApp.jsx": "a9f8801de25a",
       "app/javascript/admin/layout/AdminLayout.jsx": "5b6eded1c556",
@@ -670,6 +747,10 @@
       "app/mailers/email_template_mailer.rb": "0a0b9d4bd918",
       "app/mailers/log_mailer.rb": "5cd8ff58fcf1",
       "app/mailers/user_mailer.rb": "ba96002bccc4",
+      "app/mcp/application_tool.rb": "f918cc08e58a",
+      "app/mcp/hello_tool.rb": "adc85f7ad1aa",
+      "app/mcp/mcp_server.rb": "f42b803c9d85",
+      "app/mcp/mcp_token_verifier.rb": "80a15f2308a6",
       "app/models/ahoy/event.rb": "0b5e501122ad",
       "app/models/ahoy/visit.rb": "1d4d27d2c653",
       "app/models/app_config.rb": "e6ddb381bf7a",
@@ -688,7 +769,7 @@
       "app/services/dashboard_metrics.rb": "c4f73a6a13b3",
       "app/services/log_error_subscriber.rb": "9671f49db185",
       "app/services/log_notifier.rb": "b03ed8d187c4",
-      "app/services/quality_report.rb": "2919daebd228",
+      "app/services/quality_report.rb": "b8524082683a",
       "app/services/quality_report/builder.rb": "ccc7ef932ea9",
       "app/services/quality_report/run.rb": "084f85d3dfd2",
       "app/services/slack_service.rb": "f06c54b8dcdf",
@@ -724,6 +805,9 @@
       "app/views/devise/shared/_google_button.html.erb": "b04dd8a02ff8",
       "app/views/devise/shared/_links.html.erb": "b0b49c742154",
       "app/views/devise/unlocks/new.html.erb": "f324cc3dcfc0",
+      "app/views/doorkeeper/authorizations/_request_fields.html.erb": "c8734e8c392e",
+      "app/views/doorkeeper/authorizations/error.html.erb": "0cfe878691f0",
+      "app/views/doorkeeper/authorizations/new.html.erb": "5cb4d27a4aee",
       "app/views/email_template_mailer/email_template_email.html.erb": "43c6b5974da9",
       "app/views/email_templates/_email_template.html.erb": "bdaa8f736b5f",
       "app/views/email_templates/_form.html.erb": "8b7f4b1c0bb0",
@@ -767,7 +851,7 @@
       "config/application.rb": "e36a328ddf5a",
       "config/boot.rb": "19ab0c95be94",
       "config/environment.rb": "73b2e731e02c",
-      "config/environments/development.rb": "cd34b7e519f2",
+      "config/environments/development.rb": "7c7b260a5a37",
       "config/environments/production.rb": "3d1ac765c089",
       "config/environments/test.rb": "b3208a3cb738",
       "config/importmap.rb": "63ef3f339bf3",
@@ -775,16 +859,18 @@
       "config/initializers/app_config.rb": "43b285cb6d80",
       "config/initializers/assets.rb": "f55d4ce66ec2",
       "config/initializers/content_security_policy.rb": "ff23ccae2e4f",
-      "config/initializers/cors.rb": "24a99e64a000",
+      "config/initializers/cors.rb": "765e33041346",
       "config/initializers/devise.rb": "9a4b326c9eef",
+      "config/initializers/doorkeeper.rb": "ea4f0f7951c7",
       "config/initializers/error_reporting.rb": "3742f95cbb05",
       "config/initializers/filter_parameter_logging.rb": "f864bd67e7bd",
       "config/initializers/inflections.rb": "e2c18b803625",
+      "config/initializers/mcp.rb": "d0ee07ad4535",
       "config/initializers/recaptcha.rb": "fae3fd01a89d",
       "config/initializers/ruby_llm.rb": "1ef2edb1a4cd",
       "config/initializers/stripe.rb": "3b85c36a4803",
       "config/puma.rb": "9018e5a98af6",
-      "config/routes.rb": "b729b261b7fe",
+      "config/routes.rb": "52e9cae5e733",
       "db/migrate/20250619135110_devise_create_users.rb": "375ff622f2fa",
       "db/migrate/20250828203250_create_contacts.rb": "01e77e0b3caf",
       "db/migrate/20250828203253_create_ahoy_messages.rb": "6856f741b1d0",
@@ -816,7 +902,8 @@
       "db/migrate/20260924230002_create_ruby_llm_v2_chats.rb": "0068bcaa68b3",
       "db/migrate/20260924230003_create_ruby_llm_v2_messages.rb": "af189da22a5a",
       "db/migrate/20261012120000_drop_features.rb": "9a48ebc82510",
-      "db/schema.rb": "0b368aedb4ed",
+      "db/migrate/20261023211019_create_doorkeeper_tables.rb": "0d4e3889f43b",
+      "db/schema.rb": "bed269c4b179",
       "db/seeds.rb": "4f24f361a5a8",
       "lib/mobile_branding.rb": "3e62d98ed985",
       "lib/tasks/admin.rake": "ca3dc5a1ee03",
@@ -831,21 +918,29 @@
       "test/controllers/health_test.rb": "ae77c749a344",
       "test/controllers/log_subscriptions_controller_test.rb": "0d1ee572b3ac",
       "test/controllers/logs_controller_test.rb": "fd924cefdb0e",
+      "test/controllers/mcp_controller_test.rb": "e97a9ee0e291",
+      "test/controllers/oauth_client_registrations_controller_test.rb": "9af9bb9d6899",
       "test/controllers/omniauth_callbacks_controller_test.rb": "73aaaa1eb903",
       "test/controllers/quality_controller_test.rb": "f583c6920997",
       "test/controllers/recaptcha_protection_test.rb": "c3999dc85045",
       "test/controllers/static_controller_test.rb": "3bc9312fd78d",
       "test/controllers/theme_controller_test.rb": "7dea54faf3ab",
       "test/controllers/views_smoke_test.rb": "faa9585739cc",
+      "test/controllers/well_known_controller_test.rb": "2b198f69271b",
       "test/controllers/whats_new_test.rb": "a2c57057319d",
       "test/fixtures/action_text/rich_texts.yml": "dc51e9331598",
       "test/fixtures/credit_cards.yml": "7bb9364b9a54",
       "test/fixtures/users.yml": "de45a6aa5f49",
+      "test/helpers/oauth_helper_test.rb": "eea2d3b496b6",
+      "test/integration/mcp_oauth_flow_test.rb": "fc1728cac928",
       "test/jobs/log_notification_job_test.rb": "3d2484f72590",
       "test/lib/mobile_branding_test.rb": "242e6a8a3464",
       "test/lib/sync_mobile_theme_test.rb": "71135eeb8c6d",
       "test/mailers/previews/email_template_mailer_preview.rb": "2e3ee22513a1",
       "test/mailers/previews/user_mailer_preview.rb": "f23a46b3add2",
+      "test/mcp/hello_tool_test.rb": "c7b171f5267a",
+      "test/mcp/mcp_server_test.rb": "a3db02f22588",
+      "test/mcp/mcp_token_verifier_test.rb": "d6eaccdb9618",
       "test/models/app_config_test.rb": "ea57fe182236",
       "test/models/credit_card_test.rb": "0a99274035e3",
       "test/models/log_subscription_test.rb": "2d54c892c87f",
@@ -858,11 +953,13 @@
       "test/services/quality_report/run_test.rb": "f9b1298a18a5",
       "test/services/quality_report_test.rb": "ec472a7ae5f5",
       "test/services/theme_preset_test.rb": "453feab2fe34",
+      "test/support/mcp_helpers.rb": "327bce0d5961",
       "test/support/quality_report_fixture.rb": "11541e90084f",
       "test/support/quality_test_reporter.rb": "cf7066b5b84c",
       "test/system/admin_mobile_test.rb": "930607696867",
       "test/system/admin_spa_test.rb": "7dc2a631fd88",
       "test/system/admin_theme_test.rb": "ab7297056169",
+      "test/system/oauth_consent_test.rb": "f3a67dfc9040",
       "test/test_helper.rb": "14f583f4bc02"
     }
   }
