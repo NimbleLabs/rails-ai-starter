@@ -24,6 +24,10 @@ with Claude Code. The same rules apply to both.
 - **What's new** comes from NimbleHQ, so don't edit it here (see "Production").
 - Write everything users read in plain language: short sentences, no jargon.
 
+## Claude Code permissions
+
+`.claude/settings.json` is committed so every app starts with the same permissions: the commands in "How work happens here" run without a prompt, and force-pushes, destroying apps or databases on the server, and reading secrets are refused. Add narrow rules like `Bash(bin/rails test*)`, because broad ones can be suspended in auto mode. Personal rules go in `.claude/settings.local.json`, which is not committed.
+
 ## Tech Stack
 
 - **Backend**: Rails 8.1.1 with PostgreSQL
