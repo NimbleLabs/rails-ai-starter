@@ -2,7 +2,7 @@
 
 An opinionated Rails 8 starter optimized for building AI-accelerated products with
 [Claude Code](https://github.com/anthropics/claude-code). Ships with auth, an admin
-SPA, LLM integration, transactional email and payments, and it is built to be run
+SPA, LLM integration and transactional email, and it is built to be run
 with NimbleHQ, so you can get from `clone` to shipping in an afternoon.
 
 Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
@@ -39,8 +39,6 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 - **Email** — `bootstrap-email` for responsive HTML, Ahoy for open/click tracking,
   Mailkick for unsubscribe management, and an `EmailTemplate` model with Action
   Text rich content.
-- **Payments** — Stripe (subscriptions + one-time), wired through a single
-  `payments_controller`.
 - **Background jobs / cache / Action Cable** — Solid Queue, Solid Cache, Solid
   Cable. No Redis required.
 - **Deployment** — Dokku (`git push dokku main`) + Thruster, GitHub Actions for
@@ -104,8 +102,6 @@ Create a `.env` in the project root (loaded by `dotenv-rails` in development).
 ```bash
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
-STRIPE_SECRET_KEY=sk_test_...        # optional, payments
-STRIPE_PUBLISHABLE_KEY=pk_test_...
 
 SLACK_WEBHOOK_URL=                   # optional, error-log notifications
 MAIL_FROM=                           # from address for outgoing mail
@@ -191,7 +187,6 @@ bin/rails annotaterb:annotate  # refresh model schema comments
 app/
   controllers/
     api/v1/               # JSON API for mobile clients
-    payments_controller.rb
   javascript/
     app/                  # customer React SPA (/app/*)
     admin/                # admin React SPA (/admin/*)

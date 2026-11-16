@@ -43,12 +43,6 @@ class SlackService
     ])
   end
 
-  def new_customer_event(user, credit_card = nil)
-    lines = [ "User: #{user&.name}", "Email: #{user&.email}" ]
-    lines << "Card: #{credit_card.brand} •••• #{credit_card.last4}" if credit_card.respond_to?(:last4)
-    system_message("New customer! :tada:", lines)
-  end
-
   def email_sent_event(subject, sent_count, already_sent_count, error_count)
     system_message("Email campaign sent :envelope:", [
       "Subject: #{subject}", "Sent: #{sent_count}", "Skipped (already sent): #{already_sent_count}", "Errors: #{error_count}"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -143,19 +143,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
     t.string "slug"
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_contacts_on_slug"
-  end
-
-  create_table "credit_cards", force: :cascade do |t|
-    t.string "brand"
-    t.string "country"
-    t.datetime "created_at", null: false
-    t.integer "exp_month"
-    t.integer "exp_year"
-    t.string "last4"
-    t.string "stripe_id"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_credit_cards_on_user_id"
   end
 
   create_table "email_templates", force: :cascade do |t|
@@ -516,7 +503,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
     t.string "name"
-    t.string "payment_intent_id"
     t.string "provider"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
@@ -524,8 +510,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
     t.integer "role", default: 0
     t.integer "sign_in_count", default: 0, null: false
     t.string "slug"
-    t.string "stripe_customer_id"
-    t.string "stripe_subscription_id"
     t.string "uid"
     t.datetime "updated_at", null: false
     t.index ["auth_token"], name: "index_users_on_auth_token", unique: true
@@ -539,7 +523,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_120000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "chats", "ruby_llm_models"
   add_foreign_key "chats", "users"
-  add_foreign_key "credit_cards", "users"
   add_foreign_key "logs", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id", on_delete: :cascade

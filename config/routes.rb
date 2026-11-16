@@ -64,12 +64,6 @@ Rails.application.routes.draw do
     member { post :test }
   end
 
-  post "payments/create-subscription", to: "payments#create_subscription"
-  post "payments/subscription-complete", to: "payments#payment_complete"
-  post "payments/purchase", to: "payments#create_payment_intent"
-  post "payments/purchase-complete", to: "payments#one_time_payment_complete"
-  get "payments/price", to: "payments#price"
-
   # NimbleHQ reads one day of traffic a night (see Api::MetricsController)
   get "api/metrics/daily", to: "api/metrics#daily"
 

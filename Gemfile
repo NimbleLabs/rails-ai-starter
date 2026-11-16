@@ -38,7 +38,6 @@ gem "vite_rails"
 gem "bootstrap-email"
 gem "ahoy_email"
 gem "mailkick"
-gem "stripe"
 gem "ahoy_matey"
 gem "rack-cors"
 # HTTP client for outside feeds and APIs (e.g. WhatsNewFeed)
