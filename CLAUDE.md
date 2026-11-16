@@ -348,6 +348,11 @@ radii. The primary must read on white at 3:1; the file is checked at boot and by
   `brand_mark(size_classes)`; in React, `app` from `~/lib/app` (the host pages
   put it on `window.__app`); in mailers, `app_config` (and
   `app_config.theme.primary` for inline email styles).
+- **The favicon and the link-preview card are drawn from it too** (`BrandArtwork`,
+  served at `/favicon.svg` and `/og-image.png`, a PNG because link previews don't
+  accept SVG). `shared/_social_meta` writes the Open Graph and Twitter tags; a page
+  sets `content_for(:title)`, `:description` and `:og_image` (an absolute URL) to
+  share as itself, as articles do.
 - **Change the look on the admin's Theme page (`/admin/theme`):** presets from
   `lib/themes/*-theme.json` (Nimble Labs Theme Builder exports, via
   `ThemePreset`), fonts, colors, corners and identity, with a live light and dark

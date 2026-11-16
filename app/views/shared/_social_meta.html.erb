@@ -1,15 +1,19 @@
-<%# Open Graph and Twitter Card meta tags for link previews (iMessage, Slack, Twitter, etc.) %>
+<%# Open Graph and Twitter Card tags, so a shared link shows a title, description and picture (iMessage, Slack, X...).
+    A page can set :title, :description and :og_image (an absolute URL); otherwise the app's own card is used. %>
 <% og_title = content_for(:title).presence || app_config.name %>
 <% og_description = content_for(:description).presence || app_config.tagline %>
-<% og_image_src = content_for(:og_image).presence || og_image_url(title: og_title, description: og_description) %>
+<% page_image = content_for(:og_image).presence %>
+<% og_image_src = page_image || og_image_url %>
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="<%= og_title %>">
 <meta property="og:description" content="<%= og_description %>">
 <meta property="og:site_name" content="<%= app_config.name %>">
 <meta property="og:image" content="<%= og_image_src %>">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<% unless page_image %>
+<meta property="og:image:width" content="<%= BrandArtwork::CARD_WIDTH %>">
+<meta property="og:image:height" content="<%= BrandArtwork::CARD_HEIGHT %>">
+<% end %>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<%= og_title %>">
 <meta name="twitter:description" content="<%= og_description %>">
