@@ -6,14 +6,10 @@ class ArticlesController < ApplicationController
   # GET /articles or /articles.json
   def index
     @articles = Article.all
-    @page_title = "NimbleAI Article Library"
-    @page_description = "Learn all about AI, how it works and how to use it to solve real-world problems."
   end
 
   # GET /articles/1 or /articles/1.json
   def show
-    @page_title = "#{@article.title} | NimbleAI"
-    @page_description = @article.description
   end
 
   def writing

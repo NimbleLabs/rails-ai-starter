@@ -1,3 +1,9 @@
+<% content_for(:title, "#{@article.title} · #{app_config.name}") %>
+<% content_for(:description, @article.description) if @article.description.present? %>
+<% if @article.featured_image.attached? %>
+  <% content_for(:og_image, url_for(@article.featured_image)) %>
+<% end %>
+
 <article>
   <!-- Hero Section with Featured Image -->
   <div class="relative h-[400px] mb-8">

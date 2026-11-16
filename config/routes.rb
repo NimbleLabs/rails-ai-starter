@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  # Dynamic branding: favicon and OG image derived from config/app.yml
+  get "favicon.svg", to: "branding#favicon", as: "favicon"
+  get "og-image.svg", to: "branding#og_image", as: "og_image"
+
   get "about", to: "static#about", as: "about"
   get "simple", to: "static#simple", as: "simple"
   get "privacy", to: "static#privacy", as: "privacy"
