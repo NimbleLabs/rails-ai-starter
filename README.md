@@ -41,8 +41,8 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
   Text rich content.
 - **Background jobs / cache / Action Cable** — Solid Queue, Solid Cache, Solid
   Cable. No Redis required.
-- **Deployment** — Dokku (`git push dokku main`) + Thruster, GitHub Actions for
-  Brakeman, RuboCop, and tests.
+- **Deployment** — Dokku (`git push dokku main`, built with buildpacks), GitHub
+  Actions for Brakeman, RuboCop, and tests.
 - **Rich text + uploads** — Action Text with Trix, Active Storage with
   `image_processing` variants.
 
@@ -62,7 +62,7 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
 | LLM | ruby_llm (OpenAI + Anthropic) |
 | MCP server | `mcp` (official Ruby SDK) + Doorkeeper (OAuth 2.1) |
 | Jobs / cache / cable | Solid Queue / Cache / Cable |
-| Deployment | Dokku + Thruster |
+| Deployment | Dokku (buildpacks) |
 | Email | Action Mailer + Ahoy + Mailkick + Bootstrap Email |
 
 ---
@@ -394,8 +394,7 @@ Both features are configured per environment, so production needs its own setup:
 - Neither feature blocks a deploy: with the variables unset, the app runs
   exactly as it does today, minus the button and the widget.
 
-If you deploy with `bin/bootstrap-droplet`, pass these through with `--push-env`
-or set them later with `dokku config:set`.
+Set them on the server with `dokku config:set`.
 
 ## Deployment
 
@@ -406,10 +405,10 @@ migrations before each release:
 git push dokku main
 ```
 
-NimbleHQ's launcher sets up the server for each app it launches. For a server of
-your own, `bin/bootstrap-droplet` creates a DigitalOcean droplet with Dokku and
-Postgres, and that server builds from the `Dockerfile`. Thruster handles HTTP
-caching + compression in front of Puma.
+NimbleHQ's launcher sets up the server for each app it launches, and Dokku builds
+the app with buildpacks. The server has what the buildpacks install and nothing
+more, which is why images are made at development time (`bin/rails brand:images`)
+rather than on the server.
 
 Apps run with NimbleHQ deploy after every change: `main` is production. See
 "How work happens here: NimbleHQ" in [`CLAUDE.md`](./CLAUDE.md).

@@ -129,8 +129,7 @@ The Quality page's "Least-covered files" table shows the same thing in productio
   `publicOutputDir` at `public/` itself: Vite empties its output folder first, which deletes the error pages and
   favicons.
 - **Images are made at development time and committed, never drawn or converted on the server.** Apps deploy to
-  Dokku with buildpacks, not with this repo's `Dockerfile`, so libvips and other native image tools aren't
-  something production can count on. Nothing in the app needs libvips at runtime today (`bin/rails brand:images`
+  Dokku with buildpacks, so libvips and other native image tools aren't something production can count on. Nothing in the app needs libvips at runtime today (`bin/rails brand:images`
   runs on your machine). Active Storage variants (`.variant`, resized uploads) would change that, so check the
   server's buildpack before adding one.
 
@@ -322,10 +321,9 @@ Required environment variables (use .env in development via dotenv-rails):
 
 - Dokku: `git push dokku main` builds and deploys, and `app.json` runs the migrations first. That is the whole
   release; see "How work happens here".
-- NimbleHQ's launcher sets up each app's server with buildpacks, and that is how apps deploy. Don't rely on
-  anything the `Dockerfile` installs (libvips, for one); `bin/bootstrap-droplet`, which builds from it, is not the
-  normal path.
-- Thruster for HTTP caching/compression
+- NimbleHQ's launcher sets up each app's server, and Dokku builds the app with buildpacks. There is no
+  `Dockerfile`: the server has what the buildpacks install and nothing more, so anything native the app needs at
+  runtime has to come from a buildpack.
 - CI via GitHub Actions: brakeman, importmap audit, rubocop, tests
 
 

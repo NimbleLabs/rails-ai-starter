@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-16T20:17:29Z",
+  "generated_at": "2026-11-16T20:28:54Z",
   "status": "passing",
   "checks": [
     {
@@ -25,7 +25,7 @@
       "key": "trend",
       "label": "Coverage held",
       "status": "pass",
-      "detail": "Unchanged since 98ccf17."
+      "detail": "Unchanged since 91dc5f3."
     },
     {
       "key": "lint",
@@ -51,8 +51,8 @@
     "failures": 0,
     "errors": 0,
     "skips": 0,
-    "duration": 14.7,
-    "seed": 59821,
+    "duration": 17.8,
+    "seed": 13112,
     "by_type": {
       "controllers": 150,
       "helpers": 5,
@@ -66,29 +66,29 @@
     },
     "slowest": [
       {
-        "name": "OauthConsentTest#test_allowing_access_sends_the_user_back_to_the_client_with_a_code",
-        "location": "test/system/oauth_consent_test.rb:25",
-        "time": 8.87
+        "name": "AdminSpaTest#test_every_admin_page_mounts_without_a_runtime_error",
+        "location": "test/system/admin_spa_test.rb:57",
+        "time": 11.48
       },
       {
-        "name": "AdminMobileTest#test_no_page_scrolls_horizontally_on_a_phone",
-        "location": "test/system/admin_mobile_test.rb:59",
-        "time": 8.52
+        "name": "AdminSpaTest#test_unknown_admin_routes_render_the_in-app_not-found_page",
+        "location": "test/system/admin_spa_test.rb:116",
+        "time": 9.49
       },
       {
-        "name": "OauthConsentTest#test_cancelling_sends_the_user_back_with_access_denied",
-        "location": "test/system/oauth_consent_test.rb:45",
-        "time": 8.39
+        "name": "AdminSpaTest#test_dashboard_mounts_and_renders_Ahoy_metrics",
+        "location": "test/system/admin_spa_test.rb:17",
+        "time": 8.16
       },
       {
-        "name": "AdminMobileTest#test_the_sidebar_is_a_drawer,_not_a_permanent_column",
-        "location": "test/system/admin_mobile_test.rb:34",
-        "time": 7.75
+        "name": "AdminSpaTest#test_client-side_navigation_works_without_a_full_page_load",
+        "location": "test/system/admin_spa_test.rb:45",
+        "time": 8.12
       },
       {
-        "name": "AdminThemeTest#test_a_preset_restyles_the_preview,_and_saving_writes_config/app.yml",
-        "location": "test/system/admin_theme_test.rb:21",
-        "time": 6.86
+        "name": "AdminSpaTest#test_the_quality_page_shows_the_committed_report",
+        "location": "test/system/admin_spa_test.rb:83",
+        "time": 8.03
       }
     ],
     "problems": []
@@ -609,6 +609,15 @@
   },
   "history": [
     {
+      "commit": "91dc5f3",
+      "committed_at": "2026-11-16T14:17:38-06:00",
+      "status": "passing",
+      "tests": 326,
+      "failing": 0,
+      "line": 89.1,
+      "branch": 77.7
+    },
+    {
       "commit": "98ccf17",
       "committed_at": "2026-11-16T14:06:01-06:00",
       "status": "passing",
@@ -836,7 +845,6 @@
       "app/views/static/dark.html.erb": "8465e6ac72aa",
       "app/views/static/index.html.erb": "d8a6b5fd3fcc",
       "app/views/static/privacy.html.erb": "3e9a99e4c2a6",
-      "app/views/static/saas.html.erb": "b74b83fc7a8e",
       "app/views/static/simple.html.erb": "7d0e974619e1",
       "app/views/static/terms.html.erb": "074d64503d91",
       "app/views/user_mailer/admin_invite.html.erb": "a1244f110fca",
