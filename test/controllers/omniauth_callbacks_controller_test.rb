@@ -79,15 +79,29 @@ class OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
     assert_match(/sign-in was cancelled or failed/i, controller.flash[:alert])
   end
 
-  test "records a sign_in analytics event" do
+  # Ahoy discards requests with no User-Agent as bots, so these have to look
+  # like a browser or nothing is written.
+  BROWSER = { "HTTP_USER_AGENT" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" }.freeze
+
+  test "a first Google sign-in creates the account, so it records a sign_up" do
     stub_auth
 
-    # Ahoy discards requests with no User-Agent as bots, so this has to look
-    # like a browser or nothing is written.
-    browser = { "HTTP_USER_AGENT" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" }
+    assert_difference -> { Ahoy::Event.where(name: Analytics::SIGN_UP).count }, 1 do
+      assert_no_difference -> { Ahoy::Event.where(name: Analytics::SIGN_IN).count } do
+        get user_google_oauth2_omniauth_callback_path, headers: BROWSER
+      end
+    end
+    assert_equal "google_oauth2", Ahoy::Event.where(name: Analytics::SIGN_UP).last.properties["provider"]
+  end
+
+  test "a returning Google sign-in records a sign_in" do
+    stub_auth
+    get user_google_oauth2_omniauth_callback_path, headers: BROWSER
 
     assert_difference -> { Ahoy::Event.where(name: Analytics::SIGN_IN).count }, 1 do
-      get user_google_oauth2_omniauth_callback_path, headers: browser
+      assert_no_difference -> { Ahoy::Event.where(name: Analytics::SIGN_UP).count } do
+        get user_google_oauth2_omniauth_callback_path, headers: BROWSER
+      end
     end
   end
 end

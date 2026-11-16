@@ -16,7 +16,7 @@ function percent(part, whole) {
   return `${Math.round((part / whole) * 100)}%`
 }
 
-/** Horizontal bar list — used for events, pages, referrers and devices. */
+/** Horizontal bar list — used for actions, pages, referrers and devices. */
 function BreakdownList({ title, rows, labelKey, emptyText }) {
   const max = Math.max(1, ...rows.map((row) => row.count))
   return (
@@ -25,7 +25,7 @@ function BreakdownList({ title, rows, labelKey, emptyText }) {
       {rows.length ? (
         <ul className="space-y-3">
           {rows.map((row) => (
-            <li key={row[labelKey]}>
+            <li key={row.name ?? row[labelKey]}>
               <div className="flex items-baseline justify-between gap-3 mb-1">
                 <span className="text-sm text-ink truncate min-w-0" title={String(row[labelKey])}>{row[labelKey]}</span>
                 <span className="text-sm font-medium text-ink-muted shrink-0 tabular-nums">{row.count}</span>
@@ -105,7 +105,7 @@ export function Dashboard() {
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
             <StatTile label="Visits" value={totals.visits} hint={`${totals.visits_today} today`} />
             <StatTile label="Unique visitors" value={totals.visitors} />
-            <StatTile label="Events" value={totals.events} hint={`${percent(totals.engaged_visits, totals.visits)} of visits engaged`} />
+            <StatTile label="Actions" value={totals.actions} hint={`${percent(totals.engaged_visits, totals.visits)} of visits did something`} />
             <StatTile label="New users" value={totals.signups} hint={`${totals.total_users} total`} to="/users" />
           </div>
 
@@ -122,7 +122,7 @@ export function Dashboard() {
           <VisitsChart series={data.visits_by_day ?? []} />
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <BreakdownList title="Top events" rows={data.top_events ?? []} labelKey="name" emptyText="No events recorded yet. Track one with Analytics.track." />
+            <BreakdownList title="What people did" rows={data.top_actions ?? []} labelKey="label" emptyText="Nothing yet. Sign-ups, sign-ins and app opens show up here." />
             <BreakdownList title="Top landing pages" rows={data.top_landing_pages ?? []} labelKey="page" emptyText="No visits recorded yet." />
             <BreakdownList title="Top referrers" rows={data.top_referrers ?? []} labelKey="domain" emptyText="No external referrers yet." />
             <BreakdownList title="Devices" rows={data.device_types ?? []} labelKey="type" emptyText="No visits recorded yet." />

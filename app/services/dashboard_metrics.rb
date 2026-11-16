@@ -20,7 +20,7 @@ class DashboardMetrics
       range: { days: days, since: since.iso8601 },
       totals: totals,
       visits_by_day: visits_by_day,
-      top_events: top_events,
+      top_actions: top_actions,
       top_landing_pages: top_landing_pages,
       top_referrers: top_referrers,
       device_types: device_types,
@@ -32,18 +32,19 @@ class DashboardMetrics
   private
 
   def visits  = @visits ||= Ahoy::Visit.where(started_at: since..)
-  def events  = @events ||= Ahoy::Event.where(time: since..)
+  # What people did, as opposed to the pages they loaded: page views are already counted as visits.
+  def actions = @actions ||= Ahoy::Event.where(time: since..).where.not(name: Analytics::PAGE_VIEW)
 
   def totals
     {
       visits:            visits.count,
       visitors:          visits.distinct.count(:visitor_token),
-      events:            events.count,
+      actions:           actions.count,
       signups:           User.where(created_at: since..).count,
       visits_today:      Ahoy::Visit.where(started_at: Time.current.beginning_of_day..).count,
       total_users:       User.count,
-      # Share of visits that produced at least one event — a rough engagement read.
-      engaged_visits:    events.distinct.count(:visit_id)
+      # Share of visits where someone did something beyond loading pages — a rough engagement read.
+      engaged_visits:    actions.distinct.count(:visit_id)
     }
   end
 
@@ -57,9 +58,9 @@ class DashboardMetrics
     end
   end
 
-  def top_events
-    events.group(:name).order(count_all: :desc).limit(TOP_N).count
-          .map { |name, count| { name: name.presence || "(unnamed)", count: count } }
+  def top_actions
+    actions.group(:name).order(count_all: :desc).limit(TOP_N).count
+           .map { |name, count| { name: name, label: Analytics.label(name), count: count } }
   end
 
   def top_landing_pages

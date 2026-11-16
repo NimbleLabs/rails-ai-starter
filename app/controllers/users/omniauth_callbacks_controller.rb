@@ -15,7 +15,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     user = User.from_omniauth(auth)
 
     if user&.persisted?
-      Analytics.track(Analytics::SIGN_IN, user: user, controller: self, properties: { provider: "google_oauth2" })
+      # The first Google sign-in creates the account, so it counts as a sign-up.
+      event = user.previously_new_record? ? Analytics::SIGN_UP : Analytics::SIGN_IN
+      Analytics.track(event, user: user, controller: self, properties: { provider: "google_oauth2" })
       sign_in_and_redirect user, event: :authentication
       set_flash_message(:notice, :success, kind: "Google") if is_navigational_format?
     else

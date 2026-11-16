@@ -16,8 +16,22 @@ module Analytics
   APP_OPENED       = "app_opened".freeze
   PUSH_OPENED      = "push_opened".freeze
 
+  # ahoy.js records every page load under this name. Page views already show up as visits and landing pages,
+  # so the dashboard leaves them out of "What people did".
+  PAGE_VIEW        = "$view".freeze
+
   # Events the mobile app is allowed to POST to /api/v1/events.
   CLIENT_REPORTABLE = [ APP_OPENED, PUSH_OPENED ].freeze
+
+  # What each event means, in the words an admin reads on the dashboard. Add a line when you add an event.
+  # An event missing from this list is shown as its name, tidied up ("article_read" reads "Article read").
+  LABELS = {
+    SIGN_UP     => "Signed up",
+    SIGN_IN     => "Signed in",
+    APP_OPENED  => "Opened the app",
+    PUSH_OPENED => "Opened a notification",
+    PAGE_VIEW   => "Viewed a page"
+  }.freeze
 
   WEB = "web".freeze
   APP = "app".freeze
@@ -39,6 +53,12 @@ module Analytics
       raise e if Rails.env.test?
       Rails.logger.warn("[analytics] #{name} not recorded: #{e.class}: #{e.message}")
       false
+    end
+
+    # The plain-English name for an event, for people reading the dashboard.
+    def label(name)
+      name = name.to_s
+      LABELS[name] || name.delete_prefix("$").tr("_.-", " ").squish.capitalize.presence || "Unnamed event"
     end
 
     private

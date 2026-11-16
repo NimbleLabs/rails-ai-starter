@@ -402,8 +402,8 @@ components`) precisely so the variants can `@apply` them — Tailwind 4 cannot
 
 The admin dashboard at `/admin` is built entirely on Ahoy: `DashboardMetrics`
 (`app/services/dashboard_metrics.rb`) turns `ahoy_visits` / `ahoy_events` into visit
-counts, a dense per-day series, top events/pages/referrers, device split and recent
-sign-ups, served by `GET /dashboard/metrics.json?days=N`. That page is the argument for
+counts, a dense per-day series, what people did (every event except page views, in
+plain words), top pages and referrers, device split and recent sign-ups, served by `GET /dashboard/metrics.json?days=N`. That page is the argument for
 keeping analytics in our own Postgres: it is one request, plain SQL, and it joins
 straight against `users`.
 
@@ -454,7 +454,9 @@ be able to break a sign-up.
    `Analytics::CLIENT_REPORTABLE`; `POST /api/v1/events` silently drops anything
    else, on purpose, so an event recorded on both sides can't double-count.
 3. **Name events as past-tense facts** (`sign_up`, `challenge_started`), declare
-   them as constants in `Analytics`, and keep `properties` small and scalar.
+   them as constants in `Analytics`, and keep `properties` small and scalar. Give
+   each one a plain-English label in `Analytics::LABELS` ("Started a challenge"):
+   that is what the dashboard shows, and a test fails without it.
 4. Mobile sends `Ahoy-Visitor` / `Ahoy-Visit` headers on every API request
    (`mobile-app-starter/src/lib/visit.ts`) so anonymous activity stitches to the
    user as soon as they sign in. Don't break that by tracking without the

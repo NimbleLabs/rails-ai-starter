@@ -13,6 +13,7 @@ class Api::V1::RegistrationsController < ApplicationController
     user = User.new(user_params)
 
     if user.save
+      Analytics.track(Analytics::SIGN_UP, user: user, controller: self, properties: { provider: "email" })
       render json: { user: user_payload(user), token: user.auth_token }, status: :created
     else
       render json: { errors: user.errors.as_json }, status: :unprocessable_entity

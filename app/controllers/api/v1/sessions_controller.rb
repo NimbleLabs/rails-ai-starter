@@ -18,6 +18,7 @@ class Api::V1::SessionsController < ApplicationController
     user = User.find_by(email: params[:email].to_s.downcase.strip)
 
     if user&.valid_password?(params[:password])
+      Analytics.track(Analytics::SIGN_IN, user: user, controller: self, properties: { provider: "email" })
       render json: { user: user_payload(user), token: user.auth_token }, status: :ok
     else
       render json: { error: "Invalid email or password" }, status: :unauthorized

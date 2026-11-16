@@ -25,6 +25,23 @@ class AdminSpaTest < ApplicationSystemTestCase
     assert_selector "nav[aria-label='Admin']"
   end
 
+  test "the dashboard says what people did in plain words, without page views" do
+    visit_row = Ahoy::Visit.create!(visit_token: SecureRandom.uuid, visitor_token: SecureRandom.uuid, started_at: Time.current)
+    [ Analytics::SIGN_UP, Analytics::APP_OPENED, Analytics::PAGE_VIEW ].each do |name|
+      Ahoy::Event.create!(visit: visit_row, name: name, time: Time.current, properties: {})
+    end
+
+    visit "/admin"
+
+    within(:xpath, "//h2[normalize-space()='What people did']/ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' card ')][1]") do
+      assert_text "Signed up"
+      assert_text "Opened the app"
+      assert_no_text "Viewed a page"
+      assert_no_text "sign_up"
+      assert_no_text "$view"
+    end
+  end
+
   test "client-side navigation works without a full page load" do
     visit "/admin"
     click_on "Logs"

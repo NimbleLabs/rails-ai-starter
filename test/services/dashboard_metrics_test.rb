@@ -56,15 +56,51 @@ class DashboardMetricsTest < ActiveSupport::TestCase
     assert_equal series.map { |p| p[:date] }.sort, series.map { |p| p[:date] }, "days must be in order"
   end
 
-  test "top events are ranked and limited" do
+  def event!(visit, name, time: Time.current)
+    Ahoy::Event.create!(visit: visit, name: name, time: time, properties: {})
+  end
+
+  test "top actions are ranked, limited and labelled in plain English" do
     visit = visit!
-    3.times { Ahoy::Event.create!(visit: visit, name: "app_opened", time: Time.current, properties: {}) }
-    Ahoy::Event.create!(visit: visit, name: "push_opened", time: Time.current, properties: {})
+    3.times { event!(visit, "app_opened") }
+    event!(visit, "push_opened")
 
-    top = DashboardMetrics.new(days: 30).as_json[:top_events]
+    top = DashboardMetrics.new(days: 30).as_json[:top_actions]
 
-    assert_equal({ name: "app_opened", count: 3 }, top.first)
+    assert_equal({ name: "app_opened", label: "Opened the app", count: 3 }, top.first)
+    assert_equal "Opened a notification", top.second[:label]
     assert_operator top.size, :<=, DashboardMetrics::TOP_N
+  end
+
+  test "top actions stop at TOP_N" do
+    visit = visit!
+    (DashboardMetrics::TOP_N + 2).times { |i| event!(visit, "thing_#{i}_done") }
+
+    assert_equal DashboardMetrics::TOP_N, DashboardMetrics.new(days: 30).as_json[:top_actions].size
+  end
+
+  test "page views are left out of actions and engagement" do
+    browsed = visit!
+    3.times { event!(browsed, Analytics::PAGE_VIEW) }
+    acted = visit!
+    event!(acted, Analytics::PAGE_VIEW)
+    event!(acted, Analytics::SIGN_UP)
+
+    metrics = DashboardMetrics.new(days: 30).as_json
+
+    assert_equal [ "sign_up" ], metrics[:top_actions].map { |row| row[:name] }
+    assert_equal 1, metrics[:totals][:actions], "four page views and one sign-up is one action"
+    assert_equal 1, metrics[:totals][:engaged_visits], "a visit that only loaded pages did nothing"
+    assert_equal 2, metrics[:totals][:visits]
+  end
+
+  test "actions outside the range are not counted" do
+    event!(visit!, Analytics::SIGN_IN, time: 45.days.ago)
+
+    metrics = DashboardMetrics.new(days: 30).as_json
+
+    assert_equal 0, metrics[:totals][:actions]
+    assert_empty metrics[:top_actions]
   end
 
   test "landing pages are shortened to a path" do
@@ -102,7 +138,8 @@ class DashboardMetricsTest < ActiveSupport::TestCase
     metrics = DashboardMetrics.new(days: 30).as_json
 
     assert_equal 0, metrics[:totals][:visits]
-    assert_empty metrics[:top_events]
+    assert_empty metrics[:top_actions]
+    assert_equal 0, metrics[:totals][:actions]
     assert_empty metrics[:top_referrers]
     assert_equal 30, metrics[:visits_by_day].size
   end

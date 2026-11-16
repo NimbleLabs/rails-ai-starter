@@ -4,6 +4,13 @@ class RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters, only: [ :create ]
   before_action :check_signup_captcha, only: [ :create ]
 
+  # Devise yields the user after trying to save it, so only a real account is counted.
+  def create
+    super do |user|
+      Analytics.track(Analytics::SIGN_UP, user: user, controller: self, properties: { provider: "email" }) if user.persisted?
+    end
+  end
+
   private
 
   def configure_permitted_parameters
