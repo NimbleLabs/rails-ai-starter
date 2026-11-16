@@ -64,7 +64,6 @@ class AdminMobileTest < ApplicationSystemTestCase
       /admin/articles
       /admin/logs
       /admin/log-notifications
-      /admin/funnel-metrics
       /admin/theme
     ].each do |path|
       visit path

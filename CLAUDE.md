@@ -190,7 +190,7 @@ view and both sharing one component kit:
    - Layout: `app/javascript/admin/layout/` — permanent sidebar at `lg+`, off-canvas
      drawer below it. Nav items are data in `layout/navItems.js`.
    - Pages: `app/javascript/admin/pages/` — dashboard, users, contacts, email
-     templates, articles, funnels, metrics, logs, quality, theme.
+     templates, articles, logs, quality, theme.
 
 Both host pages serialize the signed-in user into `window.__currentUser`, so the SPAs
 boot without a round trip. Rails catch-all routes (`get "admin/*other"`) make deep
@@ -411,7 +411,7 @@ straight against `users`.
 **Ahoy is the analytics and metrics tool for this app. Do not add a third-party
 analytics SDK** (Google Analytics as a product-metrics source, Segment, Mixpanel,
 Amplitude, PostHog, Heap, …). Events are `Ahoy::Event` rows in our own Postgres,
-which means funnel numbers join directly against `users`, `articles`, `funnels`
+which means event counts join directly against `users`, `articles`
 and everything else with plain SQL, cost nothing per event, and never leave our
 database.
 

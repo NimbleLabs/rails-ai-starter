@@ -41,8 +41,6 @@ Built and maintained by [Nimble Labs](https://www.nimblelabs.com).
   Text rich content.
 - **Payments** — Stripe (subscriptions + one-time), wired through a single
   `payments_controller`.
-- **Marketing funnels** — `/f/:slug` landing pages (lead → book-call → order →
-  thank-you) backed by a `Funnel` model with a metrics endpoint.
 - **Background jobs / cache / Action Cable** — Solid Queue, Solid Cache, Solid
   Cable. No Redis required.
 - **Deployment** — Dokku (`git push dokku main`) + Thruster, GitHub Actions for
@@ -194,7 +192,6 @@ app/
   controllers/
     api/v1/               # JSON API for mobile clients
     payments_controller.rb
-    landing_pages_controller.rb
   javascript/
     app/                  # customer React SPA (/app/*)
     admin/                # admin React SPA (/admin/*)
@@ -204,10 +201,9 @@ app/
   models/
     user.rb               # Devise + roles + API tokens + Mailkick subs
     article.rb            # Action Text + Active Storage + FriendlyId
-    funnel.rb             # marketing funnels
     chat.rb / message.rb  # ruby_llm acts_as_chat
 config/
-  routes.rb               # Devise + REST + namespaced API + funnel paths
+  routes.rb               # Devise + REST + namespaced API
 bin/
   setup                   # idempotent app setup
   install-mac-deps        # idempotent toolchain installer

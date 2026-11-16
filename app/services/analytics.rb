@@ -1,6 +1,6 @@
 # Product analytics = Ahoy. Every event is an Ahoy::Event row in our own
 # Postgres, so web pages, the JSON API and the mobile app all land in one table
-# that admin dashboards (see FunnelMetrics) can join straight against users.
+# that admin dashboards (see DashboardMetrics) can join straight against users.
 # We deliberately do not run a third-party analytics SDK.
 #
 # Track things *server-side*, where they actually happen — a dropped request,
@@ -13,7 +13,6 @@
 module Analytics
   SIGN_UP          = "sign_up".freeze
   SIGN_IN          = "sign_in".freeze
-  FUNNEL_PAGE_VIEW = "funnel_page_view".freeze
   APP_OPENED       = "app_opened".freeze
   PUSH_OPENED      = "push_opened".freeze
 
