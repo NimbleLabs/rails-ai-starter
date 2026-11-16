@@ -1,6 +1,9 @@
 require "test_helper"
+require_relative "../support/brand_artwork_rasterizing"
 
 class SocialMetaTest < ActionDispatch::IntegrationTest
+  include BrandArtworkRasterizing
+
   test "home page has Open Graph meta tags" do
     get root_url
     assert_response :success
@@ -22,11 +25,20 @@ class SocialMetaTest < ActionDispatch::IntegrationTest
   test "a page without its own picture shares the app's card, at an absolute URL" do
     get root_url
 
-    assert_select 'meta[property="og:image"][content=?]', og_image_url
-    assert_select 'meta[name="twitter:image"][content=?]', og_image_url
+    assert_select 'meta[property="og:image"][content=?]', "http://www.example.com/og-image.png"
+    assert_select 'meta[name="twitter:image"][content=?]', "http://www.example.com/og-image.png"
     assert_select 'meta[property="og:image:width"][content="1200"]'
     assert_select 'meta[property="og:image:height"][content="630"]'
-    assert_match %r{\Ahttps?://.+/og-image\.png\z}, og_image_url
+  end
+
+  # The tags and page shells point at plain files in public/, drawn at development time by
+  # bin/rails brand:images. These check the committed ones are there and the size the tags say.
+  test "the icons and share card the pages point at are committed" do
+    public_dir = Rails.root.join("public")
+
+    assert_equal [ 1200, 630 ], png_size(public_dir.join("og-image.png").binread)
+    assert_equal [ BrandArtwork::ICON_SIZE, BrandArtwork::ICON_SIZE ], png_size(public_dir.join("favicon.png").binread)
+    assert_equal "svg", Nokogiri::XML(public_dir.join("favicon.svg").read) { |options| options.strict }.root.name
   end
 
   test "an article with a featured image shares that image instead" do

@@ -70,18 +70,40 @@ class BrandArtworkTest < ActiveSupport::TestCase
     assert_equal [ BrandArtwork::CARD_WIDTH, BrandArtwork::CARD_HEIGHT ], png_size(png)
   end
 
-  test "the PNG is drawn once per config and redrawn when the config changes" do
-    renders = 0
-    counting = ->(svg) { renders += 1; "png of #{svg.hash}" }
+  test "the PNG icon is 180x180, the size iPhones want for home-screen icons" do
+    png = with_fresh_process_rasterizer { BrandArtwork.new(config).icon_png }
 
-    Rails.stub(:cache, ActiveSupport::Cache::MemoryStore.new) do
-      BrandArtwork.stub(:rasterize, counting) do
-        2.times { BrandArtwork.new(config).share_card_png }
-        assert_equal 1, renders, "the same config should come from the cache"
+    assert_equal [ BrandArtwork::ICON_SIZE, BrandArtwork::ICON_SIZE ], png_size(png)
+  end
 
-        BrandArtwork.new(config(theme: { "primary" => "#0f766e" })).share_card_png
-        assert_equal 2, renders, "a new theme needs a new card"
-      end
+  test "the PNG icon is a full square, since iPhones round the corners themselves" do
+    rendered = nil
+    BrandArtwork.stub(:rasterize, ->(svg) { rendered = svg }) { BrandArtwork.new(config(theme: { "corners" => "round" })).icon_png }
+
+    svg = parse(rendered)
+    assert_equal "0", svg.at_css("rect")["rx"]
+    assert_equal BrandArtwork::ICON_SIZE.to_s, svg.root["width"]
+  end
+
+  test "write puts the three files in the folder and returns their paths" do
+    artwork = BrandArtwork.new(config)
+
+    Dir.mktmpdir do |dir|
+      paths = BrandArtwork.stub(:rasterize, ->(svg) { "png of #{svg.length} bytes" }) { artwork.write(dir) }
+
+      assert_equal %w[favicon.svg favicon.png og-image.png].map { |name| File.join(dir, name) }, paths
+      assert_equal artwork.favicon_svg, File.read(File.join(dir, "favicon.svg"))
+      assert_equal "png of #{artwork.share_card_svg.length} bytes", File.binread(File.join(dir, "og-image.png"))
+    end
+  end
+
+  test "write replaces files that are already there" do
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, "favicon.svg"), "an old icon")
+
+      BrandArtwork.stub(:rasterize, ->(_svg) { "png" }) { BrandArtwork.new(config).write(dir) }
+
+      assert_includes File.read(File.join(dir, "favicon.svg")), "TH"
     end
   end
 end

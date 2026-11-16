@@ -300,8 +300,9 @@ puts <<~STEPS
   1. cp .env.example .env  and fill in API keys (OPENAI_API_KEY, etc.)
   2. EDITOR=vim bin/rails credentials:edit   # creates a fresh config/master.key
   3. bin/setup                               # creates DB (#{slug_snake}_dev), runs migrations, seeds
-  4. bin/dev                                 # starts Rails on :3000
-  #{skip_mobile ? '' : "5. cd #{File.basename(MOBILE_DIR)} && npm install && cp .env.example .env && npx expo start"}
+  4. bin/rails brand:images                  # your icons and link-preview card (needs `brew install vips`); commit them
+  5. bin/dev                                 # starts Rails on :3000
+  #{skip_mobile ? '' : "6. cd #{File.basename(MOBILE_DIR)} && npm install && cp .env.example .env && npx expo start"}
 
   Optional: rename the directories themselves so paths match the new project:
     mv #{File.basename(RAILS_DIR)} #{slug}-api
@@ -312,5 +313,6 @@ puts <<~STEPS
 
   To change the look, open /admin/theme (fonts, colors, corners, with a live
   preview); saving it in development rewrites config/app.yml. Then run
-  bin/sync-mobile-theme to give the mobile app the same look.
+  bin/sync-mobile-theme to give the mobile app the same look, and
+  bin/rails brand:images to redraw the icons and link-preview card.
 STEPS

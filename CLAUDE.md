@@ -128,6 +128,11 @@ The Quality page's "Least-covered files" table shows the same thing in productio
 - `config/vite.json` builds dev and test assets into `public/vite-dev` and `public/vite-test`. Never point
   `publicOutputDir` at `public/` itself: Vite empties its output folder first, which deletes the error pages and
   favicons.
+- **Images are made at development time and committed, never drawn or converted on the server.** Apps deploy to
+  Dokku with buildpacks, not with this repo's `Dockerfile`, so libvips and other native image tools aren't
+  something production can count on. Nothing in the app needs libvips at runtime today (`bin/rails brand:images`
+  runs on your machine). Active Storage variants (`.variant`, resized uploads) would change that, so check the
+  server's buildpack before adding one.
 
 ## Development Commands
 
@@ -317,8 +322,9 @@ Required environment variables (use .env in development via dotenv-rails):
 
 - Dokku: `git push dokku main` builds and deploys, and `app.json` runs the migrations first. That is the whole
   release; see "How work happens here".
-- NimbleHQ's launcher sets up each app's server with buildpacks; `bin/bootstrap-droplet` sets up a fresh Dokku
-  droplet that builds from the `Dockerfile`.
+- NimbleHQ's launcher sets up each app's server with buildpacks, and that is how apps deploy. Don't rely on
+  anything the `Dockerfile` installs (libvips, for one); `bin/bootstrap-droplet`, which builds from it, is not the
+  normal path.
 - Thruster for HTTP caching/compression
 - CI via GitHub Actions: brakeman, importmap audit, rubocop, tests
 
@@ -348,16 +354,22 @@ radii. The primary must read on white at 3:1; the file is checked at boot and by
   `brand_mark(size_classes)`; in React, `app` from `~/lib/app` (the host pages
   put it on `window.__app`); in mailers, `app_config` (and
   `app_config.theme.primary` for inline email styles).
-- **The favicon and the link-preview card are drawn from it too** (`BrandArtwork`,
-  served at `/favicon.svg` and `/og-image.png`, a PNG because link previews don't
-  accept SVG). `shared/_social_meta` writes the Open Graph and Twitter tags; a page
-  sets `content_for(:title)`, `:description` and `:og_image` (an absolute URL) to
-  share as itself, as articles do.
+- **The icons and the link-preview card are files in `public/`:** `favicon.svg`,
+  `favicon.png` (180x180, also the iPhone home-screen icon) and `og-image.png`
+  (1200x630, a PNG because link previews don't accept SVG). **The starter's are
+  placeholders that say "Starter".** Every app must regenerate them from its own
+  `config/app.yml` with `bin/rails brand:images` (`BrandArtwork`; needs libvips on
+  your machine, `brew install vips`) and commit them, or replace them with designed
+  files of the same names and sizes. Rerun it whenever the name, tagline or look
+  changes. `shared/_social_meta` writes the Open Graph and Twitter tags; a page sets
+  `content_for(:title)`, `:description` and `:og_image` (an absolute URL) to share
+  as itself, as articles do.
 - **Change the look on the admin's Theme page (`/admin/theme`):** presets from
   `lib/themes/*-theme.json` (Nimble Labs Theme Builder exports, via
   `ThemePreset`), fonts, colors, corners and identity, with a live light and dark
   preview. Saving works in development and writes `config/app.yml` for you to
-  commit; production previews only (and offers the YAML to copy).
+  commit; production previews only (and offers the YAML to copy). Then run
+  `bin/rails brand:images` so the icons and link-preview card match.
 - **The mobile app gets the same look from `bin/sync-mobile-theme`**, which writes
   `mobile-app-starter/src/constants/branding.ts` (`MobileBranding`) and installs
   the right `@expo-google-fonts` packages. `bin/new-app` runs it with the

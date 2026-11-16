@@ -143,6 +143,10 @@ secondary color, and a corner style (sharp, soft or round). Everything else
   the YAML.
 - **Mobile:** after changing it, run `bin/sync-mobile-theme` to regenerate the
   Expo app's `src/constants/branding.ts` and install its fonts.
+- **Icons and link previews:** `public/favicon.svg`, `favicon.png` and
+  `og-image.png` are placeholders that say "Starter". Run `bin/rails brand:images`
+  (needs `brew install vips`) to draw your app's from `config/app.yml` and commit
+  them, or replace them with designed ones of the same names and sizes.
 
 ## Running locally
 

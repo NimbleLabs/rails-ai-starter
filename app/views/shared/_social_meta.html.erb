@@ -1,9 +1,10 @@
 <%# Open Graph and Twitter Card tags, so a shared link shows a title, description and picture (iMessage, Slack, X...).
-    A page can set :title, :description and :og_image (an absolute URL); otherwise the app's own card is used. %>
+    A page can set :title, :description and :og_image (an absolute URL); otherwise it shares public/og-image.png,
+    drawn by bin/rails brand:images (see BrandArtwork). %>
 <% og_title = content_for(:title).presence || app_config.name %>
 <% og_description = content_for(:description).presence || app_config.tagline %>
 <% page_image = content_for(:og_image).presence %>
-<% og_image_src = page_image || og_image_url %>
+<% og_image_src = page_image || "#{request.base_url}/og-image.png" %>
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="<%= og_title %>">
