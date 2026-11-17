@@ -305,7 +305,9 @@ Required environment variables (use .env in development via dotenv-rails):
 - `ANTHROPIC_API_KEY` - for ruby_llm Anthropic integration
 - `DATABASE_URL` - PostgreSQL connection (auto-configured in database.yml)
 - `SLACK_WEBHOOK_URL` - incoming webhook for `SlackService` system alerts (optional)
-- `MAIL_FROM` - from address for outgoing mail, including log alerts
+- `MAIL_FROM` - from address for every email, Devise's password resets included (`ApplicationMailer.from_address`).
+  Blank means `Harris Reynolds <harris@nimblelabs.com>`, which SendGrid has verified; SendGrid refuses any
+  address it hasn't, and the request that sent the mail fails
 - `SENDGRID_API_KEY` - production mail goes through SendGrid when set; without it, production mail isn't delivered
 - `APP_HOST` - the app's domain, used for links in emails and as the MCP server's URL (production; in
   development only for a tunnel, see "MCP server")

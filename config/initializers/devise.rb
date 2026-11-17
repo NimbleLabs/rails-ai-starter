@@ -21,10 +21,10 @@ Devise.setup do |config|
   # config.parent_controller = 'DeviseController'
 
   # ==> Mailer Configuration
-  # Configure the e-mail address which will be shown in Devise::Mailer,
-  # note that it will be overwritten if you use your own mailer class
-  # with default "from" parameter.
-  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+  # Password-reset and other Devise emails come from the same sender as the
+  # rest of the app's mail (ApplicationMailer.from_address). Any other address
+  # is one SendGrid hasn't verified, and it refuses the mail.
+  config.mailer_sender = proc { ApplicationMailer.from_address }
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
