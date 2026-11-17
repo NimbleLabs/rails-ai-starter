@@ -124,7 +124,12 @@ The Quality page's "Least-covered files" table shows the same thing in productio
   (`WHATS_NEW_FEED_URL`). NimbleHQ's builder adds an entry whenever it ships something users will notice, so don't
   edit the list here. The page is cached and keeps its last good copy, so it never depends on NimbleHQ being up.
 - **Admins:** `bin/rails admin:invite EMAIL=...` makes that person an admin (creating the account if needed) and
-  emails them a link to set their password. NimbleHQ runs it for the project's creator on launch. Safe to rerun.
+  emails them a link to set their password (it lasts 6 hours; after that, "Forgot your password?"). NimbleHQ runs
+  it for the project's creator on launch. Safe to rerun.
+  - **With `ADMIN_PASSWORD`** (at least 12 characters) it sends no email, and a new account gets that password. An
+    existing account keeps its own, so a rerun never resets anyone's password. Pass it to that one command,
+    `dokku run --env ADMIN_PASSWORD=... <app> bin/rails admin:invite EMAIL=...`, never with `config:set`: a
+    config var is stored on the server and shown by `config:show`. Use a different password for each app.
 - `config/vite.json` builds dev and test assets into `public/vite-dev` and `public/vite-test`. Never point
   `publicOutputDir` at `public/` itself: Vite empties its output folder first, which deletes the error pages and
   favicons.

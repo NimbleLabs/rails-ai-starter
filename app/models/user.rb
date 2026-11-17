@@ -55,17 +55,32 @@ class User < ApplicationRecord
     subscribe("Newsletter")
   end
 
-  # Makes this email an admin, creating the account if needed, and emails a link
-  # to set the password. `bin/rails admin:invite EMAIL=...` calls it when
-  # NimbleHQ launches the app. Safe to run again: it just sends a fresh link.
-  def self.invite_admin!(email)
+  ADMIN_PASSWORD_MIN_LENGTH = 12
+
+  # Makes this email an admin, creating the account if needed.
+  # `bin/rails admin:invite EMAIL=...` calls it when NimbleHQ launches the app.
+  #
+  # Without a password it emails a link to set one. Safe to run again: it just
+  # sends a fresh link.
+  #
+  # With a password (ADMIN_PASSWORD) it sends nothing. A new account gets that
+  # password; an existing account keeps its own, so running it again can never
+  # reset anyone's password.
+  def self.invite_admin!(email, password: nil)
+    password = password.presence
+    if password && password.length < ADMIN_PASSWORD_MIN_LENGTH
+      raise ArgumentError, "ADMIN_PASSWORD must be at least #{ADMIN_PASSWORD_MIN_LENGTH} characters"
+    end
+
     user = find_or_initialize_by(email: email.to_s.strip.downcase)
     if user.new_record?
       user.name = user.email.split("@").first
-      user.password = SecureRandom.base58(24)
+      user.password = password || SecureRandom.base58(24)
       user.invited = true
     end
     user.admin!
+    return user if password
+
     token = user.send(:set_reset_password_token)
     UserMailer.with(user:, token:).admin_invite.deliver_now
     user
